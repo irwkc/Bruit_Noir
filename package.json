@@ -9,7 +9,7 @@
     "adminjs": "node admin/server.js"
   },
   "dependencies": {
-    "@adminjs/express": "^6.1.1",
+    "@adminjs/express": "^5.1.0",
     "@adminjs/prisma": "^5.0.4",
     "@auth/core": "^0.41.0",
     "@prisma/client": "^6.17.1",
