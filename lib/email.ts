@@ -1,11 +1,11 @@
 import nodemailer from 'nodemailer'
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
+  host: 'smtp.mail.ru',
+  port: 465,
+  secure: true,
   auth: {
-    user: 'bruitnoir.info@gmail.com',
+    user: 'bruitnoir_info@mail.ru',
     pass: process.env.EMAIL_PASSWORD || 'yKqlar79cRZUjwYTzodF',
   },
   connectionTimeout: 10000,
@@ -101,7 +101,7 @@ export async function sendVerificationEmail(email: string, code: string, name?: 
 
   try {
     await transporter.sendMail({
-      from: '"Bruit Noir" <bruitnoir.info@gmail.com>',
+      from: '"Bruit Noir" <bruitnoir_info@mail.ru>',
       to: email,
       subject: 'Подтверждение email - Bruit Noir',
       text: textContent,
