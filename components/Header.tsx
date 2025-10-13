@@ -11,8 +11,8 @@ export default function Header() {
   const totalItems = useCartStore((state) => state.getTotalItems())
 
   return (
-    <header className="bg-black text-white shadow-lg sticky top-0 z-50">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <header className="bg-black text-white sticky top-0 z-50">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border-b border-transparent">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
@@ -20,9 +20,9 @@ export default function Header() {
               <Image
                 src="/logo.png"
                 alt="Bruit Noir"
-                width={220}
-                height={48}
-                className="h-8 w-auto"
+                width={200}
+                height={44}
+                className="h-10 w-auto"
                 priority
               />
             </Link>
