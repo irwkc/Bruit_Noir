@@ -19,8 +19,6 @@ export default function ProfilePage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
 
-  console.log('Profile page - Session:', session)
-  console.log('Profile page - Status:', status)
 
   useEffect(() => {
     if (session) {

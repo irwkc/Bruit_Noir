@@ -5,16 +5,11 @@ import { auth } from '@/auth'
 export async function GET(request: NextRequest) {
   try {
     const session = await auth()
-    console.log('Orders API - Session:', session)
-    console.log('Orders API - Session user:', session?.user)
-    
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const userId = session.user.id
-    console.log('Orders API - User ID:', userId)
-    console.log('Orders API - Full session user:', session.user)
     
     if (!userId) {
       return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 })
@@ -43,15 +38,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
-    console.log('Orders POST API - Session:', session)
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const userId = session.user.id
-    console.log('Orders POST API - User ID:', userId)
-    console.log('Orders POST API - Full session user:', session.user)
     
     if (!userId) {
       return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 })
