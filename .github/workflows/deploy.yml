@@ -53,6 +53,8 @@ jobs:
             fi
             chmod 755 public/uploads
             npm install
+            npx prisma generate
+            npx prisma migrate deploy
             npm run build
             pm2 delete all || true
             pm2 start "npm start" --name ${{ secrets.PM2_NAME || 'bruit-noir' }} --cwd ${{ secrets.APP_DIR }}
