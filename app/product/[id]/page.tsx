@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useCartStore } from '@/lib/store'
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import Toast from '@/components/Toast'
 
 interface Product {
   id: string
@@ -27,6 +28,7 @@ export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [showToast, setShowToast] = useState(false)
   const addItem = useCartStore((state) => state.addItem)
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function ProductPage() {
       quantity,
     })
 
-    alert('Товар добавлен в корзину!')
+    setShowToast(true)
   }
 
   if (loading) {
@@ -84,6 +86,12 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Toast
+        message="Товар добавлен в корзину!"
+        show={showToast}
+        onClose={() => setShowToast(false)}
+      />
+      
       {/* Desktop Version */}
       <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -230,7 +238,7 @@ export default function ProductPage() {
       </div>
 
       {/* Mobile Version */}
-      <div className="block md:hidden pb-20">
+      <div className="block md:hidden">
         {/* Mobile Images */}
         <div className="bg-white">
           <div className="relative aspect-[3/4]">
@@ -353,13 +361,11 @@ export default function ProductPage() {
           </div>
 
           {/* Stock Info */}
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-gray-600 mb-4">
             {product.stock > 0 ? `В наличии: ${product.stock} шт.` : 'Нет в наличии'}
           </p>
-        </div>
 
-        {/* Mobile Fixed Bottom Button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+          {/* Mobile Add to Cart Button */}
           <button
             onClick={handleAddToCart}
             disabled={!selectedSize || !selectedColor || product.stock === 0}

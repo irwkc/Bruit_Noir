@@ -299,7 +299,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* Mobile Version */}
-      <div className="block md:hidden pb-24">
+      <div className="block md:hidden">
         {/* Mobile Header */}
         <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-10">
           <h1 className="text-2xl font-bold text-gray-900">Оформление</h1>
@@ -479,19 +479,19 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
-        </form>
 
-        {/* Mobile Fixed Bottom Button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-          <button
-            type="submit"
-            disabled={loading || !selectedDeliveryPoint}
-            onClick={handleSubmit}
-            className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Оформление...' : 'Подтвердить заказ'}
-          </button>
-        </div>
+          {/* Mobile Submit Button */}
+          <div className="px-4 pb-6">
+            <button
+              type="submit"
+              disabled={loading || !selectedDeliveryPoint}
+              onClick={handleSubmit}
+              className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Оформление...' : 'Подтвердить заказ'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )
