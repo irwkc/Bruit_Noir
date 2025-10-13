@@ -62,14 +62,6 @@ export default async function HomePage() {
       {/* Featured Products */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Избранные товары
-            </h2>
-            <p className="text-lg text-gray-600">
-              Лучшие предложения от Bruit Noir
-            </p>
-          </div>
 
           {featuredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
