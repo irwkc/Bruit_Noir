@@ -24,7 +24,7 @@ jobs:
 
       - name: Install deps (for type check only)
         run: |
-          npm ci
+          npm install
           npm run build --if-present
 
       - name: SSH deploy (reset to origin/main, clean, build, restart)
@@ -41,7 +41,7 @@ jobs:
             git reset --hard origin/main
             git clean -fd
             rm -rf .next .turbo
-            npm ci
+            npm install
             npm run build
             pm2 restart ${{ secrets.PM2_NAME || 'bruit-noir' }} || pm2 start "node node_modules/next/dist/bin/next start -p 3000 -H 127.0.0.1" --name ${{ secrets.PM2_NAME || 'bruit-noir' }} --time
             pm2 save
