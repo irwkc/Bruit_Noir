@@ -11,6 +11,9 @@ interface DeliveryPoint {
   workingHours?: string
   latitude?: number
   longitude?: number
+  phone?: string
+  email?: string
+  type?: string
 }
 
 interface DeliveryMapProps {
@@ -123,7 +126,8 @@ export default function DeliveryMap({ deliveryPoints, selectedPointId, onPointSe
               <div style="padding: 10px;">
                 <h3 style="margin: 0 0 5px 0; font-weight: bold;">${point.name}</h3>
                 <p style="margin: 0 0 5px 0; color: #666;">${point.address}</p>
-                ${point.workingHours ? `<p style="margin: 0; color: #888; font-size: 12px;">${point.workingHours}</p>` : ''}
+                ${point.workingHours ? `<p style="margin: 0 0 5px 0; color: #888; font-size: 12px;">${point.workingHours}</p>` : ''}
+                ${point.phone ? `<p style="margin: 0; color: #0066cc; font-size: 12px;">📞 ${point.phone}</p>` : ''}
               </div>
             `,
             iconCaption: point.name

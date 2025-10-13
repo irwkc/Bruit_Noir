@@ -21,6 +21,9 @@ interface DeliveryPoint {
   workingHours?: string
   latitude?: number
   longitude?: number
+  phone?: string
+  email?: string
+  type?: string
 }
 
 export default function CheckoutPage() {
@@ -348,6 +351,11 @@ export default function CheckoutPage() {
                                     {point.workingHours}
                                   </p>
                                 )}
+                                {point.phone && (
+                                  <p className="text-xs text-blue-600 mt-1">
+                                    📞 {point.phone}
+                                  </p>
+                                )}
                               </div>
                             </label>
                           ))}
@@ -649,6 +657,11 @@ export default function CheckoutPage() {
                             {point.workingHours && (
                               <p className="text-xs text-gray-500 mt-1">
                                 {point.workingHours}
+                              </p>
+                            )}
+                            {point.phone && (
+                              <p className="text-xs text-blue-600 mt-1">
+                                📞 {point.phone}
                               </p>
                             )}
                           </div>

@@ -3,25 +3,31 @@ import { NextRequest, NextResponse } from 'next/server'
 // Real SDEK API integration
 async function fetchRealSdekPoints(city: string) {
   try {
-    // SDEK API endpoint for delivery points
-    const response = await fetch('https://api.cdek.ru/v2/deliverypoints', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_SDEK_TOKEN', // You need to get this from SDEK
-      },
-      body: JSON.stringify({
-        city: city,
-        country_codes: ['RU']
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error(`SDEK API error: ${response.status}`)
+    // First, get city code from SDEK
+    const cityResponse = await fetch(`https://api.cdek.ru/v2/location/cities?search=${encodeURIComponent(city)}&country_codes=RU`)
+    
+    if (!cityResponse.ok) {
+      throw new Error(`City lookup failed: ${cityResponse.status}`)
     }
-
-    const data = await response.json()
-    return data.deliverypoints || []
+    
+    const cityData = await cityResponse.json()
+    const cities = cityData.filter((c: any) => c.city.toLowerCase().includes(city.toLowerCase()))
+    
+    if (cities.length === 0) {
+      return null
+    }
+    
+    const cityCode = cities[0].code
+    
+    // Now get delivery points for this city
+    const pointsResponse = await fetch(`https://api.cdek.ru/v2/deliverypoints?city_code=${cityCode}`)
+    
+    if (!pointsResponse.ok) {
+      throw new Error(`Points lookup failed: ${pointsResponse.status}`)
+    }
+    
+    const pointsData = await pointsResponse.json()
+    return pointsData || []
   } catch (error) {
     console.error('SDEK API error:', error)
     return null
@@ -203,13 +209,16 @@ export async function GET(request: NextRequest) {
       // Transform real SDEK data to our format
       const transformedPoints = realPoints.map((point: any, index: number) => ({
         id: point.code || `sdek-real-${city}-${index}`,
-        name: point.name || `СДЭК - ${city}`,
+        name: point.name || `СДЭК - ${point.address || city}`,
         address: point.address || `${city}`,
         city: city,
         country: 'Россия',
-        workingHours: point.work_time || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
-        latitude: point.coordinates?.latitude,
-        longitude: point.coordinates?.longitude,
+        workingHours: point.work_time || point.work_time_comment || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
+        latitude: point.location?.latitude || point.coordinates?.latitude,
+        longitude: point.location?.longitude || point.coordinates?.longitude,
+        phone: point.phone || '',
+        email: point.email || '',
+        type: point.type || 'PVZ' // Пункт выдачи
       }))
       
       return NextResponse.json(transformedPoints)
