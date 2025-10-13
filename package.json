@@ -5,11 +5,16 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "adminjs": "node admin/server.js"
   },
   "dependencies": {
+    "@adminjs/express": "^6.1.1",
+    "@adminjs/prisma": "^5.0.4",
     "@auth/core": "^0.41.0",
     "@prisma/client": "^6.17.1",
+    "adminjs": "^7.8.17",
+    "express": "^5.1.0",
     "next": "15.5.4",
     "next-auth": "^5.0.0-beta.29",
     "prisma": "^6.17.1",
