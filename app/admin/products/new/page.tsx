@@ -13,7 +13,7 @@ export default function NewProductPage() {
     price: '',
     category: 'hoodies',
     stock: '',
-    images: [''],
+    images: [],
     sizes: ['S', 'M', 'L'],
     colors: ['black'],
     featured: false,
@@ -48,14 +48,17 @@ export default function NewProductPage() {
     }
   }
 
-  const addImageField = () => {
-    setFormData({ ...formData, images: [...formData.images, ''] })
-  }
-
-  const updateImage = (index: number, value: string) => {
-    const newImages = [...formData.images]
-    newImages[index] = value
-    setFormData({ ...formData, images: newImages })
+  async function uploadFiles(files: File[]) {
+    const uploadedUrls: string[] = []
+    for (const file of files) {
+      const data = new FormData()
+      data.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: data })
+      if (!res.ok) continue
+      const json = (await res.json()) as { url?: string }
+      if (json?.url) uploadedUrls.push(json.url)
+    }
+    setFormData({ ...formData, images: [...formData.images, ...uploadedUrls] })
   }
 
   return (
@@ -70,7 +73,7 @@ export default function NewProductPage() {
 
         <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Название *
             </label>
             <input
@@ -78,12 +81,12 @@ export default function NewProductPage() {
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Описание *
             </label>
             <textarea
@@ -91,13 +94,13 @@ export default function NewProductPage() {
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-black mb-2">
                 Цена (₽) *
               </label>
               <input
@@ -107,12 +110,12 @@ export default function NewProductPage() {
                 step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-black mb-2">
                 Наличие (шт.) *
               </label>
               <input
@@ -121,19 +124,19 @@ export default function NewProductPage() {
                 min="0"
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Категория *
             </label>
             <select
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black"
             >
               <option value="hoodies">Худи</option>
               <option value="t-shirts">Футболки</option>
@@ -143,30 +146,44 @@ export default function NewProductPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL изображений
+            <label className="block text-sm font-medium text-black mb-2">
+              Изображения (перетащи файлы или выбери)
             </label>
-            {formData.images.map((img, index) => (
-              <input
-                key={index}
-                type="url"
-                placeholder="https://example.com/image.jpg"
-                value={img}
-                onChange={(e) => updateImage(index, e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent mb-2"
-              />
-            ))}
-            <button
-              type="button"
-              onClick={addImageField}
-              className="text-blue-600 hover:underline text-sm"
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={async (e) => {
+                e.preventDefault()
+                const files = Array.from(e.dataTransfer.files)
+                await uploadFiles(files)
+              }}
+              className="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-white"
             >
-              + Добавить изображение
-            </button>
+              <p className="text-sm text-black mb-3">Перетащите изображения сюда</p>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={async (e) => {
+                  const files = Array.from(e.target.files || [])
+                  await uploadFiles(files)
+                }}
+                className="block w-full text-sm text-black file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800"
+              />
+              {formData.images.length > 0 && (
+                <div className="mt-4 grid grid-cols-3 gap-3">
+                  {formData.images.map((url, i) => (
+                    <div key={i} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt="preview" className="w-full h-24 object-cover rounded" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Размеры (через запятую)
             </label>
             <input
@@ -179,12 +196,12 @@ export default function NewProductPage() {
                 })
               }
               placeholder="XS, S, M, L, XL"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Цвета (через запятую)
             </label>
             <input
@@ -197,7 +214,7 @@ export default function NewProductPage() {
                 })
               }
               placeholder="black, white, gray"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500"
             />
           </div>
 

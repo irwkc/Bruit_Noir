@@ -62,13 +62,13 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Контакты</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="mailto:info@bruitnoir.com" className="hover:text-white transition">
-                  info@bruitnoir.com
+                <a href="mailto:bruitnoir@mail.ru" className="hover:text-white transition">
+                  bruitnoir@mail.ru
                 </a>
               </li>
               <li>
-                <a href="tel:+79991234567" className="hover:text-white transition">
-                  +7 (999) 123-45-67
+                <a href="tel:+79206344846" className="hover:text-white transition">
+                  +7 (920) 634-48-46
                 </a>
               </li>
               <li>
@@ -83,6 +83,12 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <p className="text-center text-sm text-gray-400">
             &copy; {new Date().getFullYear()} Bruit Noir. Все права защищены.
+          </p>
+          <p className="text-center text-xs text-gray-500 mt-2">
+            ИНН: 623410944590
+          </p>
+          <p className="text-center text-xs text-gray-500 mt-1">
+            СЗ Сергиевский Егор Андреевич
           </p>
         </div>
       </div>
