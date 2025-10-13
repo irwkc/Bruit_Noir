@@ -31,7 +31,7 @@ export default function NewProductPage() {
           ...formData,
           price: parseFloat(formData.price),
           stock: parseInt(formData.stock),
-          images: formData.images.filter((img) => img.trim() !== ''),
+          images: formData.images.filter((img: string) => img.trim() !== ''),
         }),
       })
 
