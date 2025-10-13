@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
 
+export const dynamic = 'force-dynamic'
+
 interface DeliveryPoint {
   id: string
   name: string
