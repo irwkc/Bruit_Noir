@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
 import dynamicImport from 'next/dynamic'
+import CityAutocomplete from '@/components/CityAutocomplete'
 
 // Dynamically import map component to avoid SSR issues
 const DeliveryMap = dynamicImport(() => import('@/components/DeliveryMap'), { ssr: false })
@@ -297,10 +298,9 @@ export default function CheckoutPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Город
                       </label>
-                      <input
-                        type="text"
+                      <CityAutocomplete
                         value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
+                        onChange={setSelectedCity}
                         placeholder="Введите город для поиска пунктов выдачи"
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                       />
@@ -599,10 +599,9 @@ export default function CheckoutPage() {
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     Город
                   </label>
-                  <input
-                    type="text"
+                  <CityAutocomplete
                     value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
+                    onChange={setSelectedCity}
                     placeholder="Введите город для поиска пунктов выдачи"
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                   />
