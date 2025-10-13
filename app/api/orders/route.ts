@@ -15,6 +15,10 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id
     console.log('Orders API - User ID:', userId)
     console.log('Orders API - Full session user:', session.user)
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 })
+    }
 
     const orders = await prisma.order.findMany({
       where: { userId },
@@ -48,6 +52,11 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id
     console.log('Orders POST API - User ID:', userId)
     console.log('Orders POST API - Full session user:', session.user)
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 })
+    }
+    
     const body = await request.json()
 
     const { items, deliveryPointId, customerName, customerEmail, customerPhone, paymentMethod } = body
