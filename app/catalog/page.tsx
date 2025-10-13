@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import ProductCard from '@/components/ProductCard'
 import MobileProductCard from '@/components/mobile/ProductCard'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import StaggerContainer from '@/components/animations/StaggerContainer'
+import StaggerItem from '@/components/animations/StaggerItem'
 
 interface Product {
   id: string
@@ -145,18 +147,19 @@ export default function CatalogPage() {
             ))}
           </div>
         ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                price={product.price}
-                images={(product as any).images || []}
-                category={product.category}
-              />
+              <StaggerItem key={product.id}>
+                <ProductCard
+                  id={product.id}
+                  name={product.name}
+                  price={product.price}
+                  images={(product as any).images || []}
+                  category={product.category}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         ) : (
           <div className="text-center py-20">
             <p className="text-gray-600 text-lg mb-4">
@@ -266,18 +269,19 @@ export default function CatalogPage() {
               ))}
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3">
+            <StaggerContainer className="grid grid-cols-2 gap-3" staggerDelay={0.08}>
               {filteredProducts.map((product) => (
-                <MobileProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  price={product.price}
-                  images={(product as any).images || []}
-                  category={product.category}
-                />
+                <StaggerItem key={product.id}>
+                  <MobileProductCard
+                    id={product.id}
+                    name={product.name}
+                    price={product.price}
+                    images={(product as any).images || []}
+                    category={product.category}
+                  />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-600 text-sm mb-3">

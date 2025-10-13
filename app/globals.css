@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
 @layer utilities {
   .animate-slide-down {
     animation: slideDown 0.3s ease-out;
