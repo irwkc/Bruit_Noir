@@ -62,7 +62,7 @@ export default async function HomePage() {
       </section>
 
       {/* Mobile Hero Section */}
-      <section className="relative h-[500px] bg-gradient-to-b from-black to-gray-900 text-white block md:hidden">
+      <section className="relative h-screen bg-gradient-to-b from-black to-gray-900 text-white block md:hidden">
         <div className="absolute inset-0 bg-black opacity-40" />
         <div className="relative z-10 px-4 py-16 h-full flex flex-col justify-center">
           <div className="text-center">
