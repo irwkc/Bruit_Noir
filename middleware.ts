@@ -8,15 +8,11 @@ export default auth((req) => {
 
   // Protect admin routes
   if (pathname.startsWith('/admin')) {
-    // Allow public admin login entrypoint
-    if (pathname === '/admin/login') {
-      return NextResponse.next()
-    }
-    if (!isLoggedIn) {
-      return NextResponse.redirect(new URL('/admin/login', req.url))
-    }
-    if (!isAdmin) {
-      return NextResponse.redirect(new URL('/', req.url))
+    // Always require admin role; otherwise show sign-in with return to /admin
+    if (!isLoggedIn || !isAdmin) {
+      const url = new URL('/auth/signin', req.url)
+      url.searchParams.set('callbackUrl', '/admin')
+      return NextResponse.redirect(url)
     }
   }
 
