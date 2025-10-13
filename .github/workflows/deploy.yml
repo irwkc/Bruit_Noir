@@ -43,7 +43,8 @@ jobs:
             rm -rf .next .turbo
             npm install
             npm run build
-            pm2 restart ${{ secrets.PM2_NAME || 'bruit-noir' }} || pm2 start "node node_modules/next/dist/bin/next start -p 3000 -H 127.0.0.1" --name ${{ secrets.PM2_NAME || 'bruit-noir' }} --time
+            pm2 delete all || true
+            pm2 start "npm start" --name ${{ secrets.PM2_NAME || 'bruit-noir' }} --cwd ${{ secrets.APP_DIR }}
             pm2 save
 
 
