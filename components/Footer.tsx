@@ -4,7 +4,8 @@ export default function Footer() {
   return (
     <footer className="bg-black text-white mt-auto">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Desktop: Brand takes full width, then 3 columns */}
+        <div className="hidden md:grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1">
             <h3 className="text-2xl font-bold mb-4">BRUIT NOIR</h3>
@@ -77,6 +78,86 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Mobile: Brand on top, then 3 columns in one row */}
+        <div className="md:hidden">
+          {/* Brand */}
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold mb-4">BRUIT NOIR</h3>
+            <p className="text-gray-400 text-sm">
+              Современный бренд одежды для тех, кто ценит стиль и качество
+            </p>
+          </div>
+
+          {/* 3 columns in one row */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* Shop */}
+            <div>
+              <h4 className="font-semibold mb-3 text-sm">Магазин</h4>
+              <ul className="space-y-2 text-xs text-gray-400">
+                <li>
+                  <Link href="/catalog" className="hover:text-white transition">
+                    Каталог
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/catalog?category=new" className="hover:text-white transition">
+                    Новинки
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/catalog?category=sale" className="hover:text-white transition">
+                    Распродажа
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Info */}
+            <div>
+              <h4 className="font-semibold mb-3 text-sm">Информация</h4>
+              <ul className="space-y-2 text-xs text-gray-400">
+                <li>
+                  <Link href="/about" className="hover:text-white transition">
+                    О нас
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/delivery" className="hover:text-white transition">
+                    Доставка
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/returns" className="hover:text-white transition">
+                    Возврат
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="font-semibold mb-3 text-sm">Контакты</h4>
+              <ul className="space-y-2 text-xs text-gray-400">
+                <li>
+                  <a href="mailto:bruitnoir@mail.ru" className="hover:text-white transition break-all">
+                    bruitnoir@mail.ru
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+79206344846" className="hover:text-white transition">
+                    +7 (920) 634-48-46
+                  </a>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white transition">
+                    Связь
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
