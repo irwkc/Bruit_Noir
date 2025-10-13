@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
-import DeliveryMap from '@/components/DeliveryMap'
+import dynamicImport from 'next/dynamic'
+
+// Dynamically import map component to avoid SSR issues
+const DeliveryMap = dynamicImport(() => import('@/components/DeliveryMap'), { ssr: false })
 
 export const dynamic = 'force-dynamic'
 

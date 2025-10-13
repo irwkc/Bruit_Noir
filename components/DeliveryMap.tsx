@@ -1,17 +1,13 @@
 'use client'
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 
-// Fix for default markers in react-leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-})
+// Dynamically import map components to avoid SSR issues
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false })
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false })
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false })
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false })
 
 interface DeliveryPoint {
   id: string
@@ -32,12 +28,29 @@ interface DeliveryMapProps {
 
 export default function DeliveryMap({ deliveryPoints, selectedPointId, onPointSelect }: DeliveryMapProps) {
   const [isClient, setIsClient] = useState(false)
+  const [leafletLoaded, setLeafletLoaded] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
+    
+    // Load Leaflet CSS and fix icons
+    if (typeof window !== 'undefined') {
+      import('leaflet/dist/leaflet.css').then(() => {
+        import('leaflet').then(L => {
+          // Fix for default markers in react-leaflet
+          delete (L.default.Icon.Default.prototype as any)._getIconUrl
+          L.default.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+          })
+          setLeafletLoaded(true)
+        })
+      })
+    }
   }, [])
 
-  if (!isClient) {
+  if (!isClient || !leafletLoaded) {
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <p className="text-gray-500">Загрузка карты...</p>
