@@ -5,11 +5,15 @@ import { auth } from '@/auth'
 export async function GET(request: NextRequest) {
   try {
     const session = await auth()
+    console.log('Orders API - Session:', session)
+    console.log('Orders API - Session user:', session?.user)
+    
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const userId = (session.user as any).id
+    console.log('Orders API - User ID:', userId)
 
     const orders = await prisma.order.findMany({
       where: { userId },
@@ -34,11 +38,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
+    console.log('Orders POST API - Session:', session)
+    
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const userId = (session.user as any).id
+    console.log('Orders POST API - User ID:', userId)
     const body = await request.json()
 
     const { items, deliveryPointId, customerName, customerEmail, customerPhone, paymentMethod } = body
