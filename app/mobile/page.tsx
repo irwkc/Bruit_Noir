@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import ProductCard from '@/components/ProductCard'
-import MobileHomePage from './mobile/page'
+import MobileProductCard from '@/components/mobile/ProductCard'
 
 type FeaturedProduct = {
   id: string
@@ -17,7 +16,7 @@ async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
   try {
     const products = await prisma.product.findMany({
       where: { featured: true },
-      take: 6,
+      take: 4, // Fewer products for mobile
       orderBy: { createdAt: 'desc' },
     })
     return products
@@ -27,32 +26,32 @@ async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
   }
 }
 
-export default async function HomePage() {
+export default async function MobileHomePage() {
   const featuredProducts: FeaturedProduct[] = await getFeaturedProducts()
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="relative h-[600px] bg-gradient-to-r from-black to-gray-900 text-white">
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section - mobile optimized */}
+      <section className="relative h-[500px] bg-gradient-to-b from-black to-gray-900 text-white">
         <div className="absolute inset-0 bg-black opacity-40" />
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+        <div className="relative z-10 px-4 py-16 h-full flex flex-col justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4 leading-tight">
               BRUIT NOIR
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-gray-200">
-              Новая коллекция уличной моды. Стиль, который говорит сам за себя.
+            <p className="text-lg mb-8 text-gray-200 px-4">
+              Новая коллекция уличной моды
             </p>
-            <div className="flex space-x-4">
+            <div className="flex flex-col space-y-3 px-4">
               <Link
                 href="/catalog"
-                className="bg-white text-black px-8 py-3 rounded-md font-semibold hover:bg-gray-200 transition"
+                className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition text-center"
               >
                 Смотреть коллекцию
               </Link>
               <Link
                 href="/about"
-                className="border-2 border-white text-white px-8 py-3 rounded-md font-semibold hover:bg-white hover:text-black transition"
+                className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-black transition text-center"
               >
                 О бренде
               </Link>
@@ -61,14 +60,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
+      {/* Featured Products - mobile grid */}
+      <section className="py-8">
+        <div className="px-4">
           {featuredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 gap-3">
               {featuredProducts.map((product: FeaturedProduct) => (
-                <ProductCard
+                <MobileProductCard
                   key={product.id}
                   id={product.id}
                   name={product.name}
@@ -81,24 +79,22 @@ export default async function HomePage() {
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-600 mb-4">Товары скоро появятся</p>
-              <Link href="/admin" className="text-blue-600 hover:underline">
+              <Link href="/admin" className="text-blue-600 hover:underline text-sm">
                 Добавить товары в админ-панели
               </Link>
             </div>
           )}
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <Link
               href="/catalog"
-              className="inline-block bg-black text-white px-8 py-3 rounded-md font-semibold hover:bg-gray-800 transition"
+              className="inline-block bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition text-sm"
             >
               Смотреть все товары
             </Link>
           </div>
         </div>
       </section>
-
-      {/* Benefits removed per request */}
     </div>
   )
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import SiteChrome from '@/components/SiteChrome'
+import MobileSiteChrome from '@/components/mobile/SiteChrome'
 import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
@@ -25,7 +26,14 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${inter.className} flex flex-col min-h-screen bg-gray-50`}>
         <Providers>
-          <SiteChrome>{children}</SiteChrome>
+          {/* Desktop version */}
+          <div className="hidden md:block">
+            <SiteChrome>{children}</SiteChrome>
+          </div>
+          {/* Mobile version */}
+          <div className="block md:hidden">
+            <MobileSiteChrome>{children}</MobileSiteChrome>
+          </div>
         </Providers>
       </body>
     </html>
