@@ -27,7 +27,7 @@ export default function SignInPage() {
       if (result?.error) {
         setError('Неверный email или пароль')
       } else {
-        router.push('/')
+        router.push('/profile')
         router.refresh()
       }
     } catch (error) {
