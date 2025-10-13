@@ -1,6 +1,6 @@
 const express = require('express');
-const AdminJS = require('adminjs');
-const AdminJSExpress = require('@adminjs/express');
+const AdminJS = require('adminjs').default; // ESM default export
+const AdminJSExpress = require('@adminjs/express').default; // ESM default export
 const { Database, Resource } = require('@adminjs/prisma');
 const { PrismaClient } = require('@prisma/client');
 
