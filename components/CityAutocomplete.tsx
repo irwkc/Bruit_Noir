@@ -14,7 +14,7 @@ export default function CityAutocomplete({ value, onChange, placeholder, classNa
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Fetch city suggestions
   const fetchSuggestions = async (query: string) => {
