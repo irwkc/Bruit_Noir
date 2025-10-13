@@ -1,14 +1,15 @@
 const express = require('express');
-const AdminJS = require('adminjs').default; // ESM default export
-const AdminJSExpress = require('@adminjs/express').default; // ESM default export
 const { Database, Resource } = require('@adminjs/prisma');
 const { PrismaClient } = require('@prisma/client');
 
-AdminJS.registerAdapter({ Database, Resource });
-
-const prisma = new PrismaClient();
-
 const start = async () => {
+  const { default: AdminJS } = await import('adminjs');
+  const AdminJSExpress = (await import('@adminjs/express')).default;
+
+  AdminJS.registerAdapter({ Database, Resource });
+
+  const prisma = new PrismaClient();
+
   const admin = new AdminJS({
     rootPath: '/admin',
     branding: {
@@ -52,11 +53,6 @@ const start = async () => {
     {
       authenticate: async (email, password) => {
         if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) return { email };
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (user && user.password && user.role === 'admin') {
-          // NOTE: password is hashed; for simplicity, allow env-based only unless extended
-          return { email };
-        }
         return null;
       },
       cookiePassword: process.env.ADMINJS_COOKIE_SECRET || 'very-secret-cookie',
