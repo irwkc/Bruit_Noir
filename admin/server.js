@@ -1,10 +1,10 @@
 const express = require('express');
 const { Database, Resource } = require('@adminjs/prisma');
 const { PrismaClient } = require('@prisma/client');
+const AdminJSExpress = require('@adminjs/express');
 
 const start = async () => {
   const { default: AdminJS } = await import('adminjs');
-  const AdminJSExpress = await import('@adminjs/express');
 
   AdminJS.registerAdapter({ Database, Resource });
 
