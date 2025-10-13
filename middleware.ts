@@ -11,15 +11,12 @@ export default auth((req) => {
     // Separate admin cookie auth
     const adminToken = req.cookies.get('admin_token')?.value
     if (!adminToken) {
-      // Avoid redirect loops: rewrite /admin to login to keep URL stable
-      if (pathname === '/admin') {
-        return NextResponse.rewrite(new URL('/admin/login', req.url))
+      // Разрешаем /admin (форма входа на этой же странице) и /admin/login
+      if (pathname === '/admin' || pathname === '/admin/login') {
+        return NextResponse.next()
       }
-      // For any other /admin/* path - send to login
-      if (pathname !== '/admin/login') {
-        return NextResponse.redirect(new URL('/admin/login', req.url))
-      }
-      return NextResponse.next()
+      // Остальные /admin/* требуют токен — ведём на /admin (логин)
+      return NextResponse.redirect(new URL('/admin', req.url))
     }
   }
 

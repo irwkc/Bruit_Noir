@@ -19,7 +19,8 @@ export default function AdminLoginPage() {
     })
     setLoading(false)
     if (res.ok) {
-      window.location.href = '/admin'
+      // после входа — в админ-панель
+      window.location.href = '/admin/dashboard'
     } else {
       const data = await res.json().catch(() => ({} as any))
       setError(data?.message || 'Неверный логин или пароль')

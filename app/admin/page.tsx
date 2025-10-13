@@ -1,3 +1,12 @@
+"use client"
+
+import AdminLoginPage from './login/page'
+
+export default function AdminEntry() {
+  // Рендерим ту же форму входа прямо на /admin
+  return <AdminLoginPage />
+}
+
 'use client'
 
 import { useState, useEffect } from 'react'
