@@ -3,6 +3,7 @@ import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 
 export const authConfig: NextAuthConfig = {
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
