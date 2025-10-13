@@ -13,7 +13,7 @@ export default function NewProductPage() {
     price: '',
     category: 'hoodies',
     stock: '',
-    images: [],
+    images: [] as string[],
     sizes: ['S', 'M', 'L'],
     colors: ['black'],
     featured: false,
