@@ -33,7 +33,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* Desktop Hero Section */}
-      <section className="relative h-[600px] bg-gradient-to-r from-black to-gray-900 text-white hidden md:block">
+      <section className="relative h-screen bg-gradient-to-r from-black to-gray-900 text-white hidden md:block">
         <div className="absolute inset-0 bg-black opacity-40" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="max-w-2xl">

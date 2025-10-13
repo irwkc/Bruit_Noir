@@ -84,19 +84,19 @@ export default function Footer() {
         {/* Mobile: Brand on top, then 3 columns in one row */}
         <div className="md:hidden">
           {/* Brand */}
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold mb-4">BRUIT NOIR</h3>
-            <p className="text-gray-400 text-sm">
+          <div className="mb-6">
+            <h3 className="text-xl font-bold mb-3">BRUIT NOIR</h3>
+            <p className="text-gray-400 text-xs">
               Современный бренд одежды для тех, кто ценит стиль и качество
             </p>
           </div>
 
           {/* 3 columns in one row */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2">
             {/* Shop */}
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Магазин</h4>
-              <ul className="space-y-2 text-xs text-gray-400">
+              <h4 className="font-semibold mb-2 text-xs">Магазин</h4>
+              <ul className="space-y-1.5 text-[10px] text-gray-400">
                 <li>
                   <Link href="/catalog" className="hover:text-white transition">
                     Каталог
@@ -117,8 +117,8 @@ export default function Footer() {
 
             {/* Info */}
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Информация</h4>
-              <ul className="space-y-2 text-xs text-gray-400">
+              <h4 className="font-semibold mb-2 text-xs">Инфо</h4>
+              <ul className="space-y-1.5 text-[10px] text-gray-400">
                 <li>
                   <Link href="/about" className="hover:text-white transition">
                     О нас
@@ -139,16 +139,16 @@ export default function Footer() {
 
             {/* Contact */}
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Контакты</h4>
-              <ul className="space-y-2 text-xs text-gray-400">
+              <h4 className="font-semibold mb-2 text-xs">Контакты</h4>
+              <ul className="space-y-1.5 text-[10px] text-gray-400">
                 <li>
-                  <a href="mailto:bruitnoir@mail.ru" className="hover:text-white transition break-all">
-                    bruitnoir@mail.ru
+                  <a href="mailto:bruitnoir@mail.ru" className="hover:text-white transition break-all leading-tight">
+                    bruitnoir@<br/>mail.ru
                   </a>
                 </li>
                 <li>
-                  <a href="tel:+79206344846" className="hover:text-white transition">
-                    +7 (920) 634-48-46
+                  <a href="tel:+79206344846" className="hover:text-white transition whitespace-nowrap">
+                    +7 920 634-48-46
                   </a>
                 </li>
                 <li>
