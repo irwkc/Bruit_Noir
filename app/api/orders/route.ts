@@ -51,7 +51,17 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json()
 
-    const { items, deliveryPointId, customerName, customerEmail, customerPhone, paymentMethod } = body
+    const { 
+      items, 
+      deliveryMethod, 
+      deliveryPointId, 
+      address, 
+      postalCode, 
+      customerName, 
+      customerEmail, 
+      customerPhone, 
+      paymentMethod 
+    } = body
 
     // Calculate total
     const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0)
@@ -61,7 +71,10 @@ export async function POST(request: NextRequest) {
       data: {
         userId,
         total,
+        deliveryMethod,
         deliveryPointId,
+        address,
+        postalCode,
         customerName,
         customerEmail,
         customerPhone,

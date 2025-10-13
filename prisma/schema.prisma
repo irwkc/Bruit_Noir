@@ -70,7 +70,10 @@ model Order {
   userId           String
   status           String      @default("pending") // pending, processing, shipped, delivered, cancelled
   total            Float
-  deliveryPointId  String
+  deliveryMethod   String      // post, post-regular, sdek
+  deliveryPointId  String?
+  address          String?
+  postalCode       String?
   paymentStatus    String      @default("pending") // pending, paid, failed
   paymentMethod    String?     // card, cash
   customerName     String
@@ -80,7 +83,7 @@ model Order {
   updatedAt        DateTime    @updatedAt
 
   user          User          @relation(fields: [userId], references: [id])
-  deliveryPoint DeliveryPoint @relation(fields: [deliveryPointId], references: [id])
+  deliveryPoint DeliveryPoint? @relation(fields: [deliveryPointId], references: [id])
   orderItems    OrderItem[]
 }
 
