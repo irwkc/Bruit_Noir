@@ -168,11 +168,13 @@ export default function DeliveryMap({ deliveryPoints, selectedPointId, onPointSe
 
   // Update placemark styles when selection changes
   useEffect(() => {
-    if (!map || !placemarks.length) return
+    if (!map || !placemarks.length || !deliveryPoints.length) return
 
+    const pointsWithCoords = deliveryPoints.filter(p => p.latitude && p.longitude)
+    
     placemarks.forEach((placemark, index) => {
-      const point = deliveryPoints.find(p => p.latitude && p.longitude)?.[index]
-      if (point) {
+      if (index < pointsWithCoords.length) {
+        const point = pointsWithCoords[index]
         const isSelected = selectedPointId === point.id
         placemark.options.set('preset', isSelected ? 'islands#redDotIcon' : 'islands#blueDotIcon')
       }
