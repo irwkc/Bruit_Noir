@@ -41,6 +41,8 @@ jobs:
             git reset --hard origin/main
             git clean -fd
             rm -rf .next .turbo
+            mkdir -p public/uploads
+            chmod 755 public/uploads
             npm install
             npm run build
             pm2 delete all || true
