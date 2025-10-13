@@ -98,34 +98,34 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Benefits strip (clean, minimal) */}
-      <section className="bg-white border-y border-gray-200">
+      {/* Benefits strip (inverted) */}
+      <section className="bg-black text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-stretch divide-y md:divide-y-0 md:divide-x divide-gray-200">
+          <div className="flex flex-col md:flex-row items-stretch divide-y md:divide-y-0 md:divide-x divide-gray-800">
             <div className="flex-1 py-8 md:py-10 px-0 md:px-8">
               <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-full border border-gray-300 flex items-center justify-center text-sm font-semibold">1</div>
+                <div className="h-10 w-10 rounded-full border border-gray-600 flex items-center justify-center text-sm font-semibold">1</div>
                 <div>
                   <h3 className="text-lg md:text-xl font-semibold tracking-tight">Быстрая доставка</h3>
-                  <p className="text-sm md:text-base text-gray-600">По всей России. Пункты выдачи и курьер.</p>
+                  <p className="text-sm md:text-base text-gray-300">По всей России. Пункты выдачи и курьер.</p>
                 </div>
               </div>
             </div>
             <div className="flex-1 py-8 md:py-10 px-0 md:px-8">
               <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-full border border-gray-300 flex items-center justify-center text-sm font-semibold">2</div>
+                <div className="h-10 w-10 rounded-full border border-gray-600 flex items-center justify-center text-sm font-semibold">2</div>
                 <div>
                   <h3 className="text-lg md:text-xl font-semibold tracking-tight">Контроль качества</h3>
-                  <p className="text-sm md:text-base text-gray-600">Отборные ткани, точная посадка, долгий срок службы.</p>
+                  <p className="text-sm md:text-base text-gray-300">Отборные ткани, точная посадка, долгий срок службы.</p>
                 </div>
               </div>
             </div>
             <div className="flex-1 py-8 md:py-10 px-0 md:px-8">
               <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-full border border-gray-300 flex items-center justify-center text-sm font-semibold">3</div>
+                <div className="h-10 w-10 rounded-full border border-gray-600 flex items-center justify-center text-sm font-semibold">3</div>
                 <div>
                   <h3 className="text-lg md:text-xl font-semibold tracking-tight">Лёгкий возврат</h3>
-                  <p className="text-sm md:text-base text-gray-600">14 дней на обмен или возврат без лишних вопросов.</p>
+                  <p className="text-sm md:text-base text-gray-300">14 дней на обмен или возврат без лишних вопросов.</p>
                 </div>
               </div>
             </div>
