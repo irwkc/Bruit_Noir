@@ -27,7 +27,8 @@ export default function ProductsPage() {
       const res = await fetch('/api/products')
       if (res.ok) {
         const data = await res.json()
-        setProducts(data)
+        // API returns { data: products, pagination: ... }
+        setProducts(data.data || data)
       }
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -117,17 +118,17 @@ export default function ProductsPage() {
                   <tr key={product.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {product.images.length > 0 ? (
-                          <img
-                            className="h-12 w-12 rounded-lg object-cover mr-4"
-                            src={product.images[0]}
-                            alt={product.name}
-                          />
-                        ) : (
-                          <div className="h-12 w-12 bg-gray-200 rounded-lg mr-4 flex items-center justify-center">
-                            <span className="text-gray-400 text-xs">Нет фото</span>
-                          </div>
-                        )}
+                      {product.images && product.images.length > 0 ? (
+                        <img
+                          className="h-12 w-12 rounded-lg object-cover mr-4"
+                          src={product.images[0]}
+                          alt={product.name}
+                        />
+                      ) : (
+                        <div className="h-12 w-12 bg-gray-200 rounded-lg mr-4 flex items-center justify-center">
+                          <span className="text-gray-400 text-xs">Нет фото</span>
+                        </div>
+                      )}
                         <div>
                           <div className="text-sm font-medium text-gray-900">{product.name}</div>
                           <div className="text-sm text-gray-500">ID: {product.id.slice(0, 8)}...</div>
