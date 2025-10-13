@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
+import DeliveryMap from '@/components/DeliveryMap'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,6 +15,8 @@ interface DeliveryPoint {
   city: string
   country: string
   workingHours?: string
+  latitude?: number
+  longitude?: number
 }
 
 export default function CheckoutPage() {
@@ -44,18 +47,33 @@ export default function CheckoutPage() {
   }, [session])
 
   useEffect(() => {
-    if (deliveryMethod === 'sdek') {
-      fetchDeliveryPoints()
+    if (deliveryMethod === 'sdek' && selectedCity.trim().length >= 3) {
+      const timeoutId = setTimeout(() => {
+        fetchDeliveryPoints()
+      }, 500) // Debounce 500ms
+
+      return () => clearTimeout(timeoutId)
     }
   }, [selectedCity, deliveryMethod])
 
   async function fetchDeliveryPoints() {
     try {
-      const res = await fetch(`/api/delivery-points?city=${selectedCity}`)
-      const data = await res.json()
-      setDeliveryPoints(data)
-      if (data.length > 0) {
-        setSelectedDeliveryPoint(data[0].id)
+      if (deliveryMethod === 'sdek') {
+        // Use SDEK API for SDEK delivery
+        const res = await fetch(`/api/sdek-points?city=${selectedCity}`)
+        const data = await res.json()
+        setDeliveryPoints(data)
+        if (data.length > 0) {
+          setSelectedDeliveryPoint(data[0].id)
+        }
+      } else {
+        // Use regular delivery points API for other methods
+        const res = await fetch(`/api/delivery-points?city=${selectedCity}`)
+        const data = await res.json()
+        setDeliveryPoints(data)
+        if (data.length > 0) {
+          setSelectedDeliveryPoint(data[0].id)
+        }
       }
     } catch (error) {
       console.error('Error fetching delivery points:', error)
@@ -276,54 +294,64 @@ export default function CheckoutPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Город
                       </label>
-                      <select
+                      <input
+                        type="text"
                         value={selectedCity}
                         onChange={(e) => setSelectedCity(e.target.value)}
+                        placeholder="Введите город для поиска пунктов выдачи"
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                      >
-                        {cities.map((city) => (
-                          <option key={city} value={city}>
-                            {city}
-                          </option>
-                        ))}
-                      </select>
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Доставка СДЭК доступна во все города России
+                      </p>
                     </div>
 
                     {deliveryPoints.length > 0 ? (
-                      <div className="space-y-2">
+                      <div className="space-y-4">
                         <h3 className="font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
-                        {deliveryPoints.map((point) => (
-                          <label
-                            key={point.id}
-                            className={`block p-4 border-2 rounded-lg cursor-pointer transition ${
-                              selectedDeliveryPoint === point.id
-                                ? 'border-black bg-gray-50'
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="deliveryPoint"
-                              value={point.id}
-                              checked={selectedDeliveryPoint === point.id}
-                              onChange={(e) => setSelectedDeliveryPoint(e.target.value)}
-                              className="mr-3"
-                            />
-                            <div className="inline-block">
-                              <p className="font-semibold">{point.name}</p>
-                              <p className="text-sm text-gray-600">{point.address}</p>
-                              {point.workingHours && (
-                                <p className="text-sm text-gray-500 mt-1">
-                                  Режим работы: {point.workingHours}
-                                </p>
-                              )}
-                            </div>
-                          </label>
-                        ))}
+                        
+                        {/* Map */}
+                        <DeliveryMap
+                          deliveryPoints={deliveryPoints}
+                          selectedPointId={selectedDeliveryPoint}
+                          onPointSelect={setSelectedDeliveryPoint}
+                        />
+                        
+                        {/* Points List */}
+                        <div className="space-y-2 max-h-48 overflow-y-auto">
+                          {deliveryPoints.map((point) => (
+                            <label
+                              key={point.id}
+                              className={`block p-3 border-2 rounded-lg cursor-pointer transition ${
+                                selectedDeliveryPoint === point.id
+                                  ? 'border-black bg-gray-50'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="deliveryPoint"
+                                value={point.id}
+                                checked={selectedDeliveryPoint === point.id}
+                                onChange={(e) => setSelectedDeliveryPoint(e.target.value)}
+                                className="mr-3"
+                              />
+                              <div className="inline-block">
+                                <p className="font-semibold text-sm">{point.name}</p>
+                                <p className="text-xs text-gray-600">{point.address}</p>
+                                {point.workingHours && (
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {point.workingHours}
+                                  </p>
+                                )}
+                              </div>
+                            </label>
+                          ))}
+                        </div>
                       </div>
                     ) : (
                       <p className="text-gray-600">
-                        В выбранном городе пока нет пунктов выдачи СДЭК
+                        Введите город для поиска пунктов выдачи СДЭК
                       </p>
                     )}
                   </div>
@@ -567,54 +595,66 @@ export default function CheckoutPage() {
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     Город
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
+                    placeholder="Введите город для поиска пунктов выдачи"
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                  >
-                    {cities.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Доставка СДЭК доступна во все города России
+                  </p>
                 </div>
 
                 {deliveryPoints.length > 0 ? (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
-                    {deliveryPoints.map((point) => (
-                      <label
-                        key={point.id}
-                        className={`block p-3 border-2 rounded-lg cursor-pointer transition ${
-                          selectedDeliveryPoint === point.id
-                            ? 'border-black bg-gray-50'
-                            : 'border-gray-200'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="deliveryPoint"
-                          value={point.id}
-                          checked={selectedDeliveryPoint === point.id}
-                          onChange={(e) => setSelectedDeliveryPoint(e.target.value)}
-                          className="mr-2"
-                        />
-                        <div className="inline-block">
-                          <p className="font-semibold text-sm">{point.name}</p>
-                          <p className="text-xs text-gray-600">{point.address}</p>
-                          {point.workingHours && (
-                            <p className="text-xs text-gray-500 mt-1">
-                              {point.workingHours}
-                            </p>
-                          )}
-                        </div>
-                      </label>
-                    ))}
+                    
+                    {/* Map */}
+                    <div className="h-48">
+                      <DeliveryMap
+                        deliveryPoints={deliveryPoints}
+                        selectedPointId={selectedDeliveryPoint}
+                        onPointSelect={setSelectedDeliveryPoint}
+                      />
+                    </div>
+                    
+                    {/* Points List */}
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {deliveryPoints.map((point) => (
+                        <label
+                          key={point.id}
+                          className={`block p-2 border-2 rounded-lg cursor-pointer transition ${
+                            selectedDeliveryPoint === point.id
+                              ? 'border-black bg-gray-50'
+                              : 'border-gray-200'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="deliveryPoint"
+                            value={point.id}
+                            checked={selectedDeliveryPoint === point.id}
+                            onChange={(e) => setSelectedDeliveryPoint(e.target.value)}
+                            className="mr-2"
+                          />
+                          <div className="inline-block">
+                            <p className="font-semibold text-xs">{point.name}</p>
+                            <p className="text-xs text-gray-600">{point.address}</p>
+                            {point.workingHours && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                {point.workingHours}
+                              </p>
+                            )}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <p className="text-gray-600 text-sm">
-                    В выбранном городе пока нет пунктов выдачи СДЭК
+                    Введите город для поиска пунктов выдачи СДЭК
                   </p>
                 )}
               </div>
