@@ -46,7 +46,7 @@ export async function sendVerificationEmail(email: string, code: string, name?: 
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
                       <td align="center" style="padding: 30px 0;">
-                        <div style="display: inline-block; background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%); padding: 20px 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);">
+                        <div style="display: inline-block; background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%); padding: 20px 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
                           <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #000000; font-family: 'Courier New', monospace;">
                             ${code}
                           </span>
