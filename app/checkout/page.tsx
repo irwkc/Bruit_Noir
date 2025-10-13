@@ -318,6 +318,7 @@ export default function CheckoutPage() {
                           deliveryPoints={deliveryPoints}
                           selectedPointId={selectedDeliveryPoint}
                           onPointSelect={setSelectedDeliveryPoint}
+                          city={selectedCity}
                         />
                         
                         {/* Points List */}
@@ -620,6 +621,7 @@ export default function CheckoutPage() {
                         deliveryPoints={deliveryPoints}
                         selectedPointId={selectedDeliveryPoint}
                         onPointSelect={setSelectedDeliveryPoint}
+                        city={selectedCity}
                       />
                     </div>
                     
