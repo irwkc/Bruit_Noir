@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import ProductCard from '@/components/ProductCard'
+import MobileProductCard from '@/components/mobile/ProductCard'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 interface Product {
@@ -67,7 +68,8 @@ export default function CatalogPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      {/* Desktop Version */}
+      <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Каталог</h1>
@@ -183,6 +185,128 @@ export default function CatalogPage() {
             </button>
           </div>
         )}
+      </div>
+
+      {/* Mobile Version */}
+      <div className="block md:hidden">
+        {/* Mobile Header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-4">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Каталог</h1>
+          <p className="text-sm text-gray-600">
+            Вся коллекция Bruit Noir
+          </p>
+        </div>
+
+        {/* Mobile Search */}
+        <div className="bg-white px-4 py-3 border-b border-gray-200">
+          <div className="relative">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Поиск..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        {/* Mobile Filters */}
+        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
+          {/* Categories */}
+          <div className="flex overflow-x-auto gap-2 mb-2 pb-2 -mx-4 px-4 scrollbar-hide">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex-shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                  selectedCategory === cat.id
+                    ? 'border-black bg-black text-white'
+                    : 'bg-white text-black border-gray-300'
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort */}
+          <div className="flex overflow-x-auto gap-2 -mx-4 px-4 scrollbar-hide">
+            {[
+              { id: 'newest', label: 'Новые' },
+              { id: 'price-asc', label: 'Цена ↑' },
+              { id: 'price-desc', label: 'Цена ↓' },
+              { id: 'name', label: 'A→Z' },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setSortBy(opt.id)}
+                className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                  sortBy === opt.id
+                    ? 'bg-black text-white'
+                    : 'bg-gray-100 text-black'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Products Grid */}
+        <div className="px-4 py-4">
+          {loading ? (
+            <div className="grid grid-cols-2 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[3/4] rounded-lg bg-gray-200 mb-2" />
+                  <div className="h-3 w-2/3 rounded bg-gray-200 mb-1" />
+                  <div className="h-3 w-16 rounded bg-gray-200" />
+                </div>
+              ))}
+            </div>
+          ) : filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {filteredProducts.map((product) => (
+                <MobileProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  price={product.price}
+                  images={(product as any).images || []}
+                  category={product.category}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-sm mb-3">
+                {searchQuery ? 'Товары не найдены' : 'Товары скоро появятся'}
+              </p>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-blue-600 hover:underline text-sm"
+                >
+                  Сбросить поиск
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Mobile Load more */}
+          {filteredProducts.length > 0 && page < totalPages && (
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={loading}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium hover:border-gray-400 disabled:opacity-50"
+              >
+                {loading ? 'Загрузка...' : 'Показать ещё'}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
