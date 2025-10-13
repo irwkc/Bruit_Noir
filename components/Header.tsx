@@ -28,18 +28,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            <Link href="/catalog" className="text-sm font-medium hover:text-gray-300 transition">
-              Каталог
-            </Link>
-            <Link href="/about" className="text-sm font-medium hover:text-gray-300 transition">
-              О нас
-            </Link>
-            <Link href="/contact" className="text-sm font-medium hover:text-gray-300 transition">
-              Контакты
-            </Link>
-          </div>
+          {/* Desktop Navigation (removed per request) */}
+          <div className="hidden md:flex md:items-center md:space-x-8" />
 
           {/* Icons */}
           <div className="flex items-center space-x-4">
@@ -63,32 +53,8 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-2">
-            <Link
-              href="/catalog"
-              className="block px-3 py-2 text-base font-medium hover:bg-gray-900 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Каталог
-            </Link>
-            <Link
-              href="/about"
-              className="block px-3 py-2 text-base font-medium hover:bg-gray-900 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              О нас
-            </Link>
-            <Link
-              href="/contact"
-              className="block px-3 py-2 text-base font-medium hover:bg-gray-900 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Контакты
-            </Link>
-          </div>
-        )}
+        {/* Mobile Menu (removed per request) */}
+        {mobileMenuOpen && <div className="md:hidden py-4 space-y-2" />}
       </nav>
     </header>
   )
