@@ -8,11 +8,14 @@ export default auth((req) => {
 
   // Protect admin routes
   if (pathname.startsWith('/admin')) {
-    // Always require admin role; otherwise show sign-in with return to /admin
-    if (!isLoggedIn || !isAdmin) {
-      const url = new URL('/auth/signin', req.url)
-      url.searchParams.set('callbackUrl', '/admin')
-      return NextResponse.redirect(url)
+    // Separate admin cookie auth
+    const adminToken = req.cookies.get('admin_token')?.value
+    if (!adminToken) {
+      // Show dedicated admin login
+      if (pathname !== '/admin/login') {
+        return NextResponse.redirect(new URL('/admin/login', req.url))
+      }
+      return NextResponse.next()
     }
   }
 
