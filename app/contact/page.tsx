@@ -27,10 +27,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-semibold mb-2">Социальные сети</h3>
                 <div className="space-y-2">
-                  <a href="#" className="block text-black hover:text-gray-600 transition">
-                    VK
-                  </a>
-                  <a href="#" className="block text-black hover:text-gray-600 transition">
+                  <a href="https://t.me/bruitnoir_co" target="_blank" rel="noopener noreferrer" className="block text-black hover:text-gray-600 transition">
                     Telegram
                   </a>
                 </div>
@@ -114,10 +111,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="text-sm font-semibold mb-1 text-gray-700">Социальные сети</h3>
                 <div className="space-y-1">
-                  <a href="#" className="block text-sm text-black hover:text-gray-600 transition">
-                    VK
-                  </a>
-                  <a href="#" className="block text-sm text-black hover:text-gray-600 transition">
+                  <a href="https://t.me/bruitnoir_co" target="_blank" rel="noopener noreferrer" className="block text-sm text-black hover:text-gray-600 transition">
                     Telegram
                   </a>
                 </div>
