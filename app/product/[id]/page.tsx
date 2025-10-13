@@ -84,7 +84,8 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      {/* Desktop Version */}
+      <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
           <div>
@@ -225,6 +226,150 @@ export default function ProductPage() {
               {product.stock > 0 ? `В наличии: ${product.stock} шт.` : 'Нет в наличии'}
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Version */}
+      <div className="block md:hidden pb-20">
+        {/* Mobile Images */}
+        <div className="bg-white">
+          <div className="relative aspect-[3/4]">
+            <Image
+              src={product.images[selectedImage] || '/placeholder.jpg'}
+              alt={product.name}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+
+          {/* Thumbnails */}
+          {product.images.length > 1 && (
+            <div className="flex gap-2 p-3 overflow-x-auto">
+              {product.images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden ${
+                    selectedImage === index ? 'ring-2 ring-black' : ''
+                  }`}
+                >
+                  <Image
+                    src={image}
+                    alt={`${product.name} ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Product Info */}
+        <div className="px-4 py-4 space-y-4">
+          <div className="bg-black text-white inline-block px-2 py-1 text-xs font-semibold uppercase">
+            {product.category}
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900">
+            {product.name}
+          </h1>
+
+          <p className="text-2xl font-bold text-black">
+            {product.price.toLocaleString('ru-RU')} ₽
+          </p>
+
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {product.description}
+          </p>
+
+          {/* Size Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Размер
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {product.sizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`px-3 py-2 border-2 rounded-md text-sm font-medium transition ${
+                    selectedSize === size
+                      ? 'border-black bg-black text-white'
+                      : 'border-gray-300'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Color Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Цвет
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {product.colors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={`px-3 py-2 border-2 rounded-md text-sm font-medium transition capitalize ${
+                    selectedColor === color
+                      ? 'border-black bg-black text-white'
+                      : 'border-gray-300'
+                  }`}
+                >
+                  {color}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quantity */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Количество
+            </label>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-10 h-10 border-2 border-gray-300 rounded-md"
+              >
+                -
+              </button>
+              <span className="text-lg font-semibold w-12 text-center">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                className="w-10 h-10 border-2 border-gray-300 rounded-md"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Stock Info */}
+          <p className="text-xs text-gray-600">
+            {product.stock > 0 ? `В наличии: ${product.stock} шт.` : 'Нет в наличии'}
+          </p>
+        </div>
+
+        {/* Mobile Fixed Bottom Button */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+          <button
+            onClick={handleAddToCart}
+            disabled={!selectedSize || !selectedColor || product.stock === 0}
+            className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+          >
+            <ShoppingCartIcon className="h-5 w-5" />
+            <span>
+              {product.stock === 0 ? 'Нет в наличии' : 'Добавить в корзину'}
+            </span>
+          </button>
         </div>
       </div>
     </div>
