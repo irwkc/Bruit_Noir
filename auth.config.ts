@@ -27,6 +27,11 @@ export const authConfig: NextAuthConfig = {
           return null
         }
 
+        // Check if email is verified
+        if (!user.emailVerified) {
+          return null
+        }
+
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
           user.password
