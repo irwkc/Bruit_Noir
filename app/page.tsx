@@ -1,11 +1,17 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
+type FeaturedProduct = {
+  id: string
+  name: string
+  price: number
+  images: unknown
+  category: string
+}
 import ProductCard from '@/components/ProductCard'
 
 export const dynamic = 'force-dynamic'
 
-async function getFeaturedProducts() {
+async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
   try {
     const products = await prisma.product.findMany({
       where: { featured: true },
@@ -20,7 +26,7 @@ async function getFeaturedProducts() {
 }
 
 export default async function HomePage() {
-  const featuredProducts = await getFeaturedProducts()
+  const featuredProducts: FeaturedProduct[] = await getFeaturedProducts()
 
   return (
     <div>
@@ -67,13 +73,13 @@ export default async function HomePage() {
 
           {featuredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProducts.map((product) => (
+              {featuredProducts.map((product: FeaturedProduct) => (
                 <ProductCard
                   key={product.id}
                   id={product.id}
                   name={product.name}
                   price={product.price}
-                  images={(product as any).images || []}
+                  images={((product.images as unknown) as string[]) || []}
                   category={product.category}
                 />
               ))}
