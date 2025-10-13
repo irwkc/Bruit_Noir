@@ -11,7 +11,11 @@ export default auth((req) => {
     // Separate admin cookie auth
     const adminToken = req.cookies.get('admin_token')?.value
     if (!adminToken) {
-      // Show dedicated admin login
+      // Avoid redirect loops: rewrite /admin to login to keep URL stable
+      if (pathname === '/admin') {
+        return NextResponse.rewrite(new URL('/admin/login', req.url))
+      }
+      // For any other /admin/* path - send to login
       if (pathname !== '/admin/login') {
         return NextResponse.redirect(new URL('/admin/login', req.url))
       }
