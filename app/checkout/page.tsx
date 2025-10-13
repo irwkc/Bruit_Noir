@@ -102,7 +102,8 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      {/* Desktop Version */}
+      <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">Оформление заказа</h1>
 
         <form onSubmit={handleSubmit}>
@@ -295,6 +296,202 @@ export default function CheckoutPage() {
             </div>
           </div>
         </form>
+      </div>
+
+      {/* Mobile Version */}
+      <div className="block md:hidden pb-24">
+        {/* Mobile Header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-10">
+          <h1 className="text-2xl font-bold text-gray-900">Оформление</h1>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-4 py-4 space-y-4">
+          {/* Contact Information */}
+          <div className="bg-white rounded-lg p-4">
+            <h2 className="text-lg font-bold mb-3">Контакты</h2>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Имя *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Телефон *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="+7 (999) 123-45-67"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Delivery */}
+          <div className="bg-white rounded-lg p-4">
+            <h2 className="text-lg font-bold mb-3">Доставка</h2>
+
+            <div className="mb-3">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Город
+              </label>
+              <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              >
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {deliveryPoints.length > 0 ? (
+              <div className="space-y-2">
+                {deliveryPoints.map((point) => (
+                  <label
+                    key={point.id}
+                    className={`block p-3 border-2 rounded-lg cursor-pointer transition ${
+                      selectedDeliveryPoint === point.id
+                        ? 'border-black bg-gray-50'
+                        : 'border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="deliveryPoint"
+                      value={point.id}
+                      checked={selectedDeliveryPoint === point.id}
+                      onChange={(e) => setSelectedDeliveryPoint(e.target.value)}
+                      className="mr-2"
+                    />
+                    <div className="inline-block">
+                      <p className="font-semibold text-sm">{point.name}</p>
+                      <p className="text-xs text-gray-600">{point.address}</p>
+                      {point.workingHours && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {point.workingHours}
+                        </p>
+                      )}
+                    </div>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-600 text-sm">
+                В выбранном городе пока нет пунктов выдачи
+              </p>
+            )}
+          </div>
+
+          {/* Payment */}
+          <div className="bg-white rounded-lg p-4">
+            <h2 className="text-lg font-bold mb-3">Оплата</h2>
+            <div className="space-y-2">
+              <label className="flex items-center p-3 border-2 rounded-lg cursor-pointer">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="card"
+                  checked={paymentMethod === 'card'}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="mr-2"
+                />
+                <div>
+                  <p className="font-semibold text-sm">Банковская карта</p>
+                  <p className="text-xs text-gray-600">
+                    Visa, Mastercard, МИР
+                  </p>
+                </div>
+              </label>
+              <label className="flex items-center p-3 border-2 rounded-lg cursor-pointer">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cash"
+                  checked={paymentMethod === 'cash'}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="mr-2"
+                />
+                <div>
+                  <p className="font-semibold text-sm">Наличные</p>
+                  <p className="text-xs text-gray-600">
+                    Оплата при получении
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* Order Summary */}
+          <div className="bg-white rounded-lg p-4">
+            <h2 className="text-lg font-bold mb-3">Ваш заказ</h2>
+
+            <div className="space-y-2 mb-4">
+              {items.map((item) => (
+                <div
+                  key={`${item.productId}-${item.size}-${item.color}`}
+                  className="flex justify-between text-xs"
+                >
+                  <span className="text-gray-600">
+                    {item.name} x{item.quantity}
+                  </span>
+                  <span className="font-medium">
+                    {(item.price * item.quantity).toLocaleString('ru-RU')} ₽
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="border-t pt-3 space-y-2">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Доставка:</span>
+                <span>Бесплатно</span>
+              </div>
+              <div className="flex justify-between text-lg font-bold">
+                <span>Итого:</span>
+                <span>{getTotalPrice().toLocaleString('ru-RU')} ₽</span>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        {/* Mobile Fixed Bottom Button */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+          <button
+            type="submit"
+            disabled={loading || !selectedDeliveryPoint}
+            onClick={handleSubmit}
+            className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Оформление...' : 'Подтвердить заказ'}
+          </button>
+        </div>
       </div>
     </div>
   )

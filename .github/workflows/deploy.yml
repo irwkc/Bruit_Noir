@@ -37,11 +37,20 @@ jobs:
           script: |
             set -e
             cd ${{ secrets.APP_DIR }}
+            # Backup uploads folder
+            if [ -d "public/uploads" ]; then
+              cp -r public/uploads /tmp/uploads-backup
+            fi
             git fetch origin main
             git reset --hard origin/main
             git clean -fd
             rm -rf .next .turbo
+            # Restore uploads folder
             mkdir -p public/uploads
+            if [ -d "/tmp/uploads-backup" ]; then
+              cp -r /tmp/uploads-backup/* public/uploads/ 2>/dev/null || true
+              rm -rf /tmp/uploads-backup
+            fi
             chmod 755 public/uploads
             npm install
             npm run build
