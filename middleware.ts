@@ -3,18 +3,9 @@ import { NextResponse } from 'next/server'
 export default function middleware(req: any) {
   const { pathname } = req.nextUrl
 
-  // Protect admin routes
+  // Временное отключение админ-редиректов (борьба с петлями)
   if (pathname.startsWith('/admin')) {
-    // Separate admin cookie auth
-    const adminToken = req.cookies.get('admin_token')?.value
-    if (!adminToken) {
-      // Разрешаем /admin (форма входа на этой же странице) и /admin/login
-      if (pathname === '/admin' || pathname === '/admin/login') {
-        return NextResponse.next()
-      }
-      // Остальные /admin/* требуют токен — ведём на /admin (логин)
-      return NextResponse.redirect(new URL('/admin', req.url))
-    }
+    return NextResponse.next()
   }
 
   // Пользовательские маршруты больше не проверяем здесь
