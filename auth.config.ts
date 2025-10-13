@@ -15,9 +15,8 @@ export const authConfig: NextAuthConfig = {
           return null
         }
 
-        // Lazy import Prisma to avoid bundling into Edge middleware
-        const { PrismaClient } = await import('@prisma/client')
-        const prisma = new PrismaClient()
+        // Use shared Prisma instance
+        const { prisma } = await import('@/lib/prisma')
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
