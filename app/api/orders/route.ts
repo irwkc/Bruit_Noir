@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = (session.user as any)?.id || (session as any)?.user?.id
+    const userId = session.user.id
     console.log('Orders API - User ID:', userId)
     console.log('Orders API - Full session user:', session.user)
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = (session.user as any)?.id || (session as any)?.user?.id
+    const userId = session.user.id
     console.log('Orders POST API - User ID:', userId)
     console.log('Orders POST API - Full session user:', session.user)
     const body = await request.json()
