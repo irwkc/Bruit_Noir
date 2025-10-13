@@ -11,15 +11,19 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  password      String?
-  image         String?
-  role          String    @default("user") // user, admin
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  name                  String?
+  email                 String    @unique
+  emailVerified         DateTime?
+  password              String?
+  image                 String?
+  role                  String    @default("user") // user, admin
+  verificationCode      String?
+  verificationExpires   DateTime?
+  verificationAttempts  Int       @default(0)
+  lastCodeSentAt        DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   orders Order[]
   accounts Account[]

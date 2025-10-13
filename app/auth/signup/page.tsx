@@ -41,7 +41,12 @@ export default function SignUpPage() {
       if (!res.ok) {
         setError(data.error || 'Ошибка при регистрации')
       } else {
-        router.push('/auth/signin')
+        // Redirect to verification page
+        if (data.requiresVerification && data.userId) {
+          router.push(`/auth/verify?userId=${data.userId}`)
+        } else {
+          router.push('/auth/signin')
+        }
       }
     } catch (error) {
       setError('Произошла ошибка при регистрации')
