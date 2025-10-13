@@ -20,43 +20,94 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
         widgetRef.current.innerHTML = ''
       }
 
-      // Create SDEK widget script
-      const script = document.createElement('script')
-      script.src = 'https://widget.cdek.ru/widget/scripts/rest/api/widget.js'
-      script.async = true
-      
-      script.onload = () => {
-        // Initialize SDEK widget
-        if (window.cdek && window.cdek.widget) {
-          const widget = new window.cdek.widget({
-            defaultCity: city,
-            popup: false,
-            hidedress: false,
-            hidecash: false,
-            hidedelt: false,
-            hidenp: false,
-            parent: widgetRef.current
-          })
-
-          widget.on('select', (point: any) => {
-            if (onPointSelect) {
-              onPointSelect(point)
-            }
-          })
-
+      // Try to load SDEK points directly via API
+      const loadSdekPoints = async () => {
+        try {
+          const response = await fetch(`/api/sdek-points?city=${encodeURIComponent(city)}`)
+          const points = await response.json()
+          
+          if (points && points.length > 0) {
+            renderPointsList(points)
+            setIsLoaded(true)
+          } else {
+            renderNoPoints()
+            setIsLoaded(true)
+          }
+        } catch (error) {
+          console.error('Failed to load SDEK points:', error)
+          renderError()
           setIsLoaded(true)
         }
       }
 
-      script.onerror = () => {
-        console.error('Failed to load SDEK widget')
+      const renderPointsList = (points: any[]) => {
+        if (!widgetRef.current) return
+        
+        const container = document.createElement('div')
+        container.className = 'space-y-2 max-h-80 overflow-y-auto'
+        
+        points.forEach((point, index) => {
+          const pointElement = document.createElement('div')
+          pointElement.className = 'p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition'
+          pointElement.innerHTML = `
+            <div class="flex items-start space-x-3">
+              <input type="radio" name="sdek-point" value="${point.id}" id="point-${index}" class="mt-1">
+              <label for="point-${index}" class="flex-1 cursor-pointer">
+                <div class="font-semibold text-sm">${point.name}</div>
+                <div class="text-xs text-gray-600 mt-1">${point.address}</div>
+                ${point.workingHours ? `<div class="text-xs text-gray-500 mt-1">${point.workingHours}</div>` : ''}
+                ${point.phone ? `<div class="text-xs text-blue-600 mt-1">📞 ${point.phone}</div>` : ''}
+              </label>
+            </div>
+          `
+          
+          pointElement.addEventListener('click', () => {
+            // Clear other selections
+            container.querySelectorAll('input[type="radio"]').forEach((radio: any) => {
+              radio.checked = false
+            })
+            
+            // Select this point
+            const radio = pointElement.querySelector('input[type="radio"]') as HTMLInputElement
+            radio.checked = true
+            
+            // Call callback
+            if (onPointSelect) {
+              onPointSelect(point)
+            }
+          })
+          
+          container.appendChild(pointElement)
+        })
+        
+        widgetRef.current.appendChild(container)
       }
 
-      document.head.appendChild(script)
-
-      return () => {
-        document.head.removeChild(script)
+      const renderNoPoints = () => {
+        if (!widgetRef.current) return
+        
+        widgetRef.current.innerHTML = `
+          <div class="p-6 text-center text-gray-500">
+            <div class="text-4xl mb-2">📦</div>
+            <p>Пункты выдачи СДЭК в городе "${city}" не найдены</p>
+            <p class="text-sm mt-2">Попробуйте ввести другой город</p>
+          </div>
+        `
       }
+
+      const renderError = () => {
+        if (!widgetRef.current) return
+        
+        widgetRef.current.innerHTML = `
+          <div class="p-6 text-center text-red-500">
+            <div class="text-4xl mb-2">⚠️</div>
+            <p>Ошибка загрузки пунктов выдачи</p>
+            <p class="text-sm mt-2">Попробуйте обновить страницу</p>
+          </div>
+        `
+      }
+
+      loadSdekPoints()
     }
 
     loadSdekWidget()

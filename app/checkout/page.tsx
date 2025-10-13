@@ -7,8 +7,8 @@ import { useSession } from 'next-auth/react'
 import dynamicImport from 'next/dynamic'
 import CityAutocomplete from '@/components/CityAutocomplete'
 
-// Dynamically import map component to avoid SSR issues
-const DeliveryMap = dynamicImport(() => import('@/components/DeliveryMap'), { ssr: false })
+// Dynamically import SDEK widget to avoid SSR issues
+const SdekWidget = dynamicImport(() => import('@/components/SdekWidget'), { ssr: false })
 
 export const dynamic = 'force-dynamic'
 
@@ -53,39 +53,15 @@ export default function CheckoutPage() {
     }
   }, [session])
 
+  // Remove deliveryPoints fetching for SDEK as widget handles it
   useEffect(() => {
-    if (deliveryMethod === 'sdek' && selectedCity.trim().length >= 3) {
-      const timeoutId = setTimeout(() => {
-        fetchDeliveryPoints()
-      }, 500) // Debounce 500ms
-
-      return () => clearTimeout(timeoutId)
+    if (deliveryMethod === 'sdek') {
+      // Clear selected point when switching to SDEK
+      setSelectedDeliveryPoint('')
     }
-  }, [selectedCity, deliveryMethod])
+  }, [deliveryMethod])
 
-  async function fetchDeliveryPoints() {
-    try {
-      if (deliveryMethod === 'sdek') {
-        // Use SDEK API for SDEK delivery
-        const res = await fetch(`/api/sdek-points?city=${selectedCity}`)
-        const data = await res.json()
-        setDeliveryPoints(data)
-        if (data.length > 0) {
-          setSelectedDeliveryPoint(data[0].id)
-        }
-      } else {
-        // Use regular delivery points API for other methods
-        const res = await fetch(`/api/delivery-points?city=${selectedCity}`)
-        const data = await res.json()
-        setDeliveryPoints(data)
-        if (data.length > 0) {
-          setSelectedDeliveryPoint(data[0].id)
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching delivery points:', error)
-    }
-  }
+  // fetchDeliveryPoints function removed - SDEK widget handles this internally
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -312,53 +288,22 @@ export default function CheckoutPage() {
                       </p>
                     </div>
 
-                    {deliveryPoints.length > 0 ? (
+                    {selectedCity && selectedCity.length >= 3 ? (
                       <div className="space-y-4">
                         <h3 className="font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
                         
-                        {/* Map */}
-                        <DeliveryMap
-                          deliveryPoints={deliveryPoints}
-                          selectedPointId={selectedDeliveryPoint}
-                          onPointSelect={setSelectedDeliveryPoint}
+                        {/* SDEK Widget */}
+                        <SdekWidget
                           city={selectedCity}
+                          onPointSelect={(point) => {
+                            setSelectedDeliveryPoint(point.Code || point.code || '')
+                          }}
                         />
                         
-                        {/* Points List */}
-                        <div className="space-y-2 max-h-48 overflow-y-auto">
-                          {deliveryPoints.map((point) => (
-                            <label
-                              key={point.id}
-                              className={`block p-3 border-2 rounded-lg cursor-pointer transition ${
-                                selectedDeliveryPoint === point.id
-                                  ? 'border-black bg-gray-50'
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
-                            >
-                              <input
-                                type="radio"
-                                name="deliveryPoint"
-                                value={point.id}
-                                checked={selectedDeliveryPoint === point.id}
-                                onChange={(e) => setSelectedDeliveryPoint(e.target.value)}
-                                className="mr-3"
-                              />
-                              <div className="inline-block">
-                                <p className="font-semibold text-sm">{point.name}</p>
-                                <p className="text-xs text-gray-600">{point.address}</p>
-                                {point.workingHours && (
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    {point.workingHours}
-                                  </p>
-                                )}
-                                {point.phone && (
-                                  <p className="text-xs text-blue-600 mt-1">
-                                    📞 {point.phone}
-                                  </p>
-                                )}
-                              </div>
-                            </label>
-                          ))}
+                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                          <p className="text-sm text-blue-800">
+                            💡 Выберите пункт выдачи из списка выше. После выбора он будет автоматически сохранен.
+                          </p>
                         </div>
                       </div>
                     ) : (
@@ -618,55 +563,24 @@ export default function CheckoutPage() {
                   </p>
                 </div>
 
-                {deliveryPoints.length > 0 ? (
+                {selectedCity && selectedCity.length >= 3 ? (
                   <div className="space-y-3">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
                     
-                    {/* Map */}
-                    <div className="h-48">
-                      <DeliveryMap
-                        deliveryPoints={deliveryPoints}
-                        selectedPointId={selectedDeliveryPoint}
-                        onPointSelect={setSelectedDeliveryPoint}
+                    {/* SDEK Widget */}
+                    <div className="h-96">
+                      <SdekWidget
                         city={selectedCity}
+                        onPointSelect={(point) => {
+                          setSelectedDeliveryPoint(point.Code || point.code || '')
+                        }}
                       />
                     </div>
                     
-                    {/* Points List */}
-                    <div className="space-y-2 max-h-32 overflow-y-auto">
-                      {deliveryPoints.map((point) => (
-                        <label
-                          key={point.id}
-                          className={`block p-2 border-2 rounded-lg cursor-pointer transition ${
-                            selectedDeliveryPoint === point.id
-                              ? 'border-black bg-gray-50'
-                              : 'border-gray-200'
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="deliveryPoint"
-                            value={point.id}
-                            checked={selectedDeliveryPoint === point.id}
-                            onChange={(e) => setSelectedDeliveryPoint(e.target.value)}
-                            className="mr-2"
-                          />
-                          <div className="inline-block">
-                            <p className="font-semibold text-xs">{point.name}</p>
-                            <p className="text-xs text-gray-600">{point.address}</p>
-                            {point.workingHours && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                {point.workingHours}
-                              </p>
-                            )}
-                            {point.phone && (
-                              <p className="text-xs text-blue-600 mt-1">
-                                📞 {point.phone}
-                              </p>
-                            )}
-                          </div>
-                        </label>
-                      ))}
+                    <div className="mt-2 p-2 bg-blue-50 rounded-lg">
+                      <p className="text-xs text-blue-800">
+                        💡 Выберите пункт выдачи из списка выше
+                      </p>
                     </div>
                   </div>
                 ) : (
