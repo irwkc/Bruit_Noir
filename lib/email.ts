@@ -8,9 +8,6 @@ const transporter = nodemailer.createTransport({
     user: 'bruitnoir_info@mail.ru',
     pass: process.env.EMAIL_PASSWORD || 'yKqlar79cRZUjwYTzodF',
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 5000,
-  socketTimeout: 10000,
 })
 
 export async function sendVerificationEmail(email: string, code: string, name?: string) {
