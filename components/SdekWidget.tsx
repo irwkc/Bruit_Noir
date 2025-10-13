@@ -43,19 +43,31 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
       const renderPointsList = (points: any[]) => {
         if (!widgetRef.current) return
         
+        // Add header with count
+        const header = document.createElement('div')
+        header.className = 'mb-3 p-3 bg-green-50 rounded-lg'
+        header.innerHTML = `
+          <div class="text-sm font-semibold text-green-800">
+            ✅ Найдено пунктов выдачи: ${points.length}
+          </div>
+        `
+        widgetRef.current.appendChild(header)
+        
         const container = document.createElement('div')
-        container.className = 'space-y-2 max-h-80 overflow-y-auto'
+        container.className = 'space-y-2 overflow-y-auto'
+        container.style.maxHeight = '400px'
         
         points.forEach((point, index) => {
           const pointElement = document.createElement('div')
-          pointElement.className = 'p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition'
+          pointElement.className = 'p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-gray-400 transition'
+          pointElement.setAttribute('data-point-id', point.id)
           pointElement.innerHTML = `
             <div class="flex items-start space-x-3">
-              <input type="radio" name="sdek-point" value="${point.id}" id="point-${index}" class="mt-1">
+              <input type="radio" name="sdek-point" value="${point.id}" id="point-${index}" class="mt-1 w-4 h-4">
               <label for="point-${index}" class="flex-1 cursor-pointer">
-                <div class="font-semibold text-sm">${point.name}</div>
+                <div class="font-semibold text-sm text-gray-900">${point.name}</div>
                 <div class="text-xs text-gray-600 mt-1">${point.address}</div>
-                ${point.workingHours ? `<div class="text-xs text-gray-500 mt-1">${point.workingHours}</div>` : ''}
+                ${point.workingHours ? `<div class="text-xs text-gray-500 mt-1">🕐 ${point.workingHours}</div>` : ''}
                 ${point.phone ? `<div class="text-xs text-blue-600 mt-1">📞 ${point.phone}</div>` : ''}
               </label>
             </div>
@@ -63,9 +75,14 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
           
           pointElement.addEventListener('click', () => {
             // Clear other selections
-            container.querySelectorAll('input[type="radio"]').forEach((radio: any) => {
-              radio.checked = false
+            container.querySelectorAll('[data-point-id]').forEach((el: any) => {
+              el.classList.remove('border-black', 'bg-gray-50')
+              el.classList.add('border-gray-200')
             })
+            
+            // Highlight selected
+            pointElement.classList.remove('border-gray-200')
+            pointElement.classList.add('border-black', 'bg-gray-50')
             
             // Select this point
             const radio = pointElement.querySelector('input[type="radio"]') as HTMLInputElement
@@ -123,23 +140,13 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
 
   return (
     <div className="w-full">
-      <div className="mb-4">
-        <h3 className="font-semibold text-gray-700 mb-2">
-          Пункты выдачи СДЭК в городе: {city}
-        </h3>
-        <p className="text-sm text-gray-600">
-          Выберите пункт выдачи из списка ниже
-        </p>
-      </div>
-      
       <div 
         ref={widgetRef} 
-        className="w-full min-h-64 border border-gray-300 rounded-lg bg-white"
-        style={{ minHeight: '400px' }}
+        className="w-full border border-gray-300 rounded-lg bg-white p-4"
       />
       
       {!isLoaded && (
-        <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
+        <div className="w-full p-8 bg-gray-100 rounded-lg flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-2"></div>
             <p className="text-gray-500">Загрузка пунктов выдачи СДЭК...</p>

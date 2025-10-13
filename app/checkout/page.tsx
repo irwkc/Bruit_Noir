@@ -293,18 +293,23 @@ export default function CheckoutPage() {
                         <h3 className="font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
                         
                         {/* SDEK Widget */}
-                        <SdekWidget
-                          city={selectedCity}
-                          onPointSelect={(point) => {
-                            setSelectedDeliveryPoint(point.Code || point.code || '')
-                          }}
-                        />
-                        
-                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                          <p className="text-sm text-blue-800">
-                            💡 Выберите пункт выдачи из списка выше. После выбора он будет автоматически сохранен.
-                          </p>
+                        <div className="w-full">
+                          <SdekWidget
+                            city={selectedCity}
+                            onPointSelect={(point) => {
+                              setSelectedDeliveryPoint(point.id)
+                              console.log('Selected SDEK point:', point)
+                            }}
+                          />
                         </div>
+                        
+                        {selectedDeliveryPoint && (
+                          <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                            <p className="text-sm text-green-800 font-semibold">
+                              ✅ Пункт выдачи выбран
+                            </p>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <p className="text-gray-600">
@@ -568,20 +573,23 @@ export default function CheckoutPage() {
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
                     
                     {/* SDEK Widget */}
-                    <div className="h-96">
+                    <div className="w-full">
                       <SdekWidget
                         city={selectedCity}
                         onPointSelect={(point) => {
-                          setSelectedDeliveryPoint(point.Code || point.code || '')
+                          setSelectedDeliveryPoint(point.id)
+                          console.log('Selected SDEK point:', point)
                         }}
                       />
                     </div>
                     
-                    <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-                      <p className="text-xs text-blue-800">
-                        💡 Выберите пункт выдачи из списка выше
-                      </p>
-                    </div>
+                    {selectedDeliveryPoint && (
+                      <div className="mt-2 p-2 bg-green-50 rounded-lg border border-green-200">
+                        <p className="text-xs text-green-800 font-semibold">
+                          ✅ Пункт выдачи выбран
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <p className="text-gray-600 text-sm">
