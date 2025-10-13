@@ -1,6 +1,6 @@
 'use client'
 
-import { useCartStore } from '@/lib/store'
+import { useCartStore, CartItem } from '@/lib/store'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -9,14 +9,14 @@ export default function MobileCartPage() {
   const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore()
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const handleQuantityChange = async (productId: string, newQuantity: number) => {
+  const handleQuantityChange = async (item: CartItem, newQuantity: number) => {
     if (newQuantity < 1) {
-      removeItem(productId)
+      removeItem(item.productId, item.size, item.color)
       return
     }
     
     setIsUpdating(true)
-    updateQuantity(productId, newQuantity)
+    updateQuantity(item.productId, item.size, item.color, newQuantity)
     // Small delay for better UX
     setTimeout(() => setIsUpdating(false), 300)
   }
@@ -61,14 +61,14 @@ export default function MobileCartPage() {
         <div className="pb-20">
           {/* Cart Items */}
           <div className="bg-white">
-            {items.map((item) => (
-              <div key={item.id} className="border-b border-gray-200 p-4">
+            {items.map((item, index) => (
+              <div key={`${item.productId}-${item.size}-${item.color}-${index}`} className="border-b border-gray-200 p-4">
                 <div className="flex space-x-3">
                   {/* Product Image */}
                   <div className="relative w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0">
-                    {item.images && item.images.length > 0 ? (
+                    {item.image ? (
                       <Image
-                        src={item.images[0]}
+                        src={item.image}
                         alt={item.name}
                         fill
                         className="object-cover rounded-lg"
@@ -93,7 +93,7 @@ export default function MobileCartPage() {
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center border border-gray-300 rounded-lg">
                         <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(item, item.quantity - 1)}
                           className="p-2 hover:bg-gray-50 transition"
                           disabled={isUpdating}
                         >
@@ -105,7 +105,7 @@ export default function MobileCartPage() {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(item, item.quantity + 1)}
                           className="p-2 hover:bg-gray-50 transition"
                           disabled={isUpdating}
                         >
@@ -117,7 +117,7 @@ export default function MobileCartPage() {
 
                       {/* Remove Button */}
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.productId, item.size, item.color)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
