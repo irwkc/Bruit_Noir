@@ -8,8 +8,12 @@ export default auth((req) => {
 
   // Protect admin routes
   if (pathname.startsWith('/admin')) {
+    // Allow public admin login entrypoint
+    if (pathname === '/admin/login') {
+      return NextResponse.next()
+    }
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL('/auth/signin', req.url))
+      return NextResponse.redirect(new URL('/admin/login', req.url))
     }
     if (!isAdmin) {
       return NextResponse.redirect(new URL('/', req.url))
