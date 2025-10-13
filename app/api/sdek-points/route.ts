@@ -1,35 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Real SDEK API integration
+// SDEK Widget API integration
 async function fetchRealSdekPoints(city: string) {
   try {
-    // First, get city code from SDEK
-    const cityResponse = await fetch(`https://api.cdek.ru/v2/location/cities?search=${encodeURIComponent(city)}&country_codes=RU`)
-    
-    if (!cityResponse.ok) {
-      throw new Error(`City lookup failed: ${cityResponse.status}`)
+    // Try multiple SDEK API endpoints
+    const endpoints = [
+      // Widget API
+      {
+        url: `https://widget.cdek.ru/widget/scripts/rest/api/pvzlist.php`,
+        method: 'POST',
+        body: new URLSearchParams({
+          'citypost': city,
+          'type': 'json'
+        })
+      },
+      // Alternative widget endpoint
+      {
+        url: `https://widget.cdek.ru/widget/scripts/rest/api/pvzlist.php?citypost=${encodeURIComponent(city)}&type=json`,
+        method: 'GET'
+      }
+    ]
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint.url, {
+          method: endpoint.method,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: endpoint.body
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          
+          // Transform SDEK Widget data to our format
+          if (data && Array.isArray(data) && data.length > 0) {
+            return data.map((point: any, index: number) => ({
+              id: point.Code || point.code || `sdek-widget-${city}-${index}`,
+              name: point.Name || point.name || `СДЭК - ${city}`,
+              address: point.Address || point.address || `${city}`,
+              city: city,
+              country: 'Россия',
+              workingHours: point.WorkTime || point.work_time || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
+              latitude: parseFloat(point.coordY || point.coord_y || point.latitude) || null,
+              longitude: parseFloat(point.coordX || point.coord_x || point.longitude) || null,
+              phone: point.Phone || point.phone || '',
+              email: point.Email || point.email || '',
+              type: point.Type || point.type || 'PVZ'
+            }))
+          }
+        }
+      } catch (endpointError) {
+        console.error(`Endpoint ${endpoint.url} failed:`, endpointError)
+        continue
+      }
     }
     
-    const cityData = await cityResponse.json()
-    const cities = cityData.filter((c: any) => c.city.toLowerCase().includes(city.toLowerCase()))
-    
-    if (cities.length === 0) {
-      return null
-    }
-    
-    const cityCode = cities[0].code
-    
-    // Now get delivery points for this city
-    const pointsResponse = await fetch(`https://api.cdek.ru/v2/deliverypoints?city_code=${cityCode}`)
-    
-    if (!pointsResponse.ok) {
-      throw new Error(`Points lookup failed: ${pointsResponse.status}`)
-    }
-    
-    const pointsData = await pointsResponse.json()
-    return pointsData || []
+    return null
   } catch (error) {
-    console.error('SDEK API error:', error)
+    console.error('SDEK Widget API error:', error)
     return null
   }
 }
@@ -203,25 +233,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Try to get real data from SDEK API first
+    console.log(`Fetching SDEK points for city: ${city}`)
     const realPoints = await fetchRealSdekPoints(city)
+    console.log(`SDEK API returned:`, realPoints ? realPoints.length : 'null', 'points')
     
     if (realPoints && realPoints.length > 0) {
-      // Transform real SDEK data to our format
-      const transformedPoints = realPoints.map((point: any, index: number) => ({
-        id: point.code || `sdek-real-${city}-${index}`,
-        name: point.name || `СДЭК - ${point.address || city}`,
-        address: point.address || `${city}`,
-        city: city,
-        country: 'Россия',
-        workingHours: point.work_time || point.work_time_comment || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
-        latitude: point.location?.latitude || point.coordinates?.latitude,
-        longitude: point.location?.longitude || point.coordinates?.longitude,
-        phone: point.phone || '',
-        email: point.email || '',
-        type: point.type || 'PVZ' // Пункт выдачи
-      }))
-      
-      return NextResponse.json(transformedPoints)
+      console.log('Using real SDEK data')
+      return NextResponse.json(realPoints)
     }
 
     // Fallback to realistic mock data
