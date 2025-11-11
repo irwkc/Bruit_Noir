@@ -1,6 +1,25 @@
 import Link from 'next/link'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { authenticateAdminToken } from '@/lib/adminAuth'
 
-export default function AdminDashboard() {
+async function ensureAdmin() {
+  const token = (await cookies()).get('admin_access_token')?.value
+  if (!token) {
+    redirect('/admin')
+  }
+
+  try {
+    await authenticateAdminToken(token)
+  } catch (error) {
+    console.warn('Admin access denied:', error)
+    redirect('/admin')
+  }
+}
+
+export default async function AdminDashboard() {
+  await ensureAdmin()
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="text-3xl font-bold mb-6">Админка</h1>

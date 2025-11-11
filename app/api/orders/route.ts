@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
+import { sendNewOrderNotification } from '@/lib/email'
 
 export async function GET(request: NextRequest) {
   try {
@@ -144,10 +145,48 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
-        orderItems: true,
+        orderItems: {
+          include: { product: true },
+        },
         deliveryPoint: true,
       },
     })
+
+    // Fire-and-forget notifications
+    const admins = await prisma.user.findMany({
+      where: {
+        role: 'admin',
+        orderNotificationEmail: { not: null },
+      },
+      select: { orderNotificationEmail: true },
+    })
+
+    if (admins.length > 0) {
+      const payload = {
+        id: order.id,
+        total,
+        customerName,
+        customerEmail,
+        customerPhone,
+        createdAt: order.createdAt,
+        items: order.orderItems.map((item) => ({
+          name: item.product?.name || 'Товар',
+          quantity: item.quantity,
+          price: item.price,
+          size: item.size,
+          color: item.color,
+        })),
+      }
+
+      void Promise.all(
+        admins
+          .map((admin) => admin.orderNotificationEmail)
+          .filter((email): email is string => Boolean(email))
+          .map((email) => sendNewOrderNotification(email, payload))
+      ).catch((error) => {
+        console.error('Failed to send admin notifications:', error)
+      })
+    }
 
     return NextResponse.json(order, { status: 201 })
   } catch (error) {

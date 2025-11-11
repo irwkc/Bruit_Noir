@@ -1,0 +1,4 @@
+-- Add admin security fields
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "totpSecret" TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "totpEnabled" BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "orderNotificationEmail" TEXT;
