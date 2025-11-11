@@ -109,7 +109,7 @@ export default function AdminLoginPage() {
           {!totpState?.requiresTotpSetup && (
             <div>
               <label className="block text-sm mb-1">
-                Код из приложения (если 2FA уже подключена)
+                2FA код
               </label>
               <input
                 type="text"
