@@ -106,6 +106,24 @@ export default function AdminLoginPage() {
             />
           </div>
 
+          {!totpState?.requiresTotpSetup && (
+            <div>
+              <label className="block text-sm mb-1">
+                Код из приложения (если 2FA уже подключена)
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
+                className="w-full px-3 py-2 rounded bg-zinc-800 border border-zinc-700 focus:outline-none tracking-widest text-center"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                autoComplete="one-time-code"
+              />
+            </div>
+          )}
+
           {totpState?.requiresTotpSetup && (
             <div className="space-y-3">
               <div className="rounded-lg bg-zinc-800 border border-zinc-700 p-3 text-sm text-zinc-300">
