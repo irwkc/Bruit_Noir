@@ -15,6 +15,7 @@ interface Product {
   category: string
   sizes: string[]
   colors: string[]
+  available?: boolean
 }
 
 export default function CatalogPage() {
@@ -156,6 +157,7 @@ export default function CatalogPage() {
                   price={product.price}
                   images={(product as any).images || []}
                   category={product.category}
+                  available={product.available}
                 />
               </StaggerItem>
             ))}
@@ -278,6 +280,7 @@ export default function CatalogPage() {
                     price={product.price}
                     images={(product as any).images || []}
                     category={product.category}
+                    available={product.available}
                   />
                 </StaggerItem>
               ))}

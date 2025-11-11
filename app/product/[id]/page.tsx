@@ -18,6 +18,7 @@ interface Product {
   sizes: string[]
   colors: string[]
   stock: number
+  available: boolean
 }
 
 export default function ProductPage() {
@@ -39,9 +40,15 @@ export default function ProductPage() {
     try {
       const res = await fetch(`/api/products/${params.id}`)
       const data = await res.json()
-      setProduct(data)
-      if (data.sizes.length > 0) setSelectedSize(data.sizes[0])
-      if (data.colors.length > 0) setSelectedColor(data.colors[0])
+      const normalizedSizes = Array.isArray(data.sizes) ? data.sizes : []
+      const normalizedColors = Array.isArray(data.colors) ? data.colors : []
+      setProduct({
+        ...data,
+        sizes: normalizedSizes,
+        colors: normalizedColors,
+      })
+      if (normalizedSizes.length > 0) setSelectedSize(normalizedSizes[0])
+      if (normalizedColors.length > 0) setSelectedColor(normalizedColors[0])
     } catch (error) {
       console.error('Error fetching product:', error)
     } finally {
@@ -51,6 +58,9 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (!product || !selectedSize || !selectedColor) return
+
+    const isOutOfStock = !product.available || product.stock === 0
+    if (isOutOfStock) return
 
     addItem({
       productId: product.id,
@@ -83,6 +93,8 @@ export default function ProductPage() {
       </div>
     )
   }
+
+  const isOutOfStock = !product.available || product.stock === 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -200,8 +212,9 @@ export default function ProductPage() {
               </label>
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 border-2 border-gray-300 rounded-md hover:border-gray-400 transition"
+                  onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                  disabled={isOutOfStock}
+                  className="w-10 h-10 border-2 border-gray-300 rounded-md transition disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 hover:border-gray-400"
                 >
                   -
                 </button>
@@ -209,8 +222,9 @@ export default function ProductPage() {
                   {quantity}
                 </span>
                 <button
-                  onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                  className="w-10 h-10 border-2 border-gray-300 rounded-md hover:border-gray-400 transition"
+                  onClick={() => setQuantity((prev) => Math.min(10, prev + 1))}
+                  disabled={isOutOfStock}
+                  className="w-10 h-10 border-2 border-gray-300 rounded-md transition disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 hover:border-gray-400"
                 >
                   +
                 </button>
@@ -220,18 +234,20 @@ export default function ProductPage() {
             {/* Add to Cart */}
             <button
               onClick={handleAddToCart}
-              disabled={!selectedSize || !selectedColor || product.stock === 0}
+              disabled={!selectedSize || !selectedColor || isOutOfStock}
               className="w-full bg-black text-white py-4 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
               <ShoppingCartIcon className="h-6 w-6" />
               <span>
-                {product.stock === 0 ? 'Нет в наличии' : 'Добавить в корзину'}
+                {isOutOfStock ? 'Нет в наличии' : 'Добавить в корзину'}
               </span>
             </button>
 
             {/* Stock Info */}
             <p className="text-sm text-gray-600 mt-4">
-              {product.stock > 0 ? `В наличии: ${product.stock} шт.` : 'Нет в наличии'}
+              {product.available
+                ? `В наличии: ${product.stock} шт.`
+                : 'Этот товар временно недоступен для заказа'}
             </p>
           </div>
         </div>
@@ -362,18 +378,20 @@ export default function ProductPage() {
 
           {/* Stock Info */}
           <p className="text-xs text-gray-600 mb-4">
-            {product.stock > 0 ? `В наличии: ${product.stock} шт.` : 'Нет в наличии'}
+            {product.available
+              ? `В наличии: ${product.stock} шт.`
+              : 'Этот товар временно недоступен для заказа'}
           </p>
 
           {/* Mobile Add to Cart Button */}
           <button
             onClick={handleAddToCart}
-            disabled={!selectedSize || !selectedColor || product.stock === 0}
+            disabled={!selectedSize || !selectedColor || isOutOfStock}
             className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
             <ShoppingCartIcon className="h-5 w-5" />
             <span>
-              {product.stock === 0 ? 'Нет в наличии' : 'Добавить в корзину'}
+              {isOutOfStock ? 'Нет в наличии' : 'Добавить в корзину'}
             </span>
           </button>
         </div>

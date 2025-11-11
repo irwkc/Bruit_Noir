@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 interface Product {
   id: string
@@ -12,6 +13,7 @@ interface Product {
   featured: boolean
   createdAt: string
   images: string[]
+  available: boolean
 }
 
 export default function ProductsPage() {
@@ -114,65 +116,80 @@ export default function ProductsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {products.map((product) => (
-                  <tr key={product.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                      {product.images && product.images.length > 0 ? (
-                        <img
-                          className="h-12 w-12 rounded-lg object-cover mr-4"
-                          src={product.images[0]}
-                          alt={product.name}
-                        />
-                      ) : (
-                        <div className="h-12 w-12 bg-gray-200 rounded-lg mr-4 flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">Нет фото</span>
+                {products.map((product) => {
+                  const isAvailable = product.available !== false
+
+                  return (
+                    <tr key={product.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          {product.images && product.images.length > 0 ? (
+                            <img
+                              className="h-12 w-12 rounded-lg object-cover mr-4"
+                              src={product.images[0]}
+                              alt={product.name}
+                            />
+                          ) : (
+                            <div className="h-12 w-12 bg-gray-200 rounded-lg mr-4 flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">Нет фото</span>
+                            </div>
+                          )}
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                            <div className="text-sm text-gray-500">ID: {product.id.slice(0, 8)}...</div>
+                          </div>
                         </div>
-                      )}
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                          <div className="text-sm text-gray-500">ID: {product.id.slice(0, 8)}...</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {product.category}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {product.price.toLocaleString()} ₽
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {isAvailable ? (
+                          <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                            {product.stock} шт. в наличии
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
+                            Нет в наличии
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {product.featured && (
+                            <span className="inline-flex items-center rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                              На главной
+                            </span>
+                          )}
+                          <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-800">
+                            {isAvailable ? 'Активен' : 'Скрыт из продажи'}
+                          </span>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.category}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.price.toLocaleString()} ₽
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.stock} шт.
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {product.featured ? (
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                          Избранный
-                        </span>
-                      ) : (
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                          Обычный
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Link
-                          href={`/admin/products/${product.id}/edit`}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          Редактировать
-                        </Link>
-                        <button
-                          onClick={() => deleteProduct(product.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Удалить
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/admin/products/${product.id}/edit`}
+                            className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+                          >
+                            <PencilSquareIcon className="h-4 w-4" />
+                            Редактировать
+                          </Link>
+                          <button
+                            onClick={() => deleteProduct(product.id)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                            Удалить
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

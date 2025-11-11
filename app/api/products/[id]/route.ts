@@ -29,9 +29,46 @@ export async function PUT(
   try {
     const body = await request.json()
     const { id } = await params
+
+    const {
+      name,
+      description,
+      price,
+      images = [],
+      category,
+      sizes = [],
+      colors = [],
+      stock = 0,
+      featured = false,
+      available = true,
+    } = body
+
+    const numericPrice = typeof price === 'string' ? parseFloat(price) : Number(price)
+    const numericStock = typeof stock === 'string' ? parseInt(stock, 10) : Number(stock)
+    const normalizedImages = Array.isArray(images)
+      ? images.map((value: unknown) => String(value)).filter(Boolean)
+      : []
+    const normalizedSizes = Array.isArray(sizes)
+      ? sizes.map((value: unknown) => String(value)).filter(Boolean)
+      : []
+    const normalizedColors = Array.isArray(colors)
+      ? colors.map((value: unknown) => String(value)).filter(Boolean)
+      : []
+
     const product = await prisma.product.update({
       where: { id },
-      data: body,
+      data: {
+        name,
+        description,
+        price: Number.isFinite(numericPrice) ? numericPrice : 0,
+        images: normalizedImages,
+        category,
+        sizes: normalizedSizes,
+        colors: normalizedColors,
+        stock: Number.isFinite(numericStock) ? numericStock : 0,
+        featured,
+        available,
+      },
     })
     return NextResponse.json(product)
   } catch (error) {

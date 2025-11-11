@@ -12,6 +12,7 @@ type FeaturedProduct = {
   price: number
   images: unknown
   category: string
+  available?: boolean
 }
 
 export const dynamic = 'force-dynamic'
@@ -118,6 +119,7 @@ export default async function HomePage() {
                     price={product.price}
                     images={((product.images as unknown) as string[]) || []}
                     category={product.category}
+                    available={product.available}
                   />
                 </StaggerItem>
               ))}
@@ -155,6 +157,7 @@ export default async function HomePage() {
                     price={product.price}
                     images={((product.images as unknown) as string[]) || []}
                     category={product.category}
+                    available={product.available}
                   />
                 </StaggerItem>
               ))}

@@ -51,20 +51,72 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json()
 
-    const { 
-      items, 
-      deliveryMethod, 
-      deliveryPointId, 
-      address, 
-      postalCode, 
-      customerName, 
-      customerEmail, 
-      customerPhone, 
-      paymentMethod 
+    const {
+      items,
+      deliveryMethod,
+      deliveryPointId,
+      address,
+      postalCode,
+      customerName,
+      customerEmail,
+      customerPhone,
+      paymentMethod,
     } = body
 
-    // Calculate total
-    const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0)
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Корзина пуста' }, { status: 400 })
+    }
+
+    const productIds = items.map((item: any) => item.productId)
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: {
+        id: true,
+        price: true,
+        stock: true,
+        available: true,
+      },
+    })
+
+    const productMap = new Map(products.map((product) => [product.id, product]))
+
+    const invalidItems = [] as string[]
+    const insufficientItems = [] as string[]
+
+    for (const item of items) {
+      const product = productMap.get(item.productId)
+      if (!product || !product.available) {
+        invalidItems.push(item.productId)
+        continue
+      }
+
+      if (product.stock <= 0 || item.quantity > product.stock) {
+        insufficientItems.push(item.productId)
+      }
+    }
+
+    const uniqueInvalidItems = Array.from(new Set(invalidItems))
+    const uniqueInsufficientItems = Array.from(new Set(insufficientItems))
+
+    if (uniqueInvalidItems.length > 0 || uniqueInsufficientItems.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Некоторые товары недоступны для заказа',
+          invalidItems: uniqueInvalidItems,
+          insufficientItems: uniqueInsufficientItems,
+        },
+        { status: 409 }
+      )
+    }
+
+    // Calculate total from database prices
+    const total = items.reduce((sum: number, item: any) => {
+      const product = productMap.get(item.productId)
+      if (!product) {
+        return sum
+      }
+      return sum + Number(product.price) * Number(item.quantity)
+    }, 0)
 
     // Create order with items
     const order = await prisma.order.create({
@@ -85,7 +137,7 @@ export async function POST(request: NextRequest) {
           create: items.map((item: any) => ({
             productId: item.productId,
             quantity: item.quantity,
-            price: item.price,
+            price: Number(productMap.get(item.productId)?.price ?? item.price ?? 0),
             size: item.size,
             color: item.color,
           })),

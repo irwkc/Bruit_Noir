@@ -17,6 +17,7 @@ export default function NewProductPage() {
     sizes: ['S', 'M', 'L'],
     colors: ['black'],
     featured: false,
+    outOfStock: false,
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,8 +31,9 @@ export default function NewProductPage() {
         body: JSON.stringify({
           ...formData,
           price: parseFloat(formData.price),
-          stock: parseInt(formData.stock),
+          stock: formData.stock ? parseInt(formData.stock, 10) : 0,
           images: formData.images.filter((img: string) => img.trim() !== ''),
+          available: !formData.outOfStock,
         }),
       })
 
@@ -124,8 +126,14 @@ export default function NewProductPage() {
                 min="0"
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black placeholder-gray-500 disabled:bg-gray-100"
+                disabled={formData.outOfStock}
               />
+              {formData.outOfStock && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Количество скрыто, пока товар отмечен как «Нет в наличии».
+                </p>
+              )}
             </div>
           </div>
 
@@ -143,6 +151,22 @@ export default function NewProductPage() {
               <option value="pants">Штаны</option>
               <option value="accessories">Аксессуары</option>
             </select>
+          </div>
+
+          <div className="flex items-start gap-3 rounded-lg border border-gray-200 px-4 py-3 bg-gray-50">
+            <input
+              id="new-out-of-stock"
+              type="checkbox"
+              checked={formData.outOfStock}
+              onChange={(e) => setFormData({ ...formData, outOfStock: e.target.checked })}
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+            />
+            <label htmlFor="new-out-of-stock" className="text-sm text-gray-800">
+              <span className="font-semibold">Нет в наличии</span>
+              <span className="block text-gray-500">
+                Покупатели увидят пометку «Нет в наличии», количество скроется, а добавление в корзину будет недоступно.
+              </span>
+            </label>
           </div>
 
           <div>

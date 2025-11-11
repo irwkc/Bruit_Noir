@@ -7,6 +7,7 @@ interface MobileProductCardProps {
   price: number
   images: string[]
   category: string
+  available?: boolean
 }
 
 export default function MobileProductCard({
@@ -15,7 +16,10 @@ export default function MobileProductCard({
   price,
   images,
   category,
+  available = true,
 }: MobileProductCardProps) {
+  const isAvailable = available !== false
+
   return (
     <Link href={`/product/${id}`} className="block">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -26,7 +30,7 @@ export default function MobileProductCard({
               src={images[0]}
               alt={name}
               fill
-              className="object-cover"
+              className={`object-cover ${isAvailable ? '' : 'opacity-60'}`}
               sizes="(max-width: 768px) 50vw, 33vw"
             />
           ) : (
@@ -41,6 +45,13 @@ export default function MobileProductCard({
               {category}
             </span>
           </div>
+          {!isAvailable && (
+            <div className="absolute top-2 right-2">
+              <span className="rounded-full bg-red-600/90 px-2.5 py-1 text-[10px] font-semibold uppercase text-white">
+                Нет в наличии
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Content */}
@@ -51,6 +62,11 @@ export default function MobileProductCard({
           <p className="text-lg font-bold text-gray-900">
             {price.toLocaleString()} ₽
           </p>
+          {!isAvailable && (
+            <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-red-500">
+              Скоро в продаже
+            </p>
+          )}
         </div>
       </div>
     </Link>

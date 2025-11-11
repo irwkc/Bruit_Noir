@@ -10,10 +10,12 @@ interface ProductCardProps {
   price: number
   images: string[]
   category: string
+  available?: boolean
 }
 
-export default function ProductCard({ id, name, price, images, category }: ProductCardProps) {
+export default function ProductCard({ id, name, price, images, category, available = true }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const isAvailable = available !== false
 
   return (
     <Link href={`/product/${id}`} className="block group">
@@ -30,7 +32,7 @@ export default function ProductCard({ id, name, price, images, category }: Produ
             fill
             className={`object-cover transition-transform duration-700 ease-out ${
               isHovered ? 'scale-110' : 'scale-100'
-            }`}
+            } ${isAvailable ? '' : 'opacity-60'}`}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={false}
           />
@@ -41,6 +43,13 @@ export default function ProductCard({ id, name, price, images, category }: Produ
               {category}
             </span>
           </div>
+          {!isAvailable && (
+            <div className="absolute top-3 right-3">
+              <span className="inline-flex items-center rounded-full bg-red-600/90 px-3 py-1 text-xs font-semibold text-white shadow-lg">
+                Нет в наличии
+              </span>
+            </div>
+          )}
 
           {/* Quick CTA */}
           <div className={`absolute inset-x-3 bottom-3 transition-all ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
@@ -60,6 +69,11 @@ export default function ProductCard({ id, name, price, images, category }: Produ
             {price.toLocaleString('ru-RU')} ₽
           </p>
         </div>
+        {!isAvailable && (
+          <div className="px-3 pb-3 -mt-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-red-600">Скоро в наличии</p>
+          </div>
+        )}
       </div>
     </Link>
   )

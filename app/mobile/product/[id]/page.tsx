@@ -11,6 +11,18 @@ async function getProduct(id: string) {
   try {
     const product = await prisma.product.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        images: true,
+        category: true,
+        sizes: true,
+        colors: true,
+        stock: true,
+        available: true,
+      },
     })
     return product
   } catch (error) {
@@ -76,11 +88,11 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
                 {product.category}
               </span>
               <span className={`px-2 py-1 rounded-full text-sm ${
-                product.stock > 0 
-                  ? 'bg-green-100 text-green-700' 
+                product.available && product.stock > 0
+                  ? 'bg-green-100 text-green-700'
                   : 'bg-red-100 text-red-700'
               }`}>
-                {product.stock > 0 ? 'В наличии' : 'Нет в наличии'}
+                {product.available && product.stock > 0 ? 'В наличии' : 'Нет в наличии'}
               </span>
             </div>
           </div>
@@ -130,14 +142,14 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
           {/* Add to Cart Button */}
           <div className="space-y-3">
             <button
-              disabled={product.stock === 0}
+              disabled={!product.available || product.stock === 0}
               className={`w-full py-4 rounded-lg font-semibold text-lg transition ${
-                product.stock > 0
+                product.available && product.stock > 0
                   ? 'bg-black text-white hover:bg-gray-800'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {product.stock > 0 ? 'Добавить в корзину' : 'Нет в наличии'}
+              {product.available && product.stock > 0 ? 'Добавить в корзину' : 'Нет в наличии'}
             </button>
             
             <button className="w-full py-3 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition">
