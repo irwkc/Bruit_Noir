@@ -57,6 +57,7 @@ struct OrderDetailsView: View {
                 LabeledContent("Обновлен", value: order.updatedAt.formatted(date: .abbreviated, time: .shortened))
             }
         }
+        .listStyle(.insetGrouped)
         .navigationTitle("Заказ #" + order.id.prefix(8))
     }
 }

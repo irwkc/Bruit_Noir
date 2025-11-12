@@ -10,6 +10,13 @@ final class AppViewModel: ObservableObject {
         case authenticated(session: AdminSession)
     }
 
+    enum PasscodeFlow: Equatable {
+        case hidden
+        case setup
+        case confirm
+        case locked
+    }
+
     struct PendingCredentials {
         let email: String
         let password: String
@@ -24,14 +31,24 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var orders: [Order] = []
     @Published private(set) var ordersLoading = false
     @Published private(set) var nextCursor: String?
+    @Published private(set) var products: [Product] = []
+    @Published private(set) var productsLoading = false
+    @Published private(set) var productSaving = false
+    @Published private(set) var deletingProductIDs: Set<String> = []
     @Published var notificationEmail: String = ""
     @Published var notificationMessage: String?
     @Published var showError: Bool = false
     @Published var errorMessage: String?
+    @Published var passcodeFlow: PasscodeFlow = .hidden
+    @Published var passcodeError: String?
 
     private let authService = AuthService.shared
     private let ordersService = OrdersService.shared
     private let settingsService = SettingsService.shared
+    private let productsService = ProductsService.shared
+    private let keychain = KeychainStorage.shared
+    private let passcodeStorageKey = "admin.passcode.code"
+    private var pendingPasscode: String?
 
     func bootstrap() {
         Task {
@@ -46,7 +63,9 @@ final class AppViewModel: ObservableObject {
                 let (refreshedUser, refreshedTokens) = try await authService.refresh(tokens: tokens)
                 authState = .authenticated(session: AdminSession(user: refreshedUser, tokens: refreshedTokens))
                 await APIClient.shared.updateTokens(refreshedTokens)
+                preparePasscodeFlow()
                 await fetchOrders(reset: true)
+                await fetchProducts(force: true)
                 await fetchNotificationEmail()
             } catch {
                 await authService.clearSession()
@@ -65,7 +84,9 @@ final class AppViewModel: ObservableObject {
                 case let .success(user, tokens):
                     authState = .authenticated(session: AdminSession(user: user, tokens: tokens))
                     await APIClient.shared.updateTokens(tokens)
+                    preparePasscodeFlow()
                     await fetchOrders(reset: true)
+                    await fetchProducts(force: true)
                     await fetchNotificationEmail()
                 case let .requiresTotp(info):
                     authState = .needTotp(info, PendingCredentials(email: email, password: password))
@@ -85,8 +106,12 @@ final class AppViewModel: ObservableObject {
         Task { await authService.clearSession() }
         orders = []
         nextCursor = nil
+        products = []
         notificationEmail = ""
         authState = .needCredentials
+        passcodeFlow = .hidden
+        passcodeError = nil
+        pendingPasscode = nil
     }
 
     func fetchOrders(reset: Bool) async {
@@ -108,6 +133,79 @@ final class AppViewModel: ObservableObject {
             await handleUnauthorized()
         } catch {
             handle(error)
+        }
+    }
+
+    func fetchProducts(force: Bool = false) async {
+        guard case .authenticated = authState else { return }
+        if productsLoading { return }
+        if !force && !products.isEmpty { return }
+        productsLoading = true
+        defer { productsLoading = false }
+
+        do {
+            products = try await productsService.fetchProducts()
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+        } catch {
+            handle(error)
+        }
+    }
+
+    func deleteProduct(_ product: Product) {
+        guard case .authenticated = authState else { return }
+        Task {
+            deletingProductIDs.insert(product.id)
+            defer { deletingProductIDs.remove(product.id) }
+            do {
+                try await productsService.deleteProduct(id: product.id)
+                products.removeAll { $0.id == product.id }
+            } catch APIClientError.unauthorized {
+                await handleUnauthorized()
+            } catch {
+                handle(error)
+            }
+        }
+    }
+
+    func saveProduct(draft: ProductDraft, productID: String?) async -> Product? {
+        guard case .authenticated = authState else { return nil }
+        if productSaving { return nil }
+        productSaving = true
+        defer { productSaving = false }
+
+        do {
+            let product: Product
+            if let productID {
+                product = try await productsService.updateProduct(id: productID, draft: draft)
+                if let index = products.firstIndex(where: { $0.id == productID }) {
+                    products[index] = product
+                } else {
+                    products.insert(product, at: 0)
+                }
+            } else {
+                product = try await productsService.createProduct(draft)
+                products.insert(product, at: 0)
+            }
+            return product
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+            return nil
+        } catch {
+            handle(error)
+            return nil
+        }
+    }
+
+    func uploadImage(data: Data, fileName: String, mimeType: String) async -> String? {
+        do {
+            return try await productsService.uploadImage(data: data, fileName: fileName, mimeType: mimeType)
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+            return nil
+        } catch {
+            handle(error)
+            return nil
         }
     }
 
@@ -145,11 +243,83 @@ final class AppViewModel: ObservableObject {
         await authService.clearSession()
         await MainActor.run {
             authState = .needCredentials
+            passcodeFlow = .hidden
         }
     }
 
     private func handle(_ error: Error) {
         errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         showError = true
+    }
+
+    func preparePasscodeFlow() {
+        guard case .authenticated = authState else {
+            passcodeFlow = .hidden
+            return
+        }
+
+        passcodeError = nil
+        pendingPasscode = nil
+        if keychain.string(for: passcodeStorageKey) == nil {
+            passcodeFlow = .setup
+        } else {
+            passcodeFlow = .locked
+        }
+    }
+
+    func processPasscodeInput(_ code: String) {
+        guard code.count == 4 else { return }
+        passcodeError = nil
+
+        switch passcodeFlow {
+        case .setup:
+            pendingPasscode = code
+            passcodeFlow = .confirm
+        case .confirm:
+            guard let pending = pendingPasscode else {
+                restartPasscodeSetup()
+                return
+            }
+            if constantTimeCompare(pending, code) {
+                do {
+                    try keychain.set(code, for: passcodeStorageKey)
+                    pendingPasscode = nil
+                    passcodeFlow = .hidden
+                } catch {
+                    passcodeError = "Не удалось сохранить код"
+                    passcodeFlow = .setup
+                }
+            } else {
+                passcodeError = "Коды не совпадают"
+                restartPasscodeSetup()
+            }
+        case .locked:
+            guard let stored = keychain.string(for: passcodeStorageKey) else {
+                restartPasscodeSetup()
+                return
+            }
+            if constantTimeCompare(stored, code) {
+                passcodeFlow = .hidden
+                passcodeError = nil
+            } else {
+                passcodeError = "Неверный код"
+            }
+        case .hidden:
+            break
+        }
+    }
+
+    func restartPasscodeSetup() {
+        pendingPasscode = nil
+        passcodeFlow = .setup
+    }
+
+    private func constantTimeCompare(_ lhs: String, _ rhs: String) -> Bool {
+        guard lhs.count == rhs.count else { return false }
+        var result: UInt8 = 0
+        for (a, b) in zip(lhs.utf8, rhs.utf8) {
+            result |= a ^ b
+        }
+        return result == 0
     }
 }

@@ -85,13 +85,100 @@ extension OrderItem {
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
-struct Product: Codable, Identifiable {
+struct Product: Codable, Identifiable, Hashable {
     let id: String
-    let name: String
-    let description: String?
-    let price: Double
-    let images: [String]?
-    let category: String
+    var name: String
+    var description: String
+    var price: Double
+    var images: [String]
+    var category: String
+    var sizes: [String]
+    var colors: [String]
+    var stock: Int
+    var featured: Bool
+    var available: Bool
+    var createdAt: Date?
+    var updatedAt: Date?
+
+    var formattedPrice: String {
+        Product.currencyFormatter.string(from: NSNumber(value: price)) ?? "—"
+    }
+
+    static let currencyFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "RUB"
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter
+    }()
+}
+
+struct ProductsListResponse: Decodable {
+    struct Pagination: Decodable {
+        let page: Int?
+        let limit: Int?
+        let total: Int?
+        let totalPages: Int?
+    }
+
+    let data: [Product]
+    let pagination: Pagination?
+
+    init(from decoder: Decoder) throws {
+        if let singleValueContainer = try? decoder.singleValueContainer(),
+           let array = try? singleValueContainer.decode([Product].self) {
+            data = array
+            pagination = nil
+        } else {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            data = try container.decode([Product].self, forKey: .data)
+            pagination = try container.decodeIfPresent(Pagination.self, forKey: .pagination)
+        }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case data
+        case pagination
+    }
+}
+
+struct ProductDraft: Encodable {
+    var name: String
+    var description: String
+    var price: Double
+    var images: [String]
+    var category: String
+    var sizes: [String]
+    var colors: [String]
+    var stock: Int
+    var featured: Bool
+    var available: Bool
+}
+
+struct UploadResponse: Decodable {
+    let url: String?
+}
+
+extension Product {
+    static func resolveImageURL(from value: String) -> URL? {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        if let url = URL(string: trimmed), url.scheme != nil {
+            return url
+        }
+
+        let normalized = trimmed.hasPrefix("/") ? String(trimmed.dropFirst()) : trimmed
+        return URL(string: "https://bruitnoir.ru/\(normalized)")
+    }
+
+    var imageURLs: [URL] {
+        images.compactMap { Product.resolveImageURL(from: $0) }
+    }
+
+    var primaryImageURL: URL? {
+        imageURLs.first
+    }
 }
 
 struct DeliveryPoint: Codable, Identifiable {

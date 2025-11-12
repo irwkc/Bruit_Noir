@@ -35,29 +35,29 @@ struct OrdersListView: View {
                     .listStyle(.insetGrouped)
                 }
             }
-            .navigationTitle("Заказы")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        Task { await appModel.fetchOrders(reset: true) }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                    .disabled(appModel.ordersLoading)
+        .navigationTitle("Заказы")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    Task { await appModel.fetchOrders(reset: true) }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
                 }
-            }
-            .task {
-                if appModel.orders.isEmpty {
-                    await appModel.fetchOrders(reset: true)
-                }
-            }
-            .refreshable {
-                await appModel.fetchOrders(reset: true)
-            }
-            .navigationDestination(for: Order.self) { order in
-                OrderDetailsView(order: order)
+                .disabled(appModel.ordersLoading)
             }
         }
+        .task {
+            if appModel.orders.isEmpty {
+                await appModel.fetchOrders(reset: true)
+            }
+        }
+        .refreshable {
+            await appModel.fetchOrders(reset: true)
+        }
+        .navigationDestination(for: Order.self) { order in
+            OrderDetailsView(order: order)
+        }
+    }
     }
 }
 

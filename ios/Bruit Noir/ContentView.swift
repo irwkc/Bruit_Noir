@@ -26,6 +26,11 @@ struct ContentView: View {
                 TotpVerificationView(info: info, credentials: credentials)
             case .authenticated:
                 MainTabView()
+                    .overlay {
+                        PasscodeOverlayView()
+                            .environmentObject(appModel)
+                            .ignoresSafeArea()
+                    }
             }
         }
         .animation(.easeInOut(duration: 0.25), value: appModel.authStateDescription)
