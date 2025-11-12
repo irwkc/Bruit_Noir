@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru">
-      <body className={`${inter.className} flex flex-col min-h-screen bg-gray-50`}>
+    <html lang="ru" className="bg-black">
+      <body className={`${inter.className} flex flex-col min-h-dvh bg-black`}>
         <Providers>
           {/* Desktop version */}
           <div className="hidden md:block">
