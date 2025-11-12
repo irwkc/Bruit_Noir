@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function MobileFooter() {
   return (
-    <footer className="bg-black text-white mt-auto md:hidden">
+    <footer className="bg-black text-white md:hidden">
       <div className="px-4 py-8">
         {/* Brand */}
         <div className="text-center mb-6">
