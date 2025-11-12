@@ -11,9 +11,12 @@ export const metadata: Metadata = {
   title: 'Bruit Noir - Современный бренд одежды',
   description: 'Стильная и качественная одежда для настоящих ценителей моды',
   icons: {
-    icon: '/favicon.png',
-    shortcut: '/favicon.png',
-    apple: '/favicon.png',
+    icon: [
+      { url: '/favicon.png?v=2', type: 'image/png' },
+      { url: '/icon.png?v=2', type: 'image/png', sizes: 'any' },
+    ],
+    shortcut: ['/favicon.png?v=2'],
+    apple: [{ url: '/apple-touch-icon.png?v=2', sizes: '180x180', type: 'image/png' }],
   },
 }
 
