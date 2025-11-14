@@ -13,16 +13,16 @@ export default function Header() {
   return (
     <header className="bg-black text-white sticky top-0 z-50">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border-b border-transparent">
-        <div className="flex min-h-[120px] items-center justify-between py-4">
+        <div className="flex min-h-[60px] items-center justify-between py-2">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/Frame-337.png"
+                src="/logo_header.jpeg"
                 alt="Bruit Noir"
-                width={600}
-                height={132}
-                className="h-[120px] w-auto"
+                width={300}
+                height={66}
+                className="h-[60px] w-auto"
                 priority
               />
             </Link>

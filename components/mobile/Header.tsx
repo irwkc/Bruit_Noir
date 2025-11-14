@@ -13,15 +13,15 @@ export default function MobileHeader() {
   return (
     <header className="bg-black text-white sticky top-0 z-50 md:hidden">
       <nav className="px-4 py-3">
-        <div className="flex items-center justify-between min-h-[72px]">
+        <div className="flex items-center justify-between min-h-[36px]">
           {/* Logo - smaller for mobile */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/Frame-337.png"
+              src="/logo_header.jpeg"
               alt="Bruit Noir"
-              width={360}
-              height={78}
-              className="h-[72px] w-auto"
+              width={180}
+              height={39}
+              className="h-[36px] w-auto"
               priority
             />
           </Link>
