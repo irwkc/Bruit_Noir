@@ -18,7 +18,7 @@ export default function Header() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/logo.png"
+                src="/Frame-337.png"
                 alt="Bruit Noir"
                 width={200}
                 height={44}

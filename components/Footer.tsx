@@ -166,10 +166,10 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Bruit Noir. Все права защищены.
           </p>
           <p className="text-center text-xs text-gray-500 mt-2">
-            ИНН: 623410944590
+            ИНН: 623400937804
           </p>
           <p className="text-center text-xs text-gray-500 mt-1">
-            СЗ Сергиевский Егор Андреевич
+            ИП Сергиевская Екатерина Петровна
           </p>
         </div>
       </div>

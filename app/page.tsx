@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import ProductCard from '@/components/ProductCard'
 import MobileProductCard from '@/components/mobile/ProductCard'
@@ -42,9 +43,16 @@ export default async function HomePage() {
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="max-w-2xl">
             <FadeIn delay={0.2}>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                BRUIT NOIR
-              </h1>
+              <div className="mb-6">
+                <Image
+                  src="/logo.png"
+                  alt="Bruit Noir"
+                  width={400}
+                  height={88}
+                  className="h-16 md:h-20 w-auto"
+                  priority
+                />
+              </div>
             </FadeIn>
             <FadeIn delay={0.4}>
               <p className="text-xl md:text-2xl mb-8 text-gray-200">
@@ -77,9 +85,16 @@ export default async function HomePage() {
         <div className="relative z-10 px-4 py-16 h-full flex flex-col justify-center">
           <div className="text-center">
             <FadeIn delay={0.2}>
-              <h1 className="text-4xl font-bold mb-4 leading-tight">
-                BRUIT NOIR
-              </h1>
+              <div className="mb-4 flex justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="Bruit Noir"
+                  width={300}
+                  height={66}
+                  className="h-12 w-auto"
+                  priority
+                />
+              </div>
             </FadeIn>
             <FadeIn delay={0.4}>
               <p className="text-lg mb-8 text-gray-200 px-4">

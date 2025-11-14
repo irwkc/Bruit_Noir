@@ -17,7 +17,7 @@ export default function MobileHeader() {
           {/* Logo - smaller for mobile */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo.png"
+              src="/Frame-337.png"
               alt="Bruit Noir"
               width={120}
               height={26}
