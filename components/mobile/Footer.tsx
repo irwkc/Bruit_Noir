@@ -56,6 +56,12 @@ export default function MobileFooter() {
               >
                 +7 (920) 634-48-46
               </a>
+              <Link 
+                href="/contact" 
+                className="block hover:text-white transition"
+              >
+                Обратная связь
+              </Link>
             </div>
           </div>
         </div>
