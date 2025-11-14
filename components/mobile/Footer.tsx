@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function MobileFooter() {
   return (
@@ -6,7 +7,15 @@ export default function MobileFooter() {
       <div className="px-4 py-8">
         {/* Brand */}
         <div className="text-center mb-6">
-          <h3 className="text-xl font-bold mb-2">BRUIT NOIR</h3>
+          <div className="mb-2 flex justify-center">
+            <Image
+              src="/logo.png"
+              alt="Bruit Noir"
+              width={150}
+              height={33}
+              className="h-6 w-auto"
+            />
+          </div>
           <p className="text-gray-400 text-sm">
             Современный бренд одежды
           </p>

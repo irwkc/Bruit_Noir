@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Footer() {
   return (
@@ -8,7 +9,15 @@ export default function Footer() {
         <div className="hidden md:grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1">
-            <h3 className="text-2xl font-bold mb-4">BRUIT NOIR</h3>
+            <div className="mb-4">
+              <Image
+                src="/logo.png"
+                alt="Bruit Noir"
+                width={200}
+                height={44}
+                className="h-8 w-auto"
+              />
+            </div>
             <p className="text-gray-400 text-sm">
               Современный бренд одежды для тех, кто ценит стиль и качество
             </p>
@@ -84,8 +93,16 @@ export default function Footer() {
         {/* Mobile: Brand on top, then 3 columns in one row */}
         <div className="md:hidden">
           {/* Brand */}
-          <div className="mb-6">
-            <h3 className="text-xl font-bold mb-3">BRUIT NOIR</h3>
+          <div className="mb-6 text-center">
+            <div className="mb-3 flex justify-center">
+              <Image
+                src="/logo.png"
+                alt="Bruit Noir"
+                width={150}
+                height={33}
+                className="h-6 w-auto"
+              />
+            </div>
             <p className="text-gray-400 text-xs">
               Современный бренд одежды для тех, кто ценит стиль и качество
             </p>
