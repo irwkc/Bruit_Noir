@@ -38,10 +38,10 @@ export default function MobileContactPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                 <a 
-                  href="mailto:bruitnoir@mail.ru" 
+                  href="mailto:bruitnoirco@gmail.com" 
                   className="text-gray-600 hover:text-black transition"
                 >
-                  bruitnoir@mail.ru
+                  bruitnoirco@gmail.com
                 </a>
               </div>
             </div>

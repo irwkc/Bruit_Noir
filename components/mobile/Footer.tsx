@@ -45,10 +45,10 @@ export default function MobileFooter() {
             <h4 className="font-semibold mb-3 text-sm">Контакты</h4>
             <div className="space-y-2 text-sm text-gray-400">
               <a 
-                href="mailto:bruitnoir@mail.ru" 
+                href="mailto:bruitnoirco@gmail.com" 
                 className="block hover:text-white transition"
               >
-                bruitnoir@mail.ru
+                bruitnoirco@gmail.com
               </a>
               <a 
                 href="tel:+79206344846" 

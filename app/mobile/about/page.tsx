@@ -78,10 +78,10 @@ export default function MobileAboutPage() {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Email</p>
                 <a 
-                  href="mailto:bruitnoir@mail.ru" 
+                  href="mailto:bruitnoirco@gmail.com" 
                   className="text-black font-medium hover:underline"
                 >
-                  bruitnoir@mail.ru
+                  bruitnoirco@gmail.com
                 </a>
               </div>
               <div>

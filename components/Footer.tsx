@@ -72,8 +72,8 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Контакты</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="mailto:bruitnoir@mail.ru" className="hover:text-white transition">
-                  bruitnoir@mail.ru
+                <a href="mailto:bruitnoirco@gmail.com" className="hover:text-white transition">
+                  bruitnoirco@gmail.com
                 </a>
               </li>
               <li>
@@ -159,7 +159,7 @@ export default function Footer() {
               <h4 className="font-semibold mb-2 text-xs">Контакты</h4>
               <ul className="space-y-1.5 text-[10px] text-gray-400">
                 <li>
-                  <a href="mailto:bruitnoir@mail.ru" className="hover:text-white transition break-all leading-tight">
+                  <a href="mailto:bruitnoirco@gmail.com" className="hover:text-white transition break-all leading-tight">
                     bruitnoir@<br/>mail.ru
                   </a>
                 </li>

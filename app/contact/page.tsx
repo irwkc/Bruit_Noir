@@ -81,8 +81,8 @@ export default function ContactPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold mb-2">Email</h3>
-                <a href="mailto:bruitnoir@mail.ru" className="text-black hover:text-gray-600 transition">
-                  bruitnoir@mail.ru
+                <a href="mailto:bruitnoirco@gmail.com" className="text-black hover:text-gray-600 transition">
+                  bruitnoirco@gmail.com
                 </a>
               </div>
 
@@ -190,8 +190,8 @@ export default function ContactPage() {
             <div className="space-y-3">
               <div>
                 <h3 className="text-sm font-semibold mb-1 text-gray-700">Email</h3>
-                <a href="mailto:bruitnoir@mail.ru" className="text-sm text-black hover:text-gray-600 transition">
-                  bruitnoir@mail.ru
+                <a href="mailto:bruitnoirco@gmail.com" className="text-sm text-black hover:text-gray-600 transition">
+                  bruitnoirco@gmail.com
                 </a>
               </div>
 
