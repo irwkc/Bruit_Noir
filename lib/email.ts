@@ -115,6 +115,109 @@ export function generateVerificationCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
+export async function sendContactFormEmail(data: {
+  name: string
+  email: string
+  message: string
+}) {
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Новое сообщение с формы обратной связи - Bruit Noir</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #000000; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+              <!-- Header -->
+              <tr>
+                <td style="padding: 40px 40px 30px; text-align: center; background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);">
+                  <h1 style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">
+                    BRUIT NOIR
+                  </h1>
+                  <p style="margin: 10px 0 0; font-size: 16px; color: #cccccc;">
+                    Новое сообщение с формы обратной связи
+                  </p>
+                </td>
+              </tr>
+              
+              <!-- Content -->
+              <tr>
+                <td style="padding: 40px; background-color: #000000;">
+                  <div style="margin-bottom: 30px;">
+                    <p style="margin: 0 0 10px; font-size: 14px; color: #999999;">Имя:</p>
+                    <p style="margin: 0; font-size: 18px; color: #ffffff; font-weight: 600;">${data.name}</p>
+                  </div>
+                  
+                  <div style="margin-bottom: 30px;">
+                    <p style="margin: 0 0 10px; font-size: 14px; color: #999999;">Email:</p>
+                    <p style="margin: 0; font-size: 18px; color: #ffffff; font-weight: 600;">
+                      <a href="mailto:${data.email}" style="color: #ffffff; text-decoration: none;">${data.email}</a>
+                    </p>
+                  </div>
+                  
+                  <div style="margin-bottom: 30px;">
+                    <p style="margin: 0 0 10px; font-size: 14px; color: #999999;">Сообщение:</p>
+                    <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; border-left: 3px solid #ffffff;">
+                      <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #cccccc; white-space: pre-wrap;">${data.message}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              
+              <!-- Footer -->
+              <tr>
+                <td style="padding: 30px 40px; background-color: #0a0a0a; border-top: 1px solid #1a1a1a;">
+                  <p style="margin: 0 0 10px; font-size: 12px; color: #666666; text-align: center;">
+                    © ${new Date().getFullYear()} Bruit Noir. Все права защищены.
+                  </p>
+                  <p style="margin: 0; font-size: 12px; color: #666666; text-align: center;">
+                    Это автоматическое уведомление с сайта Bruit Noir
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  const textContent = `
+Новое сообщение с формы обратной связи - Bruit Noir
+
+Имя: ${data.name}
+Email: ${data.email}
+
+Сообщение:
+${data.message}
+
+---
+© ${new Date().getFullYear()} Bruit Noir
+Это автоматическое уведомление с сайта Bruit Noir
+  `
+
+  try {
+    await transporter.sendMail({
+      from: '"Bruit Noir" <bruitnoir_info@mail.ru>',
+      to: 'bruitnoirco@gmail.com',
+      replyTo: data.email,
+      subject: `Новое сообщение с формы обратной связи от ${data.name}`,
+      text: textContent,
+      html: htmlContent,
+    })
+    return { success: true }
+  } catch (error) {
+    console.error('Error sending contact form email:', error)
+    return { success: false, error }
+  }
+}
+
 export async function sendNewOrderNotification(to: string, order: {
   id: string
   total: number

@@ -1,4 +1,73 @@
+'use client'
+
+import { useState } from 'react'
+
 export default function ContactPage() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setSuccess(false)
+
+    // Валидация на клиенте
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setError('Все поля обязательны для заполнения')
+      return
+    }
+
+    if (name.trim().length < 2) {
+      setError('Имя должно содержать минимум 2 символа')
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Некорректный email адрес')
+      return
+    }
+
+    if (message.trim().length < 10) {
+      setError('Сообщение должно содержать минимум 10 символов')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Ошибка при отправке сообщения')
+      } else {
+        setSuccess(true)
+        setName('')
+        setEmail('')
+        setMessage('')
+        // Скрыть сообщение об успехе через 5 секунд
+        setTimeout(() => setSuccess(false), 5000)
+      }
+    } catch (error) {
+      setError('Произошла ошибка при отправке сообщения. Попробуйте позже.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Desktop Version */}
@@ -38,14 +107,30 @@ export default function ContactPage() {
           <div className="bg-white rounded-lg p-8">
             <h2 className="text-2xl font-bold mb-6">Напишите нам</h2>
             
-            <form className="space-y-4">
+            {success && (
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 text-sm">Сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время.</p>
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Имя
                 </label>
                 <input
                   type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  required
                 />
               </div>
 
@@ -55,7 +140,11 @@ export default function ContactPage() {
                 </label>
                 <input
                   type="email"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  required
                 />
               </div>
 
@@ -65,15 +154,20 @@ export default function ContactPage() {
                 </label>
                 <textarea
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  required
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
+                disabled={loading}
+                className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Отправить
+                {loading ? 'Отправка...' : 'Отправить'}
               </button>
             </form>
           </div>
@@ -123,14 +217,30 @@ export default function ContactPage() {
           <div className="bg-white rounded-lg p-4">
             <h2 className="text-lg font-bold mb-4">Напишите нам</h2>
             
-            <form className="space-y-3">
+            {success && (
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 text-xs">Сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время.</p>
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-xs">{error}</p>
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Имя
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  required
                 />
               </div>
 
@@ -140,7 +250,11 @@ export default function ContactPage() {
                 </label>
                 <input
                   type="email"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  required
                 />
               </div>
 
@@ -150,15 +264,20 @@ export default function ContactPage() {
                 </label>
                 <textarea
                   rows={4}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  required
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition"
+                disabled={loading}
+                className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Отправить
+                {loading ? 'Отправка...' : 'Отправить'}
               </button>
             </form>
           </div>
@@ -167,4 +286,3 @@ export default function ContactPage() {
     </div>
   )
 }
-
