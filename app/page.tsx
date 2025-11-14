@@ -47,9 +47,9 @@ export default async function HomePage() {
                 <Image
                   src="/logo.png"
                   alt="Bruit Noir"
-                  width={400}
-                  height={88}
-                  className="h-16 md:h-20 w-auto"
+                  width={600}
+                  height={132}
+                  className="h-32 md:h-40 w-auto"
                   priority
                 />
               </div>
@@ -89,9 +89,9 @@ export default async function HomePage() {
                 <Image
                   src="/logo.png"
                   alt="Bruit Noir"
-                  width={300}
-                  height={66}
-                  className="h-12 w-auto"
+                  width={450}
+                  height={99}
+                  className="h-24 w-auto"
                   priority
                 />
               </div>
