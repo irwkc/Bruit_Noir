@@ -21,26 +21,11 @@ export default function MobileFooter() {
           </p>
         </div>
 
-        {/* Links - compact grid */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* Links */}
+        <div className="mb-6">
           <div>
-            <h4 className="font-semibold mb-3 text-sm">Магазин</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <Link href="/catalog" className="hover:text-white transition">
-                  Каталог
-                </Link>
-              </li>
-              <li>
-                <Link href="/catalog?category=new" className="hover:text-white transition">
-                  Новинки
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-3 text-sm">Информация</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h4 className="font-semibold mb-3 text-sm text-center">Информация</h4>
+            <ul className="space-y-2 text-sm text-gray-400 text-center">
               <li>
                 <Link href="/about" className="hover:text-white transition">
                   О нас
