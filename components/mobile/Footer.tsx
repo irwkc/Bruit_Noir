@@ -21,11 +21,12 @@ export default function MobileFooter() {
           </p>
         </div>
 
-        {/* Links */}
-        <div className="mb-6">
+        {/* Links and Contact - side by side */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          {/* Information */}
           <div>
-            <h4 className="font-semibold mb-3 text-sm text-center">Информация</h4>
-            <ul className="space-y-2 text-sm text-gray-400 text-center">
+            <h4 className="font-semibold mb-3 text-sm">Информация</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <Link href="/about" className="hover:text-white transition">
                   О нас
@@ -38,24 +39,24 @@ export default function MobileFooter() {
               </li>
             </ul>
           </div>
-        </div>
 
-        {/* Contact - prominent for mobile */}
-        <div className="text-center mb-6">
-          <h4 className="font-semibold mb-3 text-sm">Контакты</h4>
-          <div className="space-y-2">
-            <a 
-              href="mailto:bruitnoir@mail.ru" 
-              className="block text-sm text-gray-400 hover:text-white transition"
-            >
-              bruitnoir@mail.ru
-            </a>
-            <a 
-              href="tel:+79206344846" 
-              className="block text-sm text-gray-400 hover:text-white transition"
-            >
-              +7 (920) 634-48-46
-            </a>
+          {/* Contact */}
+          <div>
+            <h4 className="font-semibold mb-3 text-sm">Контакты</h4>
+            <div className="space-y-2 text-sm text-gray-400">
+              <a 
+                href="mailto:bruitnoir@mail.ru" 
+                className="block hover:text-white transition"
+              >
+                bruitnoir@mail.ru
+              </a>
+              <a 
+                href="tel:+79206344846" 
+                className="block hover:text-white transition"
+              >
+                +7 (920) 634-48-46
+              </a>
+            </div>
           </div>
         </div>
 
