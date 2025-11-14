@@ -24,7 +24,7 @@ export default function MobileFooter() {
         {/* Links and Contact - side by side */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           {/* Information */}
-          <div>
+          <div className="text-center">
             <h4 className="font-semibold mb-3 text-sm">Информация</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
@@ -41,7 +41,7 @@ export default function MobileFooter() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="text-center">
             <h4 className="font-semibold mb-3 text-sm">Контакты</h4>
             <div className="space-y-2 text-sm text-gray-400">
               <a 
