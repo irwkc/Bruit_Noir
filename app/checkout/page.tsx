@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
-import dynamicImport from 'next/dynamic'
 import CityAutocomplete from '@/components/CityAutocomplete'
+import dynamicImport from 'next/dynamic'
 
 // Dynamically import SDEK widget to avoid SSR issues
-const SdekWidget = dynamicImport(() => import('@/components/SdekWidget'), { ssr: false })
+const CdekWidget = dynamicImport(() => import('@/components/CdekWidget'), { ssr: false })
 
 export const dynamic = 'force-dynamic'
 
@@ -294,10 +294,17 @@ export default function CheckoutPage() {
                         
                         {/* SDEK Widget */}
                         <div className="w-full">
-                          <SdekWidget
+                          <CdekWidget
                             city={selectedCity}
                             onPointSelect={(point) => {
-                              setSelectedDeliveryPoint(point.id)
+                              const chosenId =
+                                point?.code ||
+                                point?.id ||
+                                point?.uuid ||
+                                point?.pvz_code ||
+                                point?.number ||
+                                ''
+                              setSelectedDeliveryPoint(chosenId)
                               console.log('Selected SDEK point:', point)
                             }}
                           />
@@ -574,10 +581,17 @@ export default function CheckoutPage() {
                     
                     {/* SDEK Widget */}
                     <div className="w-full">
-                      <SdekWidget
+                      <CdekWidget
                         city={selectedCity}
                         onPointSelect={(point) => {
-                          setSelectedDeliveryPoint(point.id)
+                          const chosenId =
+                            point?.code ||
+                            point?.id ||
+                            point?.uuid ||
+                            point?.pvz_code ||
+                            point?.number ||
+                            ''
+                          setSelectedDeliveryPoint(chosenId)
                           console.log('Selected SDEK point:', point)
                         }}
                       />
