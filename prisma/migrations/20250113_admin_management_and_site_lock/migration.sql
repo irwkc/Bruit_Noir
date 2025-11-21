@@ -12,5 +12,5 @@ CREATE TABLE "SiteSettings" (
 );
 
 -- Set existing admin as super admin
-UPDATE "User" SET "isSuperAdmin" = true WHERE "role" = 'admin' LIMIT 1;
+UPDATE "User" SET "isSuperAdmin" = true WHERE "id" = (SELECT "id" FROM "User" WHERE "role" = 'admin' ORDER BY "createdAt" ASC LIMIT 1);
 
