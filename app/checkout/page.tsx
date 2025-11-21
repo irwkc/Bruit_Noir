@@ -119,21 +119,16 @@ export default function CheckoutPage() {
             // Яндекс.Карты могут быть загружены, но не готовы
             // Используем ymaps.ready() если доступен
             const ymaps = (window as any).ymaps
-            if (ymaps && ymaps.ready) {
+            if (ymaps && ymaps.ready && typeof (ymaps.ready as any) === 'function') {
               try {
-                // Используем as any для обхода проблем с типизацией
-                const readyFn = ymaps.ready as any
-                if (typeof readyFn === 'function') {
-                  readyFn(() => {
-                    (window as any).__ymaps_loaded = true
-                    (window as any).__ymaps_ready = true
-                    window.dispatchEvent(new Event('ymaps-ready'))
-                  })
-                } else {
-                  throw new Error('ready is not a function')
-                }
+                // Вызываем напрямую через as any
+                ;(ymaps.ready as any)(() => {
+                  (window as any).__ymaps_loaded = true
+                  (window as any).__ymaps_ready = true
+                  window.dispatchEvent(new Event('ymaps-ready'))
+                })
               } catch {
-                // Если ymaps.ready недоступен или не функция, просто помечаем как загруженные
+                // Если вызов не удался, просто помечаем как загруженные
                 setTimeout(() => {
                   (window as any).__ymaps_loaded = true
                   (window as any).__ymaps_ready = true
@@ -141,7 +136,7 @@ export default function CheckoutPage() {
                 }, 1000)
               }
             } else {
-              // Если ymaps вообще нет, ждём
+              // Если ymaps.ready недоступен, просто помечаем как загруженные
               setTimeout(() => {
                 (window as any).__ymaps_loaded = true
                 (window as any).__ymaps_ready = true
