@@ -69,8 +69,8 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
         return false
       }
 
-      // Проверяем, что Яндекс.Карты загружены
-      if (!(window as any).ymaps || !(window as any).__ymaps_loaded) {
+      // Проверяем, что Яндекс.Карты загружены и готовы
+      if (!(window as any).ymaps || !(window as any).__ymaps_ready) {
         return false
       }
 
@@ -86,6 +86,14 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       destroyWidget()
 
       try {
+        console.log('Initializing CDEK widget with:', {
+          from: DEFAULT_ORIGIN_CITY,
+          defaultLocation: city,
+          root: containerId,
+          apiKey: YANDEX_API_KEY ? 'present' : 'missing',
+          servicePath: SERVICE_PATH,
+        })
+        
         widgetInstanceRef.current = new window.CDEKWidget({
           from: DEFAULT_ORIGIN_CITY,
           defaultLocation: city,
@@ -93,9 +101,11 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           apiKey: YANDEX_API_KEY,
           servicePath: SERVICE_PATH,
           onReady: () => {
+            console.log('CDEK widget initialized successfully')
             isInitializingRef.current = false
           },
           onChoose: (point: any) => {
+            console.log('CDEK point selected:', point)
             onPointSelect?.(point)
           },
           onError: (error: any) => {
@@ -103,6 +113,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
             isInitializingRef.current = false
           },
         })
+        console.log('CDEK widget instance created')
         return true
       } catch (error) {
         console.error('Failed to initialize CDEK widget:', error)
@@ -129,19 +140,23 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       
       // Если виджет не загружен, ждём события
       if (!window.CDEKWidget || !(window as any).__cdek_widget_loaded) {
+        console.log('Waiting for CDEK widget to load...')
         readyHandler = () => {
+          console.log('CDEK widget loaded event received')
           // Даём время на загрузку Яндекс.Карт
           setTimeout(() => {
             if (!tryInit() && !checkInterval) {
+              console.log('Starting periodic check for widget initialization...')
               // Если не получилось, проверяем периодически
               checkInterval = setInterval(() => {
                 if (tryInit()) {
+                  console.log('Widget initialized via periodic check')
                   clearInterval(checkInterval!)
                   checkInterval = undefined
                 }
               }, 500)
             }
-          }, 1500)
+          }, 2000)
         }
         window.addEventListener(READY_EVENT, readyHandler)
         window.addEventListener('ymaps-ready', readyHandler)
@@ -154,8 +169,15 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       }
 
       // Если Яндекс.Карты не загружены, проверяем периодически
-      if ((!(window as any).ymaps || !(window as any).__ymaps_loaded) && !checkInterval) {
+      if ((!(window as any).ymaps || !(window as any).__ymaps_ready) && !checkInterval) {
         checkInterval = setInterval(() => {
+          // Проверяем готовность Яндекс.Карт
+          if ((window as any).ymaps && (window as any).ymaps.ready && !(window as any).__ymaps_ready) {
+            (window as any).ymaps.ready(() => {
+              (window as any).__ymaps_ready = true
+              window.dispatchEvent(new Event('ymaps-ready'))
+            })
+          }
           if (tryInit()) {
             clearInterval(checkInterval!)
             checkInterval = undefined
