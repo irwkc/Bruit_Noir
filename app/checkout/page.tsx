@@ -117,10 +117,8 @@ export default function CheckoutPage() {
           // Помечаем, что Яндекс.Карты загружены
           if (typeof window !== 'undefined') {
             // Даём время на полную инициализацию Яндекс.Карт
-            const setTimer = (callback: () => void, delay: number) => {
-              return setTimeout(callback, delay)
-            }
-            setTimer(() => {
+            const timerFn: typeof setTimeout = globalThis.setTimeout
+            timerFn(() => {
               (window as any).__ymaps_loaded = true
               (window as any).__ymaps_ready = true
               window.dispatchEvent(new Event('ymaps-ready'))
