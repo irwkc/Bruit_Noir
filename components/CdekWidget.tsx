@@ -16,7 +16,7 @@ declare global {
 }
 
 const YANDEX_API_KEY = 'f366a46d-5c10-4875-a6ee-263f3678b026'
-const SERVICE_PATH = '/service.php'
+const SERVICE_PATH = '/api/cdek-service'
 const DEFAULT_ORIGIN_CITY = 'Москва'
 const READY_EVENT = 'cdek-widget-ready'
 
