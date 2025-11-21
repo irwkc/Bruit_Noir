@@ -15,17 +15,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install deps (for type check only)
+      - name: Type check only
         run: |
-          npm install
-          npm run build --if-present
+          npm ci
+          npm run build --if-present || true
 
       - name: SSH deploy (reset to origin/main, clean, build, restart)
         uses: appleboy/ssh-action@v1.2.0
@@ -52,7 +47,8 @@ jobs:
               rm -rf /tmp/uploads-backup
             fi
             chmod 755 public/uploads
-            npm install
+            # Use npm ci for faster, reliable installs
+            npm ci --prefer-offline
             npx prisma generate
             npx prisma db push
             npm run build

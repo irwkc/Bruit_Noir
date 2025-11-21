@@ -37,11 +37,12 @@ async function getAuthToken(): Promise<string> {
     throw new Error('No access token in CDEK response')
   }
 
-  authToken = data.access_token
+  const newToken = data.access_token
+  authToken = newToken
   // Токен обычно валиден 3600 секунд, ставим на 3500 для безопасности
   tokenExpiry = Date.now() + (data.expires_in || 3500) * 1000
 
-  return authToken
+  return newToken
 }
 
 async function makeCdekRequest(
