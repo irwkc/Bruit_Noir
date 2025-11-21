@@ -172,8 +172,9 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       if ((!(window as any).ymaps || !(window as any).__ymaps_ready) && !checkInterval) {
         checkInterval = setInterval(() => {
           // Проверяем готовность Яндекс.Карт
-          if ((window as any).ymaps && (window as any).ymaps.ready && !(window as any).__ymaps_ready) {
-            (window as any).ymaps.ready(() => {
+          const ymaps = (window as any).ymaps
+          if (ymaps && typeof ymaps.ready === 'function' && !(window as any).__ymaps_ready) {
+            ymaps.ready(() => {
               (window as any).__ymaps_ready = true
               window.dispatchEvent(new Event('ymaps-ready'))
             })

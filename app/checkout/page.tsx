@@ -118,8 +118,9 @@ export default function CheckoutPage() {
           if (typeof window !== 'undefined') {
             // Яндекс.Карты могут быть загружены, но не готовы
             // Используем ymaps.ready() если доступен
-            if ((window as any).ymaps && (window as any).ymaps.ready) {
-              (window as any).ymaps.ready(() => {
+            const ymaps = (window as any).ymaps
+            if (ymaps && typeof ymaps.ready === 'function') {
+              ymaps.ready(() => {
                 (window as any).__ymaps_loaded = true
                 (window as any).__ymaps_ready = true
                 window.dispatchEvent(new Event('ymaps-ready'))
