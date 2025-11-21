@@ -24,14 +24,14 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   const widgetInstanceRef = useRef<{ destroy?: () => void } | null>(null)
   const isInitializingRef = useRef(false)
   const [mounted, setMounted] = useState(false)
-  const containerId = useMemo(
-    () => `cdek-widget-${Math.random().toString(36).slice(2, 9)}`,
-    []
-  )
+  const containerIdRef = useRef<string | null>(null)
 
-  // Убеждаемся, что компонент монтирован на клиенте
+  // Генерируем ID только на клиенте после монтирования
   useEffect(() => {
-    setMounted(true)
+    if (typeof window !== 'undefined' && !containerIdRef.current) {
+      containerIdRef.current = `cdek-widget-${Math.random().toString(36).slice(2, 9)}`
+      setMounted(true)
+    }
   }, [])
 
   const destroyWidget = useCallback(() => {
@@ -42,12 +42,13 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !mounted) return
+    if (typeof window === 'undefined' || !mounted || !containerIdRef.current) return
     if (!city || city.length < 3) {
       destroyWidget()
       return
     }
 
+    const containerId = containerIdRef.current
     let cleanupListener: (() => void) | undefined
     let initTimeout: NodeJS.Timeout | undefined
     let checkInterval: NodeJS.Timeout | undefined
@@ -170,10 +171,10 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       isInitializingRef.current = false
       destroyWidget()
     }
-  }, [city, containerId, destroyWidget, onPointSelect, mounted])
+  }, [city, destroyWidget, onPointSelect, mounted])
 
   // Не рендерим контейнер до монтирования, чтобы избежать проблем с гидратацией
-  if (!mounted) {
+  if (!mounted || !containerIdRef.current) {
     return (
       <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
         <div
@@ -189,7 +190,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   return (
     <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
       <div
-        id={containerId}
+        id={containerIdRef.current}
         style={{ width: '100%', height: '600px', minHeight: '600px' }}
         className="w-full"
       />
