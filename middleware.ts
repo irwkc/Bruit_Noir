@@ -1,19 +1,46 @@
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-export default function middleware(req: any) {
-  const { pathname } = req.nextUrl
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-  // Временное отключение админ-редиректов (борьба с петлями)
-  if (pathname.startsWith('/admin')) {
+  // Пропускаем админку, API, статические файлы
+  if (
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon') ||
+    pathname.startsWith('/icon') ||
+    pathname === '/site-unlock'
+  ) {
     return NextResponse.next()
   }
 
-  // Пользовательские маршруты больше не проверяем здесь
+  // Проверяем закрытый режим
+  try {
+    const settings = await prisma.siteSettings.findFirst()
+    
+    if (settings?.siteLocked) {
+      // Проверяем cookie доступа
+      const unlocked = request.cookies.get('site_unlocked')?.value === 'true'
+      
+      if (!unlocked) {
+        // Редиректим на страницу ввода пароля
+        const url = request.nextUrl.clone()
+        url.pathname = '/site-unlock'
+        return NextResponse.redirect(url)
+      }
+    }
+  } catch (error) {
+    // В случае ошибки пропускаем (чтобы не сломать сайт)
+    console.error('Middleware error:', error)
+  }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|icon).*)'],
 }
 

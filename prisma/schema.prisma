@@ -25,6 +25,7 @@ model User {
   totpSecret            String?
   totpEnabled           Boolean  @default(false)
   orderNotificationEmail String?
+  isSuperAdmin          Boolean  @default(false)
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -118,5 +119,12 @@ model DeliveryPoint {
   updatedAt DateTime @updatedAt
 
   orders Order[]
+}
+
+model SiteSettings {
+  id              String   @id @default(cuid())
+  siteLocked      Boolean  @default(false)
+  siteLockPassword String? // bcrypt hash
+  updatedAt       DateTime @updatedAt
 }
 

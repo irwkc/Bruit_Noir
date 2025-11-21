@@ -36,3 +36,11 @@ export async function authenticateAdminToken(token: string) {
 
   return user
 }
+
+export async function verifyAdminToken(request: NextRequest) {
+  try {
+    return await authenticateAdminRequest(request)
+  } catch {
+    return null
+  }
+}

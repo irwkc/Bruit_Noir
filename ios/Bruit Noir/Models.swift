@@ -5,6 +5,27 @@ struct AdminUser: Codable, Identifiable {
     let email: String
     let name: String?
     let role: String
+    let isSuperAdmin: Bool?
+    let totpEnabled: Bool?
+    let createdAt: Date?
+}
+
+struct AdminListResponse: Codable {
+    let admins: [AdminUser]
+}
+
+struct SiteLockStatus: Codable {
+    let siteLocked: Bool
+}
+
+struct SiteLockUpdateRequest: Codable {
+    let siteLocked: Bool
+    let password: String?
+}
+
+struct SiteLockUpdateResponse: Codable {
+    let siteLocked: Bool
+    let message: String
 }
 
 struct AuthTokens: Codable {

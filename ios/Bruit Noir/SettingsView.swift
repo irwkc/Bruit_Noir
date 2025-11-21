@@ -36,6 +36,42 @@ struct SettingsView: View {
                         }
                     }
                 }
+                
+                if appModel.isSuperAdmin {
+                    Section("Управление админами") {
+                        NavigationLink {
+                            AdminsListView()
+                                .environmentObject(appModel)
+                        } label: {
+                            Text("Админы")
+                        }
+                    }
+                }
+                
+                Section("Закрытый режим сайта") {
+                    Toggle("Включить закрытый режим", isOn: $appModel.siteLocked)
+                    
+                    if appModel.siteLocked {
+                        SecureField("Пароль для доступа", text: $appModel.siteLockPassword)
+                            .textContentType(.password)
+                    }
+                    
+                    Button {
+                        isSaving = true
+                        appModel.updateSiteLock()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            isSaving = false
+                        }
+                    } label: {
+                        if isSaving {
+                            ProgressView()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        } else {
+                            Text("Сохранить")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                    }
+                }
 
                 Section {
                     Button(role: .destructive) {
@@ -48,11 +84,14 @@ struct SettingsView: View {
             }
             .navigationTitle("Настройки")
             .alert(isPresented: Binding(get: {
-                appModel.notificationMessage != nil
+                appModel.notificationMessage != nil || appModel.siteLockMessage != nil
             }, set: { newValue in
-                if !newValue { appModel.notificationMessage = nil }
+                if !newValue {
+                    appModel.notificationMessage = nil
+                    appModel.siteLockMessage = nil
+                }
             })) {
-                Alert(title: Text(appModel.notificationMessage ?? ""))
+                Alert(title: Text(appModel.notificationMessage ?? appModel.siteLockMessage ?? ""))
             }
         }
     }

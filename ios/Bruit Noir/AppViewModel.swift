@@ -41,11 +41,17 @@ final class AppViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var passcodeFlow: PasscodeFlow = .hidden
     @Published var passcodeError: String?
+    @Published private(set) var admins: [AdminUser] = []
+    @Published private(set) var adminsLoading = false
+    @Published var siteLocked: Bool = false
+    @Published var siteLockPassword: String = ""
+    @Published var siteLockMessage: String?
 
     private let authService = AuthService.shared
     private let ordersService = OrdersService.shared
     private let settingsService = SettingsService.shared
     private let productsService = ProductsService.shared
+    private let adminsService = AdminsService.shared
     private let keychain = KeychainStorage.shared
     private let passcodeStorageKey = "admin.passcode.code"
     private var pendingPasscode: String?
@@ -67,6 +73,7 @@ final class AppViewModel: ObservableObject {
                 await fetchOrders(reset: true)
                 await fetchProducts(force: true)
                 await fetchNotificationEmail()
+                await fetchSiteLockStatus()
             } catch {
                 await authService.clearSession()
                 authState = .needCredentials
@@ -88,6 +95,7 @@ final class AppViewModel: ObservableObject {
                     await fetchOrders(reset: true)
                     await fetchProducts(force: true)
                     await fetchNotificationEmail()
+                    await fetchSiteLockStatus()
                 case let .requiresTotp(info):
                     authState = .needTotp(info, PendingCredentials(email: email, password: password))
                 }
@@ -321,5 +329,87 @@ final class AppViewModel: ObservableObject {
             result |= a ^ b
         }
         return result == 0
+    }
+    
+    // MARK: - Admins Management
+    
+    var isSuperAdmin: Bool {
+        guard case let .authenticated(session) = authState else { return false }
+        return session.user.isSuperAdmin ?? false
+    }
+    
+    func fetchAdmins() async {
+        guard case .authenticated = authState, isSuperAdmin else { return }
+        if adminsLoading { return }
+        adminsLoading = true
+        defer { adminsLoading = false }
+        
+        do {
+            admins = try await adminsService.fetchAdmins()
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+        } catch {
+            handle(error)
+        }
+    }
+    
+    func createAdmin(email: String, password: String, name: String?) async -> Bool {
+        guard case .authenticated = authState, isSuperAdmin else { return false }
+        do {
+            let newAdmin = try await adminsService.createAdmin(email: email, password: password, name: name)
+            admins.append(newAdmin)
+            return true
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+            return false
+        } catch {
+            handle(error)
+            return false
+        }
+    }
+    
+    func deleteAdmin(_ admin: AdminUser) async -> Bool {
+        guard case .authenticated = authState, isSuperAdmin else { return false }
+        do {
+            try await adminsService.deleteAdmin(id: admin.id)
+            admins.removeAll { $0.id == admin.id }
+            return true
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+            return false
+        } catch {
+            handle(error)
+            return false
+        }
+    }
+    
+    // MARK: - Site Lock
+    
+    func fetchSiteLockStatus() async {
+        guard case .authenticated = authState else { return }
+        do {
+            siteLocked = try await settingsService.fetchSiteLockStatus()
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+        } catch {
+            handle(error)
+        }
+    }
+    
+    func updateSiteLock() {
+        guard case .authenticated = authState else { return }
+        Task {
+            do {
+                let password = siteLocked ? (siteLockPassword.isEmpty ? nil : siteLockPassword) : nil
+                let newStatus = try await settingsService.updateSiteLock(locked: siteLocked, password: password)
+                siteLocked = newStatus
+                siteLockMessage = newStatus ? "Закрытый режим включён" : "Закрытый режим выключен"
+                siteLockPassword = ""
+            } catch APIClientError.unauthorized {
+                await handleUnauthorized()
+            } catch {
+                handle(error)
+            }
+        }
     }
 }
