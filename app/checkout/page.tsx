@@ -109,14 +109,14 @@ export default function CheckoutPage() {
 
   return (
     <>
-      {/* Load CDEK scripts only on checkout page */}
+      {/* Load CDEK scripts only on checkout page - afterInteractive for faster loading */}
       <Script
         src="https://api-maps.yandex.ru/2.1/?apikey=f366a46d-5c10-4875-a6ee-263f3678b026&lang=ru_RU"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
       />
       <Script
         src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
         onLoad={() => {
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new Event('cdek-widget-ready'))
