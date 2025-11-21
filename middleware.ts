@@ -22,13 +22,16 @@ export async function middleware(request: NextRequest) {
   // Проверяем закрытый режим из кэша (без запроса к БД)
   try {
     const siteLocked = await getSiteLockStatus()
+    console.log('Middleware check:', { pathname, siteLocked })
     
     if (siteLocked) {
       // Проверяем cookie доступа
       const unlocked = request.cookies.get('site_unlocked')?.value === 'true'
+      console.log('Site locked, checking cookie:', { unlocked })
       
       if (!unlocked) {
         // Редиректим на страницу ввода пароля
+        console.log('Redirecting to /site-unlock')
         const url = request.nextUrl.clone()
         url.pathname = '/site-unlock'
         return NextResponse.redirect(url)

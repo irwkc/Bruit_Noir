@@ -18,8 +18,10 @@ export async function refreshSiteLockCache(): Promise<void> {
   try {
     const { prisma } = await import('@/lib/prisma')
     const settings = await prisma.siteSettings.findFirst()
-    siteLockedCache = settings?.siteLocked ?? false
+    const newValue = settings?.siteLocked ?? false
+    siteLockedCache = newValue
     cacheInitialized = true
+    console.log('Site lock cache refreshed:', { siteLocked: newValue, fromDB: settings?.siteLocked })
   } catch (error) {
     console.error('Error refreshing site lock cache:', error)
     // On error, default to unlocked
@@ -29,8 +31,10 @@ export async function refreshSiteLockCache(): Promise<void> {
 }
 
 export function setSiteLockStatus(locked: boolean): void {
+  const oldValue = siteLockedCache
   siteLockedCache = locked
   cacheInitialized = true
+  console.log('Site lock cache updated:', { oldValue, newValue: locked })
 }
 
 // Initialize cache on module load (for server startup)
