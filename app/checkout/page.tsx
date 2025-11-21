@@ -58,12 +58,14 @@ export default function CheckoutPage() {
   // Initialize Yandex Maps ready flag after scripts are loaded
   useEffect(() => {
     if (scriptsLoaded && typeof window !== 'undefined') {
-      const timer = window.setTimeout(() => {
+      const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
         (window as any).__ymaps_loaded = true
         (window as any).__ymaps_ready = true
         window.dispatchEvent(new Event('ymaps-ready'))
       }, 1500)
-      return () => clearTimeout(timer)
+      return () => {
+        clearTimeout(timerId)
+      }
     }
   }, [scriptsLoaded])
 
