@@ -59,8 +59,9 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (scriptsLoaded && typeof window !== 'undefined') {
       const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
-        (window as any).__ymaps_loaded = true
-        (window as any).__ymaps_ready = true
+        const win = window as any
+        win.__ymaps_loaded = true
+        win.__ymaps_ready = true
         window.dispatchEvent(new Event('ymaps-ready'))
       }, 1500)
       return () => {
