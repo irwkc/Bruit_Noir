@@ -5,7 +5,11 @@ import SiteChrome from '@/components/SiteChrome'
 import MobileSiteChrome from '@/components/mobile/SiteChrome'
 import { Providers } from './providers'
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+const inter = Inter({ 
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap', // Оптимизация загрузки шрифтов
+  preload: true,
+})
 
 export const metadata: Metadata = {
   title: 'Bruit Noir - Современный бренд одежды',
