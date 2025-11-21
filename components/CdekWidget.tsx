@@ -173,13 +173,17 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
         checkInterval = setInterval(() => {
           // Проверяем готовность Яндекс.Карт
           const ymaps = (window as any).ymaps
-          if (ymaps && !(window as any).__ymaps_ready) {
-            const readyFn = ymaps.ready as ((callback: () => void) => void) | undefined
-            if (readyFn && typeof readyFn === 'function') {
-              readyFn(() => {
-                (window as any).__ymaps_ready = true
-                window.dispatchEvent(new Event('ymaps-ready'))
-              })
+          if (ymaps && !(window as any).__ymaps_ready && ymaps.ready) {
+            try {
+              const readyFn = ymaps.ready as any
+              if (typeof readyFn === 'function') {
+                readyFn(() => {
+                  (window as any).__ymaps_ready = true
+                  window.dispatchEvent(new Event('ymaps-ready'))
+                })
+              }
+            } catch {
+              // Игнорируем ошибки
             }
           }
           if (tryInit()) {
