@@ -91,7 +91,6 @@ final class AppViewModel: ObservableObject {
                     await fetchOrders(reset: true)
                     await fetchProducts(force: true)
                     await fetchNotificationEmail()
-                    await fetchSiteLockStatus()
                 case let .requiresTotp(info):
                     authState = .needTotp(info, PendingCredentials(email: email, password: password))
                 }
