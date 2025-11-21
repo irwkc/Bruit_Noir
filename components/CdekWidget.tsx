@@ -23,10 +23,16 @@ const READY_EVENT = 'cdek-widget-ready'
 export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   const widgetInstanceRef = useRef<{ destroy?: () => void } | null>(null)
   const isInitializingRef = useRef(false)
+  const [mounted, setMounted] = useState(false)
   const containerId = useMemo(
     () => `cdek-widget-${Math.random().toString(36).slice(2, 9)}`,
     []
   )
+
+  // Убеждаемся, что компонент монтирован на клиенте
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const destroyWidget = useCallback(() => {
     if (widgetInstanceRef.current?.destroy) {
@@ -36,7 +42,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined' || !mounted) return
     if (!city || city.length < 3) {
       destroyWidget()
       return
@@ -58,12 +64,12 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       }
 
       // Проверяем наличие всех зависимостей
-      if (!window.CDEKWidget) {
+      if (!window.CDEKWidget || !(window as any).__cdek_widget_loaded) {
         return false
       }
 
       // Проверяем, что Яндекс.Карты загружены
-      if (!(window as any).ymaps) {
+      if (!(window as any).ymaps || !(window as any).__ymaps_loaded) {
         return false
       }
 
@@ -121,7 +127,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       let readyHandler: (() => void) | null = null
       
       // Если виджет не загружен, ждём события
-      if (!window.CDEKWidget) {
+      if (!window.CDEKWidget || !(window as any).__cdek_widget_loaded) {
         readyHandler = () => {
           // Даём время на загрузку Яндекс.Карт
           setTimeout(() => {
@@ -134,18 +140,20 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
                 }
               }, 500)
             }
-          }, 1000)
+          }, 1500)
         }
         window.addEventListener(READY_EVENT, readyHandler)
+        window.addEventListener('ymaps-ready', readyHandler)
         cleanupListener = () => {
           if (readyHandler) {
             window.removeEventListener(READY_EVENT, readyHandler)
+            window.removeEventListener('ymaps-ready', readyHandler)
           }
         }
       }
 
       // Если Яндекс.Карты не загружены, проверяем периодически
-      if (!(window as any).ymaps && !checkInterval) {
+      if ((!(window as any).ymaps || !(window as any).__ymaps_loaded) && !checkInterval) {
         checkInterval = setInterval(() => {
           if (tryInit()) {
             clearInterval(checkInterval!)
@@ -162,7 +170,21 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       isInitializingRef.current = false
       destroyWidget()
     }
-  }, [city, containerId, destroyWidget, onPointSelect])
+  }, [city, containerId, destroyWidget, onPointSelect, mounted])
+
+  // Не рендерим контейнер до монтирования, чтобы избежать проблем с гидратацией
+  if (!mounted) {
+    return (
+      <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+        <div
+          style={{ width: '100%', height: '600px', minHeight: '600px' }}
+          className="w-full flex items-center justify-center"
+        >
+          <p className="text-gray-500">Загрузка карты...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
