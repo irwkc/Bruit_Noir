@@ -117,12 +117,13 @@ export default function CheckoutPage() {
           // Помечаем, что Яндекс.Карты загружены
           if (typeof window !== 'undefined') {
             // Даём время на полную инициализацию Яндекс.Карт
-            // @ts-expect-error - setTimeout type issue in Next.js build
-            setTimeout(() => {
+            const callback = () => {
               (window as any).__ymaps_loaded = true
               (window as any).__ymaps_ready = true
               window.dispatchEvent(new Event('ymaps-ready'))
-            }, 1500)
+            }
+            const delay = 1500
+            setTimeout(callback, delay)
           }
         }}
         onError={(e) => {
