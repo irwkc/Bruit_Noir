@@ -41,6 +41,7 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+  const [scriptsLoaded, setScriptsLoaded] = useState(false)
 
   useEffect(() => {
     if (session?.user) {
@@ -53,6 +54,18 @@ export default function CheckoutPage() {
   useEffect(() => {
     setSelectedDeliveryPoint('')
   }, [selectedCity])
+
+  // Initialize Yandex Maps ready flag after scripts are loaded
+  useEffect(() => {
+    if (scriptsLoaded && typeof window !== 'undefined') {
+      const timer = window.setTimeout(() => {
+        (window as any).__ymaps_loaded = true
+        (window as any).__ymaps_ready = true
+        window.dispatchEvent(new Event('ymaps-ready'))
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [scriptsLoaded])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -114,17 +127,7 @@ export default function CheckoutPage() {
         src="https://api-maps.yandex.ru/2.1/?apikey=f366a46d-5c10-4875-a6ee-263f3678b026&lang=ru_RU"
         strategy="afterInteractive"
         onLoad={() => {
-          // Помечаем, что Яндекс.Карты загружены
-          if (typeof window !== 'undefined') {
-            // Даём время на полную инициализацию Яндекс.Карт
-            const callback = () => {
-              (window as any).__ymaps_loaded = true
-              (window as any).__ymaps_ready = true
-              window.dispatchEvent(new Event('ymaps-ready'))
-            }
-            const delay = 1500
-            setTimeout(callback, delay)
-          }
+          setScriptsLoaded(true)
         }}
         onError={(e) => {
           console.error('Failed to load Yandex Maps:', e)
