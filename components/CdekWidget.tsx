@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 interface CdekWidgetProps {
   city: string
@@ -22,6 +22,7 @@ const READY_EVENT = 'cdek-widget-ready'
 
 export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   const widgetInstanceRef = useRef<{ destroy?: () => void } | null>(null)
+  const isInitializingRef = useRef(false)
   const containerId = useMemo(
     () => `cdek-widget-${Math.random().toString(36).slice(2, 9)}`,
     []
@@ -46,6 +47,16 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
     let checkInterval: NodeJS.Timeout | undefined
 
     const initWidget = () => {
+      // Предотвращаем множественную инициализацию
+      if (isInitializingRef.current) {
+        return false
+      }
+
+      // Если виджет уже инициализирован, не создаём новый
+      if (widgetInstanceRef.current) {
+        return true
+      }
+
       // Проверяем наличие всех зависимостей
       if (!window.CDEKWidget) {
         return false
@@ -62,10 +73,8 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
         return false
       }
 
-      // Если виджет уже инициализирован, не создаём новый
-      if (widgetInstanceRef.current) {
-        return true
-      }
+      // Помечаем, что начинаем инициализацию
+      isInitializingRef.current = true
 
       destroyWidget()
 
@@ -77,19 +86,20 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           apiKey: YANDEX_API_KEY,
           servicePath: SERVICE_PATH,
           onReady: () => {
-            console.log('CDEK widget ready')
+            isInitializingRef.current = false
           },
           onChoose: (point: any) => {
-            console.log('CDEK point selected:', point)
             onPointSelect?.(point)
           },
           onError: (error: any) => {
             console.error('CDEK widget error:', error)
+            isInitializingRef.current = false
           },
         })
         return true
       } catch (error) {
         console.error('Failed to initialize CDEK widget:', error)
+        isInitializingRef.current = false
         return false
       }
     }
@@ -108,34 +118,40 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
 
     // Пробуем инициализировать сразу
     if (!tryInit()) {
-      // Если не получилось, ждём события загрузки виджета
-      const handleReady = () => {
-        if (!tryInit()) {
-          // Если виджет загрузился, но Яндекс.Карты ещё нет, проверяем периодически
-          checkInterval = setInterval(() => {
-            if (tryInit()) {
-              clearInterval(checkInterval!)
-              checkInterval = undefined
+      let readyHandler: (() => void) | null = null
+      
+      // Если виджет не загружен, ждём события
+      if (!window.CDEKWidget) {
+        readyHandler = () => {
+          // Даём время на загрузку Яндекс.Карт
+          setTimeout(() => {
+            if (!tryInit() && !checkInterval) {
+              // Если не получилось, проверяем периодически
+              checkInterval = setInterval(() => {
+                if (tryInit()) {
+                  clearInterval(checkInterval!)
+                  checkInterval = undefined
+                }
+              }, 500)
             }
-          }, 300)
+          }, 1000)
+        }
+        window.addEventListener(READY_EVENT, readyHandler)
+        cleanupListener = () => {
+          if (readyHandler) {
+            window.removeEventListener(READY_EVENT, readyHandler)
+          }
         }
       }
-      
-      if (window.CDEKWidget) {
-        handleReady()
-      } else {
-        window.addEventListener(READY_EVENT, handleReady)
-        cleanupListener = () => window.removeEventListener(READY_EVENT, handleReady)
-      }
 
-      // Также проверяем Яндекс.Карты отдельно
-      if (!(window as any).ymaps) {
+      // Если Яндекс.Карты не загружены, проверяем периодически
+      if (!(window as any).ymaps && !checkInterval) {
         checkInterval = setInterval(() => {
           if (tryInit()) {
             clearInterval(checkInterval!)
             checkInterval = undefined
           }
-        }, 300)
+        }, 500)
       }
     }
 
@@ -143,6 +159,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       cleanupListener?.()
       if (initTimeout) clearTimeout(initTimeout)
       if (checkInterval) clearInterval(checkInterval)
+      isInitializingRef.current = false
       destroyWidget()
     }
   }, [city, containerId, destroyWidget, onPointSelect])
