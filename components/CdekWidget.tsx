@@ -68,6 +68,10 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
 
       // Небольшая задержка для гарантии, что DOM готов
       initTimeout = setTimeout(() => {
+        if (!window.CDEKWidget) {
+          console.error('CDEK widget not available')
+          return
+        }
         try {
           widgetInstanceRef.current = new window.CDEKWidget({
             from: DEFAULT_ORIGIN_CITY,

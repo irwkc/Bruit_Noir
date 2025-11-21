@@ -4,7 +4,6 @@ import './globals.css'
 import SiteChrome from '@/components/SiteChrome'
 import MobileSiteChrome from '@/components/mobile/SiteChrome'
 import { Providers } from './providers'
-import CdekScripts from '@/components/CdekScripts'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
@@ -29,7 +28,6 @@ export default function RootLayout({
   return (
     <html lang="ru" className="bg-black">
       <body className={`${inter.className} flex flex-col min-h-dvh bg-black`}>
-        <CdekScripts />
         <Providers>
           {/* Desktop version */}
           <div className="hidden md:block">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
+import Script from 'next/script'
 import CityAutocomplete from '@/components/CityAutocomplete'
 import dynamicImport from 'next/dynamic'
 
@@ -107,9 +108,24 @@ export default function CheckoutPage() {
   const cities = ['Москва', 'Санкт-Петербург', 'Казань', 'Екатеринбург', 'Новосибирск']
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Desktop Version */}
-      <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+    <>
+      {/* Load CDEK scripts only on checkout page */}
+      <Script
+        src="https://api-maps.yandex.ru/2.1/?apikey=f366a46d-5c10-4875-a6ee-263f3678b026&lang=ru_RU"
+        strategy="lazyOnload"
+      />
+      <Script
+        src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3"
+        strategy="lazyOnload"
+        onLoad={() => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('cdek-widget-ready'))
+          }
+        }}
+      />
+      <div className="min-h-screen bg-gray-50">
+        {/* Desktop Version */}
+        <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">Оформление заказа</h1>
 
         <form onSubmit={handleSubmit}>
@@ -507,7 +523,8 @@ export default function CheckoutPage() {
           </div>
         </form>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 
