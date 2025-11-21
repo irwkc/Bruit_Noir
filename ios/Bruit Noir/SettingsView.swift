@@ -3,12 +3,10 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var appModel: AppViewModel
     @State private var isSavingEmail = false
-    @State private var isSavingSiteLock = false
     @FocusState private var focusedField: Field?
 
     enum Field {
         case notificationEmail
-        case siteLockPassword
     }
 
     var body: some View {
@@ -61,38 +59,6 @@ struct SettingsView: View {
                         }
                     }
                 }
-                
-                Section("Закрытый режим сайта") {
-                    Toggle("Включить закрытый режим", isOn: $appModel.siteLocked)
-                    
-                    if appModel.siteLocked {
-                        SecureField("Пароль для доступа", text: $appModel.siteLockPassword)
-                            .textContentType(.password)
-                            .focused($focusedField, equals: .siteLockPassword)
-                            .submitLabel(.done)
-                            .onSubmit {
-                                focusedField = nil
-                            }
-                    }
-                    
-                    Button {
-                        focusedField = nil
-                        isSavingSiteLock = true
-                        appModel.updateSiteLock()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                            isSavingSiteLock = false
-                        }
-                    } label: {
-                        if isSavingSiteLock {
-                            ProgressView()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        } else {
-                            Text("Сохранить")
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        }
-                    }
-                    .disabled(isSavingSiteLock)
-                }
 
                 Section {
                     Button(role: .destructive) {
@@ -105,14 +71,13 @@ struct SettingsView: View {
             }
             .navigationTitle("Настройки")
             .alert(isPresented: Binding(get: {
-                appModel.notificationMessage != nil || appModel.siteLockMessage != nil
+                appModel.notificationMessage != nil
             }, set: { newValue in
                 if !newValue {
                     appModel.notificationMessage = nil
-                    appModel.siteLockMessage = nil
                 }
             })) {
-                Alert(title: Text(appModel.notificationMessage ?? appModel.siteLockMessage ?? ""))
+                Alert(title: Text(appModel.notificationMessage ?? ""))
             }
         }
     }

@@ -25,22 +25,4 @@ actor SettingsService {
         return response.email
     }
     
-    func fetchSiteLockStatus() async throws -> Bool {
-        let response: SiteLockStatus = try await APIClient.shared.performRequest(
-            "GET",
-            path: "/api/admin/site-lock",
-            decode: SiteLockStatus.self
-        )
-        return response.siteLocked
-    }
-    
-    func updateSiteLock(locked: Bool, password: String?) async throws -> Bool {
-        let response: SiteLockUpdateResponse = try await APIClient.shared.performRequest(
-            "POST",
-            path: "/api/admin/site-lock",
-            body: SiteLockUpdateRequest(siteLocked: locked, password: password),
-            decode: SiteLockUpdateResponse.self
-        )
-        return response.siteLocked
-    }
 }

@@ -14,19 +14,6 @@ struct AdminListResponse: Codable {
     let admins: [AdminUser]
 }
 
-struct SiteLockStatus: Codable {
-    let siteLocked: Bool
-}
-
-struct SiteLockUpdateRequest: Codable {
-    let siteLocked: Bool
-    let password: String?
-}
-
-struct SiteLockUpdateResponse: Codable {
-    let siteLocked: Bool
-    let message: String
-}
 
 struct AuthTokens: Codable {
     let accessToken: String

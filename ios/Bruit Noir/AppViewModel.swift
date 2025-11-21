@@ -43,9 +43,6 @@ final class AppViewModel: ObservableObject {
     @Published var passcodeError: String?
     @Published private(set) var admins: [AdminUser] = []
     @Published private(set) var adminsLoading = false
-    @Published var siteLocked: Bool = false
-    @Published var siteLockPassword: String = ""
-    @Published var siteLockMessage: String?
 
     private let authService = AuthService.shared
     private let ordersService = OrdersService.shared
@@ -73,7 +70,6 @@ final class AppViewModel: ObservableObject {
                 await fetchOrders(reset: true)
                 await fetchProducts(force: true)
                 await fetchNotificationEmail()
-                await fetchSiteLockStatus()
             } catch {
                 await authService.clearSession()
                 authState = .needCredentials
@@ -383,43 +379,4 @@ final class AppViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Site Lock
-    
-    func fetchSiteLockStatus() async {
-        guard case .authenticated = authState else { return }
-        do {
-            siteLocked = try await settingsService.fetchSiteLockStatus()
-        } catch APIClientError.unauthorized {
-            await handleUnauthorized()
-        } catch {
-            handle(error)
-        }
-    }
-    
-    func updateSiteLock() {
-        guard case .authenticated = authState else { return }
-        Task {
-            do {
-                // Если включаем режим, нужен пароль (если он не пустой)
-                // Если выключаем, пароль не нужен
-                let password = siteLocked ? (siteLockPassword.isEmpty ? nil : siteLockPassword) : nil
-                let newStatus = try await settingsService.updateSiteLock(locked: siteLocked, password: password)
-                siteLocked = newStatus
-                siteLockMessage = newStatus ? "Закрытый режим включён" : "Закрытый режим выключен"
-                // Очищаем пароль только после успешного сохранения
-                if newStatus {
-                    // Если режим включён, пароль уже сохранён, можно очистить поле
-                    siteLockPassword = ""
-                } else {
-                    // Если режим выключен, тоже очищаем
-                    siteLockPassword = ""
-                }
-            } catch APIClientError.unauthorized {
-                await handleUnauthorized()
-            } catch {
-                handle(error)
-                // При ошибке не очищаем пароль, чтобы пользователь мог попробовать снова
-            }
-        }
-    }
 }
