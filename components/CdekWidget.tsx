@@ -42,10 +42,20 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
     }
 
     let cleanupListener: (() => void) | undefined
+    let initTimeout: NodeJS.Timeout | undefined
 
     const initWidget = () => {
-      const WidgetConstructor = window.CDEKWidget
-      if (!WidgetConstructor) return
+      // Проверяем наличие всех зависимостей
+      if (!window.CDEKWidget) {
+        console.log('CDEK widget not loaded yet, waiting...')
+        return
+      }
+
+      // Проверяем, что Яндекс.Карты загружены
+      if (!(window as any).ymaps) {
+        console.log('Yandex Maps not loaded yet, waiting...')
+        return
+      }
 
       // Убеждаемся, что контейнер существует
       const container = document.getElementById(containerId)
@@ -56,39 +66,57 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
 
       destroyWidget()
 
-      try {
-        widgetInstanceRef.current = new WidgetConstructor({
-          from: DEFAULT_ORIGIN_CITY,
-          defaultLocation: city,
-          root: containerId,
-          apiKey: YANDEX_API_KEY,
-          servicePath: SERVICE_PATH,
-          onReady: () => {
-            console.log('CDEK widget ready')
-          },
-          onChoose: (point: any) => {
-            console.log('CDEK point selected:', point)
-            onPointSelect?.(point)
-          },
-          onError: (error: any) => {
-            console.error('CDEK widget error:', error)
-          },
-        })
-      } catch (error) {
-        console.error('Failed to initialize CDEK widget:', error)
-      }
+      // Небольшая задержка для гарантии, что DOM готов
+      initTimeout = setTimeout(() => {
+        try {
+          widgetInstanceRef.current = new window.CDEKWidget({
+            from: DEFAULT_ORIGIN_CITY,
+            defaultLocation: city,
+            root: containerId,
+            apiKey: YANDEX_API_KEY,
+            servicePath: SERVICE_PATH,
+            onReady: () => {
+              console.log('CDEK widget ready')
+            },
+            onChoose: (point: any) => {
+              console.log('CDEK point selected:', point)
+              onPointSelect?.(point)
+            },
+            onError: (error: any) => {
+              console.error('CDEK widget error:', error)
+            },
+          })
+        } catch (error) {
+          console.error('Failed to initialize CDEK widget:', error)
+        }
+      }, 100)
     }
 
-    if (window.CDEKWidget) {
-      initWidget()
-    } else {
-      const handleReady = () => initWidget()
+    // Проверяем сразу
+    initWidget()
+
+    // Если виджет не загружен, ждём события
+    if (!window.CDEKWidget) {
+      const handleReady = () => {
+        // Даём время на загрузку Яндекс.Карт
+        setTimeout(initWidget, 500)
+      }
       window.addEventListener(READY_EVENT, handleReady)
       cleanupListener = () => window.removeEventListener(READY_EVENT, handleReady)
     }
 
+    // Также слушаем загрузку Яндекс.Карт
+    const checkYmaps = setInterval(() => {
+      if ((window as any).ymaps && window.CDEKWidget) {
+        clearInterval(checkYmaps)
+        initWidget()
+      }
+    }, 200)
+
     return () => {
       cleanupListener?.()
+      if (initTimeout) clearTimeout(initTimeout)
+      clearInterval(checkYmaps)
       destroyWidget()
     }
   }, [city, containerId, destroyWidget, onPointSelect])
