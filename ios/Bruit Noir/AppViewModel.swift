@@ -400,15 +400,25 @@ final class AppViewModel: ObservableObject {
         guard case .authenticated = authState else { return }
         Task {
             do {
+                // Если включаем режим, нужен пароль (если он не пустой)
+                // Если выключаем, пароль не нужен
                 let password = siteLocked ? (siteLockPassword.isEmpty ? nil : siteLockPassword) : nil
                 let newStatus = try await settingsService.updateSiteLock(locked: siteLocked, password: password)
                 siteLocked = newStatus
                 siteLockMessage = newStatus ? "Закрытый режим включён" : "Закрытый режим выключен"
-                siteLockPassword = ""
+                // Очищаем пароль только после успешного сохранения
+                if newStatus {
+                    // Если режим включён, пароль уже сохранён, можно очистить поле
+                    siteLockPassword = ""
+                } else {
+                    // Если режим выключен, тоже очищаем
+                    siteLockPassword = ""
+                }
             } catch APIClientError.unauthorized {
                 await handleUnauthorized()
             } catch {
                 handle(error)
+                // При ошибке не очищаем пароль, чтобы пользователь мог попробовать снова
             }
         }
     }

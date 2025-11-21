@@ -2,7 +2,14 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var appModel: AppViewModel
-    @State private var isSaving = false
+    @State private var isSavingEmail = false
+    @State private var isSavingSiteLock = false
+    @FocusState private var focusedField: Field?
+
+    enum Field {
+        case notificationEmail
+        case siteLockPassword
+    }
 
     var body: some View {
         NavigationStack {
@@ -19,15 +26,21 @@ struct SettingsView: View {
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
+                        .focused($focusedField, equals: .notificationEmail)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            focusedField = nil
+                        }
 
                     Button {
-                        isSaving = true
+                        focusedField = nil
+                        isSavingEmail = true
                         appModel.updateNotificationEmail()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                            isSaving = false
+                            isSavingEmail = false
                         }
                     } label: {
-                        if isSaving {
+                        if isSavingEmail {
                             ProgressView()
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {
@@ -35,6 +48,7 @@ struct SettingsView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
                     }
+                    .disabled(isSavingEmail)
                 }
                 
                 if appModel.isSuperAdmin {
@@ -54,16 +68,22 @@ struct SettingsView: View {
                     if appModel.siteLocked {
                         SecureField("Пароль для доступа", text: $appModel.siteLockPassword)
                             .textContentType(.password)
+                            .focused($focusedField, equals: .siteLockPassword)
+                            .submitLabel(.done)
+                            .onSubmit {
+                                focusedField = nil
+                            }
                     }
                     
                     Button {
-                        isSaving = true
+                        focusedField = nil
+                        isSavingSiteLock = true
                         appModel.updateSiteLock()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                            isSaving = false
+                            isSavingSiteLock = false
                         }
                     } label: {
-                        if isSaving {
+                        if isSavingSiteLock {
                             ProgressView()
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {
@@ -71,6 +91,7 @@ struct SettingsView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
                     }
+                    .disabled(isSavingSiteLock)
                 }
 
                 Section {

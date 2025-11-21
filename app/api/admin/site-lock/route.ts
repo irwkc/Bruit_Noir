@@ -69,12 +69,19 @@ export async function POST(request: NextRequest) {
 
     // Если включаем режим, нужен пароль
     if (siteLocked) {
-      if (!password || password.length < 4) {
-        return NextResponse.json({ message: 'Пароль должен быть не менее 4 символов' }, { status: 400 })
+      // Если пароль не передан, но режим включается, используем существующий пароль
+      if (password && password.length > 0) {
+        if (password.length < 4) {
+          return NextResponse.json({ message: 'Пароль должен быть не менее 4 символов' }, { status: 400 })
+        }
+        hashedPassword = await bcrypt.hash(password, 10)
+      } else if (!settings.siteLockPassword) {
+        // Если пароля нет и новый не передан, требуем пароль
+        return NextResponse.json({ message: 'При включении режима требуется пароль' }, { status: 400 })
       }
-      hashedPassword = await bcrypt.hash(password, 10)
+      // Если пароль не передан, но есть существующий - оставляем его
     } else {
-      // Если выключаем, можно оставить пароль или очистить
+      // Если выключаем, очищаем пароль
       hashedPassword = null
     }
 
@@ -88,6 +95,7 @@ export async function POST(request: NextRequest) {
 
     // Обновляем кэш в памяти сразу после изменения в БД
     setSiteLockStatus(updated.siteLocked)
+    console.log('Site lock updated:', { siteLocked: updated.siteLocked, cacheUpdated: true })
 
     return NextResponse.json({
       siteLocked: updated.siteLocked,

@@ -47,21 +47,36 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       const WidgetConstructor = window.CDEKWidget
       if (!WidgetConstructor) return
 
+      // Убеждаемся, что контейнер существует
+      const container = document.getElementById(containerId)
+      if (!container) {
+        console.error('CDEK widget container not found:', containerId)
+        return
+      }
+
       destroyWidget()
 
-      widgetInstanceRef.current = new WidgetConstructor({
-        from: DEFAULT_ORIGIN_CITY,
-        defaultLocation: city,
-        root: containerId,
-        apiKey: YANDEX_API_KEY,
-        servicePath: SERVICE_PATH,
-        onReady: () => {
-          // Widget ready
-        },
-        onChoose: (point: any) => {
-          onPointSelect?.(point)
-        },
-      })
+      try {
+        widgetInstanceRef.current = new WidgetConstructor({
+          from: DEFAULT_ORIGIN_CITY,
+          defaultLocation: city,
+          root: containerId,
+          apiKey: YANDEX_API_KEY,
+          servicePath: SERVICE_PATH,
+          onReady: () => {
+            console.log('CDEK widget ready')
+          },
+          onChoose: (point: any) => {
+            console.log('CDEK point selected:', point)
+            onPointSelect?.(point)
+          },
+          onError: (error: any) => {
+            console.error('CDEK widget error:', error)
+          },
+        })
+      } catch (error) {
+        console.error('Failed to initialize CDEK widget:', error)
+      }
     }
 
     if (window.CDEKWidget) {
@@ -79,10 +94,11 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   }, [city, containerId, destroyWidget, onPointSelect])
 
   return (
-    <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm">
+    <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
       <div
         id={containerId}
-        className="min-h-[420px] w-full overflow-hidden rounded-xl"
+        style={{ width: '100%', height: '600px', minHeight: '600px' }}
+        className="w-full"
       />
     </div>
   )
