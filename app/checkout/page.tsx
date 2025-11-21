@@ -120,8 +120,8 @@ export default function CheckoutPage() {
             // Используем ymaps.ready() если доступен
             const ymaps = (window as any).ymaps
             if (ymaps) {
-              const readyFn = ymaps.ready
-              if (typeof readyFn === 'function') {
+              const readyFn = ymaps.ready as ((callback: () => void) => void) | undefined
+              if (readyFn && typeof readyFn === 'function') {
                 readyFn(() => {
                   (window as any).__ymaps_loaded = true
                   (window as any).__ymaps_ready = true

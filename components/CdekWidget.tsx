@@ -174,8 +174,8 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           // Проверяем готовность Яндекс.Карт
           const ymaps = (window as any).ymaps
           if (ymaps && !(window as any).__ymaps_ready) {
-            const readyFn = ymaps.ready
-            if (typeof readyFn === 'function') {
+            const readyFn = ymaps.ready as ((callback: () => void) => void) | undefined
+            if (readyFn && typeof readyFn === 'function') {
               readyFn(() => {
                 (window as any).__ymaps_ready = true
                 window.dispatchEvent(new Event('ymaps-ready'))
