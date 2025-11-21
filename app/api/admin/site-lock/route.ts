@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { verifyAdminToken } from '@/lib/adminAuth'
+import { refreshSiteLockCache, setSiteLockStatus } from '@/lib/siteLockCache'
+// Initialize cache on module load
+import '@/lib/initSiteLockCache'
 
 // GET - получить статус закрытого режима
 export async function GET(request: NextRequest) {
@@ -11,6 +14,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: 'Доступ запрещён' }, { status: 403 })
     }
 
+    // Используем кэш, но обновляем его на всякий случай
+    await refreshSiteLockCache()
+    
     let settings = await prisma.siteSettings.findFirst()
 
     if (!settings) {
@@ -21,6 +27,7 @@ export async function GET(request: NextRequest) {
           siteLockPassword: null,
         },
       })
+      setSiteLockStatus(false)
     }
 
     return NextResponse.json({
@@ -78,6 +85,9 @@ export async function POST(request: NextRequest) {
         siteLockPassword: hashedPassword,
       },
     })
+
+    // Обновляем кэш в памяти сразу после изменения в БД
+    setSiteLockStatus(updated.siteLocked)
 
     return NextResponse.json({
       siteLocked: updated.siteLocked,

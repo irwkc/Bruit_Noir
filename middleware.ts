@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getSiteLockStatus } from '@/lib/siteLockCache'
+// Initialize cache on module load
+import '@/lib/initSiteLockCache'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -17,11 +19,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Проверяем закрытый режим
+  // Проверяем закрытый режим из кэша (без запроса к БД)
   try {
-    const settings = await prisma.siteSettings.findFirst()
+    const siteLocked = await getSiteLockStatus()
     
-    if (settings?.siteLocked) {
+    if (siteLocked) {
       // Проверяем cookie доступа
       const unlocked = request.cookies.get('site_unlocked')?.value === 'true'
       
