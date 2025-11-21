@@ -31,16 +31,11 @@ export default function CheckoutPage() {
   const { data: session } = useSession()
   const { items, getTotalPrice, clearCart } = useCartStore()
 
-  const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPoint[]>([])
   const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState('')
   const [selectedCity, setSelectedCity] = useState('Москва')
-  const [deliveryMethod, setDeliveryMethod] = useState('post')
+  const [deliveryMethod] = useState('sdek') // Только СДЭК
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [loading, setLoading] = useState(false)
-  
-  // Address fields for postal delivery
-  const [address, setAddress] = useState('')
-  const [postalCode, setPostalCode] = useState('')
 
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
@@ -53,26 +48,16 @@ export default function CheckoutPage() {
     }
   }, [session])
 
-  // Remove deliveryPoints fetching for SDEK as widget handles it
+  // Clear selected point when city changes
   useEffect(() => {
-    if (deliveryMethod === 'sdek') {
-      // Clear selected point when switching to SDEK
-      setSelectedDeliveryPoint('')
-    }
-  }, [deliveryMethod])
-
-  // fetchDeliveryPoints function removed - SDEK widget handles this internally
+    setSelectedDeliveryPoint('')
+  }, [selectedCity])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (deliveryMethod === 'sdek' && !selectedDeliveryPoint) {
+    if (!selectedDeliveryPoint) {
       alert('Пожалуйста, выберите пункт выдачи СДЭК')
-      return
-    }
-    
-    if (deliveryMethod === 'post' && (!address || !postalCode)) {
-      alert('Пожалуйста, заполните адрес доставки')
       return
     }
     
@@ -87,12 +72,10 @@ export default function CheckoutPage() {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+          body: JSON.stringify({
           items,
-          deliveryMethod,
-          deliveryPointId: deliveryMethod === 'sdek' ? selectedDeliveryPoint : null,
-          address: deliveryMethod === 'post' ? address : null,
-          postalCode: deliveryMethod === 'post' ? postalCode : null,
+          deliveryMethod: 'sdek',
+          deliveryPointId: selectedDeliveryPoint,
           customerName,
           customerEmail,
           customerPhone,
@@ -180,151 +163,64 @@ export default function CheckoutPage() {
               {/* Delivery */}
               <div className="bg-white rounded-lg p-6">
                 <h2 className="text-xl font-bold mb-4">Способ доставки</h2>
-
-                {/* Delivery Method Selection */}
-                <div className="space-y-3 mb-6">
-                  <label className="block p-4 border-2 rounded-lg cursor-pointer transition">
-                    <input
-                      type="radio"
-                      name="deliveryMethod"
-                      value="post"
-                      checked={deliveryMethod === 'post'}
-                      onChange={(e) => setDeliveryMethod(e.target.value)}
-                      className="mr-3"
-                    />
-                    <div className="inline-block">
-                      <p className="font-semibold">Почтой России (Первым классом) от 1 дня, от 956 ₽</p>
-                    </div>
-                  </label>
-
-                  <label className="block p-4 border-2 rounded-lg cursor-pointer transition">
-                    <input
-                      type="radio"
-                      name="deliveryMethod"
-                      value="post-regular"
-                      checked={deliveryMethod === 'post-regular'}
-                      onChange={(e) => setDeliveryMethod(e.target.value)}
-                      className="mr-3"
-                    />
-                    <div className="inline-block">
-                      <p className="font-semibold">Почтой России от 2 дней, от 575 ₽</p>
-                    </div>
-                  </label>
-
-                  <label className="block p-4 border-2 rounded-lg cursor-pointer transition">
-                    <input
-                      type="radio"
-                      name="deliveryMethod"
-                      value="sdek"
-                      checked={deliveryMethod === 'sdek'}
-                      onChange={(e) => setDeliveryMethod(e.target.value)}
-                      className="mr-3"
-                    />
-                    <div className="inline-block">
-                      <p className="font-semibold">СДЭК Пункт выдачи от 1 дня, от 425 ₽</p>
-                    </div>
-                  </label>
+                
+                <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="font-semibold text-gray-900">СДЭК Пункт выдачи</p>
+                  <p className="text-sm text-gray-600 mt-1">Доставка от 1 дня, от 425 ₽</p>
                 </div>
 
-                {/* Postal Delivery Fields */}
-                {(deliveryMethod === 'post' || deliveryMethod === 'post-regular') && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Город
-                      </label>
-                      <input
-                        type="text"
-                        value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                        placeholder="Введите город"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Адрес *
-                      </label>
-                      <textarea
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Улица, дом, квартира"
-                        rows={3}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Почтовый индекс *
-                      </label>
-                      <input
-                        type="text"
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                        placeholder="123456"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                      />
-                    </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Город
+                    </label>
+                    <CityAutocomplete
+                      value={selectedCity}
+                      onChange={setSelectedCity}
+                      placeholder="Введите город для поиска пунктов выдачи"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Доставка СДЭК доступна во все города России
+                    </p>
                   </div>
-                )}
 
-                {/* SDEK Delivery Points */}
-                {deliveryMethod === 'sdek' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Город
-                      </label>
-                      <CityAutocomplete
-                        value={selectedCity}
-                        onChange={setSelectedCity}
-                        placeholder="Введите город для поиска пунктов выдачи"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Доставка СДЭК доступна во все города России
-                      </p>
-                    </div>
-
-                    {selectedCity && selectedCity.length >= 3 ? (
-                      <div className="space-y-4">
-                        <h3 className="font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
-                        
-                        {/* SDEK Widget */}
-                        <div className="w-full">
-                          <CdekWidget
-                            city={selectedCity}
-                            onPointSelect={(point) => {
-                              const chosenId =
-                                point?.code ||
-                                point?.id ||
-                                point?.uuid ||
-                                point?.pvz_code ||
-                                point?.number ||
-                                ''
-                              setSelectedDeliveryPoint(chosenId)
-                              console.log('Selected SDEK point:', point)
-                            }}
-                          />
-                        </div>
-                        
-                        {selectedDeliveryPoint && (
-                          <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                            <p className="text-sm text-green-800 font-semibold">
-                              ✅ Пункт выдачи выбран
-                            </p>
-                          </div>
-                        )}
+                  {selectedCity && selectedCity.length >= 3 ? (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
+                      
+                      {/* CDEK Widget */}
+                      <div className="w-full">
+                        <CdekWidget
+                          city={selectedCity}
+                          onPointSelect={(point) => {
+                            const chosenId =
+                              point?.code ||
+                              point?.id ||
+                              point?.uuid ||
+                              point?.pvz_code ||
+                              point?.number ||
+                              ''
+                            setSelectedDeliveryPoint(chosenId)
+                            console.log('Selected CDEK point:', point)
+                          }}
+                        />
                       </div>
-                    ) : (
-                      <p className="text-gray-600">
-                        Введите город для поиска пунктов выдачи СДЭК
-                      </p>
-                    )}
-                  </div>
-                )}
+                      
+                      {selectedDeliveryPoint && (
+                        <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                          <p className="text-sm text-green-800 font-semibold">
+                            ✅ Пункт выдачи выбран
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-gray-600">
+                      Введите город для поиска пунктов выдачи СДЭК
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Payment */}
@@ -401,7 +297,7 @@ export default function CheckoutPage() {
 
                 <button
                   type="submit"
-                  disabled={loading || (deliveryMethod === 'sdek' && !selectedDeliveryPoint) || (deliveryMethod !== 'sdek' && (!address || !postalCode))}
+                  disabled={loading || !selectedDeliveryPoint}
                   className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Оформление...' : 'Подтвердить заказ'}
@@ -467,151 +363,64 @@ export default function CheckoutPage() {
           {/* Delivery */}
           <div className="bg-white rounded-lg p-4">
             <h2 className="text-lg font-bold mb-3">Способ доставки</h2>
-
-            {/* Delivery Method Selection */}
-            <div className="space-y-2 mb-4">
-              <label className="block p-3 border-2 rounded-lg cursor-pointer transition">
-                <input
-                  type="radio"
-                  name="deliveryMethod"
-                  value="post"
-                  checked={deliveryMethod === 'post'}
-                  onChange={(e) => setDeliveryMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <div className="inline-block">
-                  <p className="text-sm font-semibold">Почтой России (Первым классом) от 1 дня, от 956 ₽</p>
-                </div>
-              </label>
-
-              <label className="block p-3 border-2 rounded-lg cursor-pointer transition">
-                <input
-                  type="radio"
-                  name="deliveryMethod"
-                  value="post-regular"
-                  checked={deliveryMethod === 'post-regular'}
-                  onChange={(e) => setDeliveryMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <div className="inline-block">
-                  <p className="text-sm font-semibold">Почтой России от 2 дней, от 575 ₽</p>
-                </div>
-              </label>
-
-              <label className="block p-3 border-2 rounded-lg cursor-pointer transition">
-                <input
-                  type="radio"
-                  name="deliveryMethod"
-                  value="sdek"
-                  checked={deliveryMethod === 'sdek'}
-                  onChange={(e) => setDeliveryMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <div className="inline-block">
-                  <p className="text-sm font-semibold">СДЭК Пункт выдачи от 1 дня, от 425 ₽</p>
-                </div>
-              </label>
+            
+            <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-sm font-semibold text-gray-900">СДЭК Пункт выдачи</p>
+              <p className="text-xs text-gray-600 mt-1">Доставка от 1 дня, от 425 ₽</p>
             </div>
 
-            {/* Postal Delivery Fields */}
-            {(deliveryMethod === 'post' || deliveryMethod === 'post-regular') && (
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Город
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
-                    placeholder="Введите город"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Адрес *
-                  </label>
-                  <textarea
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Улица, дом, квартира"
-                    rows={3}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Почтовый индекс *
-                  </label>
-                  <input
-                    type="text"
-                    value={postalCode}
-                    onChange={(e) => setPostalCode(e.target.value)}
-                    placeholder="123456"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                  />
-                </div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Город
+                </label>
+                <CityAutocomplete
+                  value={selectedCity}
+                  onChange={setSelectedCity}
+                  placeholder="Введите город для поиска пунктов выдачи"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Доставка СДЭК доступна во все города России
+                </p>
               </div>
-            )}
 
-            {/* SDEK Delivery Points */}
-            {deliveryMethod === 'sdek' && (
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Город
-                  </label>
-                  <CityAutocomplete
-                    value={selectedCity}
-                    onChange={setSelectedCity}
-                    placeholder="Введите город для поиска пунктов выдачи"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Доставка СДЭК доступна во все города России
-                  </p>
-                </div>
-
-                {selectedCity && selectedCity.length >= 3 ? (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
-                    
-                    {/* SDEK Widget */}
-                    <div className="w-full">
-                      <CdekWidget
-                        city={selectedCity}
-                        onPointSelect={(point) => {
-                          const chosenId =
-                            point?.code ||
-                            point?.id ||
-                            point?.uuid ||
-                            point?.pvz_code ||
-                            point?.number ||
-                            ''
-                          setSelectedDeliveryPoint(chosenId)
-                          console.log('Selected SDEK point:', point)
-                        }}
-                      />
-                    </div>
-                    
-                    {selectedDeliveryPoint && (
-                      <div className="mt-2 p-2 bg-green-50 rounded-lg border border-green-200">
-                        <p className="text-xs text-green-800 font-semibold">
-                          ✅ Пункт выдачи выбран
-                        </p>
-                      </div>
-                    )}
+              {selectedCity && selectedCity.length >= 3 ? (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
+                  
+                  {/* CDEK Widget */}
+                  <div className="w-full">
+                    <CdekWidget
+                      city={selectedCity}
+                      onPointSelect={(point) => {
+                        const chosenId =
+                          point?.code ||
+                          point?.id ||
+                          point?.uuid ||
+                          point?.pvz_code ||
+                          point?.number ||
+                          ''
+                        setSelectedDeliveryPoint(chosenId)
+                        console.log('Selected CDEK point:', point)
+                      }}
+                    />
                   </div>
-                ) : (
-                  <p className="text-gray-600 text-sm">
-                    Введите город для поиска пунктов выдачи СДЭК
-                  </p>
-                )}
-              </div>
-            )}
+                  
+                  {selectedDeliveryPoint && (
+                    <div className="mt-2 p-2 bg-green-50 rounded-lg border border-green-200">
+                      <p className="text-xs text-green-800 font-semibold">
+                        ✅ Пункт выдачи выбран
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-600 text-sm">
+                  Введите город для поиска пунктов выдачи СДЭК
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Payment */}
@@ -689,7 +498,7 @@ export default function CheckoutPage() {
           <div className="px-4 pb-6">
             <button
               type="submit"
-              disabled={loading || (deliveryMethod === 'sdek' && !selectedDeliveryPoint) || (deliveryMethod !== 'sdek' && (!address || !postalCode))}
+              disabled={loading || !selectedDeliveryPoint}
               onClick={handleSubmit}
               className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
