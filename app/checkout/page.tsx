@@ -114,35 +114,14 @@ export default function CheckoutPage() {
         src="https://api-maps.yandex.ru/2.1/?apikey=f366a46d-5c10-4875-a6ee-263f3678b026&lang=ru_RU"
         strategy="afterInteractive"
         onLoad={() => {
-          // Помечаем, что Яндекс.Карты загружены и ждём готовности
+          // Помечаем, что Яндекс.Карты загружены
           if (typeof window !== 'undefined') {
-            // Яндекс.Карты могут быть загружены, но не готовы
-            // Используем ymaps.ready() если доступен
-            const ymaps = (window as any).ymaps
-            if (ymaps && ymaps.ready && typeof (ymaps.ready as any) === 'function') {
-              try {
-                // Вызываем напрямую через as any
-                ;(ymaps.ready as any)(() => {
-                  (window as any).__ymaps_loaded = true
-                  (window as any).__ymaps_ready = true
-                  window.dispatchEvent(new Event('ymaps-ready'))
-                })
-              } catch {
-                // Если вызов не удался, просто помечаем как загруженные
-                setTimeout(() => {
-                  (window as any).__ymaps_loaded = true
-                  (window as any).__ymaps_ready = true
-                  window.dispatchEvent(new Event('ymaps-ready'))
-                }, 1000)
-              }
-            } else {
-              // Если ymaps.ready недоступен, просто помечаем как загруженные
-              setTimeout(() => {
-                (window as any).__ymaps_loaded = true
-                (window as any).__ymaps_ready = true
-                window.dispatchEvent(new Event('ymaps-ready'))
-              }, 1000)
-            }
+            // Даём время на полную инициализацию Яндекс.Карт
+            setTimeout(() => {
+              (window as any).__ymaps_loaded = true
+              (window as any).__ymaps_ready = true
+              window.dispatchEvent(new Event('ymaps-ready'))
+            }, 1500)
           }
         }}
         onError={(e) => {

@@ -171,21 +171,12 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       // Если Яндекс.Карты не загружены, проверяем периодически
       if ((!(window as any).ymaps || !(window as any).__ymaps_ready) && !checkInterval) {
         checkInterval = setInterval(() => {
-          // Проверяем готовность Яндекс.Карт
-          const ymaps = (window as any).ymaps
-          if (ymaps && !(window as any).__ymaps_ready && ymaps.ready && typeof (ymaps.ready as any) === 'function') {
-            try {
-              ;(ymaps.ready as any)(() => {
-                (window as any).__ymaps_ready = true
-                window.dispatchEvent(new Event('ymaps-ready'))
-              })
-            } catch {
-              // Игнорируем ошибки
+          // Просто проверяем наличие ymaps и флага готовности
+          if ((window as any).ymaps && (window as any).__ymaps_ready) {
+            if (tryInit()) {
+              clearInterval(checkInterval!)
+              checkInterval = undefined
             }
-          }
-          if (tryInit()) {
-            clearInterval(checkInterval!)
-            checkInterval = undefined
           }
         }, 500)
       }
