@@ -166,7 +166,7 @@ export default function CheckoutPage() {
       if (res.ok) {
         const order = await res.json()
         clearCart()
-        router.push(`/orders/${order.id}`)
+        router.push('/profile')
       } else {
         const error = await res.json().catch(() => ({ error: 'Unknown error' }))
         console.error('Order creation error:', error)
