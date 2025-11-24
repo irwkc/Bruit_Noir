@@ -139,6 +139,21 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    func updateOrderStatus(orderId: String, status: String) async {
+        guard case .authenticated = authState else { return }
+        do {
+            let updatedOrder = try await ordersService.updateOrderStatus(orderId: orderId, status: status)
+            // Обновляем заказ в списке
+            if let index = orders.firstIndex(where: { $0.id == orderId }) {
+                orders[index] = updatedOrder
+            }
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+        } catch {
+            handle(error)
+        }
+    }
+
     func fetchProducts(force: Bool = false) async {
         guard case .authenticated = authState else { return }
         if productsLoading { return }

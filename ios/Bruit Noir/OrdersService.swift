@@ -18,4 +18,17 @@ actor OrdersService {
             decode: AdminOrdersResponse.self
         )
     }
+
+    func updateOrderStatus(orderId: String, status: String) async throws -> Order {
+        struct UpdateStatusRequest: Encodable {
+            let status: String
+        }
+
+        return try await APIClient.shared.performRequest(
+            "PATCH",
+            path: "/api/admin/orders/\(orderId)",
+            body: UpdateStatusRequest(status: status),
+            decode: Order.self
+        )
+    }
 }

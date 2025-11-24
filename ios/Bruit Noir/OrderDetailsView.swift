@@ -2,6 +2,9 @@ import SwiftUI
 
 struct OrderDetailsView: View {
     let order: Order
+    @EnvironmentObject var appModel: AppViewModel
+    @State private var isUpdatingStatus = false
+    @State private var showConfirmDialog = false
 
     var body: some View {
         List {
@@ -53,11 +56,45 @@ struct OrderDetailsView: View {
 
             Section("Служебное") {
                 LabeledContent("ID заказа", value: order.id)
+                LabeledContent("Статус", value: order.status)
                 LabeledContent("Создан", value: order.createdAt.formatted(date: .abbreviated, time: .shortened))
                 LabeledContent("Обновлен", value: order.updatedAt.formatted(date: .abbreviated, time: .shortened))
+            }
+
+            // Кнопка "Отправить" для заказов, которые еще не отправлены
+            if order.status != "shipped" && order.status != "delivered" && order.status != "cancelled" {
+                Section {
+                    Button {
+                        showConfirmDialog = true
+                    } label: {
+                        HStack {
+                            Spacer()
+                            if isUpdatingStatus {
+                                ProgressView()
+                                    .padding(.trailing, 8)
+                            }
+                            Text("Отправить заказ")
+                                .fontWeight(.semibold)
+                            Spacer()
+                        }
+                    }
+                    .disabled(isUpdatingStatus)
+                }
             }
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Заказ #" + order.id.prefix(8))
+        .confirmationDialog("Отправить заказ?", isPresented: $showConfirmDialog) {
+            Button("Отправить", role: .destructive) {
+                Task {
+                    isUpdatingStatus = true
+                    await appModel.updateOrderStatus(orderId: order.id, status: "shipped")
+                    isUpdatingStatus = false
+                }
+            }
+            Button("Отмена", role: .cancel) {}
+        } message: {
+            Text("Заказ будет помечен как отправленный, и клиенту будет отправлено уведомление на email.")
+        }
     }
 }

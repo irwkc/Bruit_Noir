@@ -301,3 +301,161 @@ export async function sendNewOrderNotification(to: string, order: {
   }
 }
 
+export async function sendOrderShippedNotification(
+  to: string,
+  order: {
+    id: string
+    customerName: string
+    items: { name: string; quantity: number; price: number; size: string; color: string }[]
+    total: number
+    deliveryPoint: { name: string; address: string; city: string; phone?: string | null } | null
+  }
+) {
+  const formatter = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' })
+  const orderTotal = formatter.format(order.total)
+
+  const itemsTable = order.items
+    .map(
+      (item) =>
+        `<tr>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; color: #111;">
+            <strong>${item.name}</strong><br>
+            <span style="color:#666; font-size:12px;">Размер: ${item.size} · Цвет: ${item.color}</span>
+          </td>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; color: #111; text-align:center;">${item.quantity} шт.</td>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; color: #111; text-align:right;">${formatter.format(item.price)}</td>
+        </tr>`
+    )
+    .join('')
+
+  const deliveryInfo = order.deliveryPoint
+    ? `
+      <div style="background-color: #f7f7f7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="margin: 0 0 12px; font-size: 16px; color: #111;">Пункт выдачи:</h3>
+        <p style="margin: 0 0 8px; color: #444; font-size: 14px;"><strong>${order.deliveryPoint.name}</strong></p>
+        <p style="margin: 0 0 8px; color: #444; font-size: 14px;">${order.deliveryPoint.address}</p>
+        <p style="margin: 0 0 8px; color: #444; font-size: 14px;">${order.deliveryPoint.city}</p>
+        ${order.deliveryPoint.phone ? `<p style="margin: 8px 0 0; color: #444; font-size: 14px;">Телефон: ${order.deliveryPoint.phone}</p>` : ''}
+      </div>
+    `
+    : ''
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Ваш заказ отправлен - Bruit Noir</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #000000; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+              <!-- Header -->
+              <tr>
+                <td style="padding: 40px 40px 30px; text-align: center; background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);">
+                  <h1 style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">
+                    BRUIT NOIR
+                  </h1>
+                  <p style="margin: 10px 0 0; font-size: 18px; color: #4ade80; font-weight: 600;">
+                    ✅ Ваш заказ отправлен!
+                  </p>
+                </td>
+              </tr>
+              
+              <!-- Content -->
+              <tr>
+                <td style="padding: 40px; background-color: #000000;">
+                  <p style="margin: 0 0 20px; font-size: 18px; color: #ffffff;">
+                    Здравствуйте, ${order.customerName}!
+                  </p>
+                  
+                  <p style="margin: 0 0 30px; font-size: 16px; line-height: 1.6; color: #cccccc;">
+                    Ваш заказ <strong style="color: #ffffff;">#${order.id.slice(0, 8)}</strong> был отправлен и скоро поступит в пункт выдачи.
+                  </p>
+
+                  <div style="background-color: #1a1a1a; padding: 24px; border-radius: 8px; margin-bottom: 30px;">
+                    <h2 style="margin: 0 0 20px; font-size: 20px; color: #ffffff;">Детали заказа</h2>
+                    
+                    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:20px;">
+                      <thead>
+                        <tr style="border-bottom: 1px solid #333;">
+                          <th style="padding: 10px 0; color: #999; font-weight: 600; text-align: left;">Товар</th>
+                          <th style="padding: 10px 0; color: #999; font-weight: 600; text-align: center;">Кол-во</th>
+                          <th style="padding: 10px 0; color: #999; font-weight: 600; text-align: right;">Цена</th>
+                        </tr>
+                      </thead>
+                      <tbody>${itemsTable}</tbody>
+                    </table>
+
+                    <div style="border-top: 1px solid #333; padding-top: 16px; margin-top: 16px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 18px; color: #ffffff; font-weight: 600;">Итого:</span>
+                        <span style="font-size: 20px; color: #ffffff; font-weight: bold;">${orderTotal}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  ${deliveryInfo}
+
+                  <p style="margin: 30px 0 0; font-size: 14px; line-height: 1.6; color: #999999;">
+                    Вы получите уведомление, когда заказ поступит в пункт выдачи. Спасибо за покупку!
+                  </p>
+                </td>
+              </tr>
+              
+              <!-- Footer -->
+              <tr>
+                <td style="padding: 30px 40px; background-color: #0a0a0a; border-top: 1px solid #1a1a1a;">
+                  <p style="margin: 0 0 10px; font-size: 12px; color: #666666; text-align: center;">
+                    © ${new Date().getFullYear()} Bruit Noir. Все права защищены.
+                  </p>
+                  <p style="margin: 0; font-size: 12px; color: #666666; text-align: center;">
+                    Современный бренд одежды для тех, кто ценит стиль и качество
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  const textContent = `
+Здравствуйте, ${order.customerName}!
+
+Ваш заказ #${order.id.slice(0, 8)} был отправлен и скоро поступит в пункт выдачи.
+
+Детали заказа:
+${order.items.map((item) => `- ${item.name} · ${item.quantity} шт. · ${formatter.format(item.price)} · Размер ${item.size} · Цвет ${item.color}`).join('\n')}
+
+Итого: ${orderTotal}
+
+${order.deliveryPoint ? `Пункт выдачи:\n${order.deliveryPoint.name}\n${order.deliveryPoint.address}\n${order.deliveryPoint.city}${order.deliveryPoint.phone ? `\nТелефон: ${order.deliveryPoint.phone}` : ''}` : ''}
+
+Вы получите уведомление, когда заказ поступит в пункт выдачи. Спасибо за покупку!
+
+---
+© ${new Date().getFullYear()} Bruit Noir
+Современный бренд одежды для тех, кто ценит стиль и качество
+  `
+
+  try {
+    await transporter.sendMail({
+      from: '"Bruit Noir" <bruitnoir_info@mail.ru>',
+      to,
+      subject: `Ваш заказ #${order.id.slice(0, 8)} отправлен - Bruit Noir`,
+      text: textContent,
+      html: htmlContent,
+    })
+    return { success: true }
+  } catch (error) {
+    console.error('Error sending order shipped notification:', error)
+    return { success: false, error }
+  }
+}
+
