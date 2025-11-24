@@ -97,10 +97,30 @@ export async function POST(request: NextRequest) {
   return handleRequest(request)
 }
 
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-App-Name, X-App-Version',
+      'Access-Control-Max-Age': '86400',
+      'X-Service-Version': SERVICE_VERSION,
+    },
+  })
+}
+
 async function handleRequest(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const action = searchParams.get('action')
+    
+    console.log('CDEK service request:', {
+      method: request.method,
+      action,
+      url: request.url,
+      headers: Object.fromEntries(request.headers.entries()),
+    })
 
     // Получаем данные из body для POST запросов
     let bodyData: Record<string, any> = {}
@@ -119,14 +139,29 @@ async function handleRequest(request: NextRequest) {
     })
     Object.assign(requestData, bodyData)
 
+    // CORS заголовки для виджета СДЭК
+    const corsHeaders: HeadersInit = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-App-Name, X-App-Version',
+      'Access-Control-Max-Age': '86400',
+      'X-Service-Version': SERVICE_VERSION,
+    }
+
+    // Обработка preflight запросов
+    if (request.method === 'OPTIONS') {
+      return new NextResponse(null, {
+        status: 200,
+        headers: corsHeaders,
+      })
+    }
+
     if (!action) {
       return NextResponse.json(
         { message: 'Action is required' },
         {
           status: 400,
-          headers: {
-            'X-Service-Version': SERVICE_VERSION,
-          },
+          headers: corsHeaders,
         }
       )
     }
@@ -135,19 +170,21 @@ async function handleRequest(request: NextRequest) {
 
     switch (action) {
       case 'offices':
+        console.log('Fetching CDEK offices with params:', requestData)
         result = await makeCdekRequest('deliverypoints', requestData)
+        console.log('CDEK offices response received, length:', result.result.length)
         break
       case 'calculate':
+        console.log('Calculating CDEK tariff with params:', requestData)
         result = await makeCdekRequest('calculator/tarifflist', requestData, true)
+        console.log('CDEK tariff response received, length:', result.result.length)
         break
       default:
         return NextResponse.json(
           { message: 'Unknown action' },
           {
             status: 400,
-            headers: {
-              'X-Service-Version': SERVICE_VERSION,
-            },
+            headers: corsHeaders,
           }
         )
     }
@@ -155,6 +192,9 @@ async function handleRequest(request: NextRequest) {
     // Копируем X- заголовки из ответа CDEK
     const responseHeaders: HeadersInit = {
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-App-Name, X-App-Version',
       'X-Service-Version': SERVICE_VERSION,
     }
 
@@ -175,6 +215,9 @@ async function handleRequest(request: NextRequest) {
       {
         status: 500,
         headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-App-Name, X-App-Version',
           'X-Service-Version': SERVICE_VERSION,
         },
       }

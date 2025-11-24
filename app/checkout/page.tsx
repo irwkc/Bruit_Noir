@@ -130,16 +130,27 @@ export default function CheckoutPage() {
         src="https://api-maps.yandex.ru/2.1/?apikey=f366a46d-5c10-4875-a6ee-263f3678b026&lang=ru_RU"
         strategy="afterInteractive"
         onLoad={() => {
+          console.log('Yandex Maps script loaded')
           setScriptsLoaded(true)
+          // Инициализируем ymaps после загрузки
+          if (typeof window !== 'undefined' && (window as any).ymaps) {
+            (window as any).ymaps.ready(() => {
+              console.log('Yandex Maps ready')
+              ;(window as any).__ymaps_ready = true
+              window.dispatchEvent(new Event('ymaps-ready'))
+            })
+          }
         }}
         onError={(e) => {
           console.error('Failed to load Yandex Maps:', e)
+          alert('Ошибка загрузки Яндекс.Карт. Пожалуйста, обновите страницу.')
         }}
       />
       <Script
         src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3"
         strategy="afterInteractive"
         onLoad={() => {
+          console.log('CDEK widget script loaded')
           if (typeof window !== 'undefined') {
             (window as any).__cdek_widget_loaded = true
             window.dispatchEvent(new Event('cdek-widget-ready'))
@@ -147,6 +158,7 @@ export default function CheckoutPage() {
         }}
         onError={(e) => {
           console.error('Failed to load CDEK widget:', e)
+          alert('Ошибка загрузки виджета СДЭК. Пожалуйста, обновите страницу.')
         }}
       />
       <div className="min-h-screen bg-gray-50">

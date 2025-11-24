@@ -66,13 +66,23 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
 
       // Проверяем наличие всех зависимостей
       if (!window.CDEKWidget || !(window as any).__cdek_widget_loaded) {
+        console.log('CDEK widget dependencies check:', {
+          CDEKWidget: !!window.CDEKWidget,
+          __cdek_widget_loaded: !!(window as any).__cdek_widget_loaded,
+        })
         return false
       }
 
       // Проверяем, что Яндекс.Карты загружены и готовы
       if (!(window as any).ymaps || !(window as any).__ymaps_ready) {
+        console.log('Yandex Maps dependencies check:', {
+          ymaps: !!(window as any).ymaps,
+          __ymaps_ready: !!(window as any).__ymaps_ready,
+        })
         return false
       }
+      
+      console.log('All dependencies loaded, initializing widget...')
 
       // Убеждаемся, что контейнер существует
       const container = document.getElementById(containerId)
@@ -111,6 +121,24 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           onError: (error: any) => {
             console.error('CDEK widget error:', error)
             isInitializingRef.current = false
+            
+            // Показываем сообщение об ошибке пользователю
+            const container = document.getElementById(containerId)
+            if (container) {
+              container.innerHTML = `
+                <div class="p-6 text-center text-red-500">
+                  <div class="text-4xl mb-2">⚠️</div>
+                  <p class="font-semibold mb-2">Ошибка загрузки виджета СДЭК</p>
+                  <p class="text-sm text-gray-600">${error?.message || 'Попробуйте обновить страницу'}</p>
+                  <button 
+                    onclick="window.location.reload()" 
+                    class="mt-4 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+                  >
+                    Обновить страницу
+                  </button>
+                </div>
+              `
+            }
           },
         })
         console.log('CDEK widget instance created')
@@ -118,6 +146,24 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       } catch (error) {
         console.error('Failed to initialize CDEK widget:', error)
         isInitializingRef.current = false
+        
+        // Показываем сообщение об ошибке пользователю
+        const container = document.getElementById(containerId)
+        if (container) {
+          container.innerHTML = `
+            <div class="p-6 text-center text-red-500">
+              <div class="text-4xl mb-2">⚠️</div>
+              <p class="font-semibold mb-2">Ошибка инициализации виджета СДЭК</p>
+              <p class="text-sm text-gray-600">${error instanceof Error ? error.message : 'Попробуйте обновить страницу'}</p>
+              <button 
+                onclick="window.location.reload()" 
+                class="mt-4 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+              >
+                Обновить страницу
+              </button>
+            </div>
+          `
+        }
         return false
       }
     }
@@ -199,7 +245,24 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           style={{ width: '100%', height: '600px', minHeight: '600px' }}
           className="w-full flex items-center justify-center"
         >
-          <p className="text-gray-500">Загрузка карты...</p>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-2"></div>
+            <p className="text-gray-500">Загрузка карты...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  
+  // Если город не указан или слишком короткий
+  if (!city || city.length < 3) {
+    return (
+      <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+        <div
+          style={{ width: '100%', height: '600px', minHeight: '600px' }}
+          className="w-full flex items-center justify-center"
+        >
+          <p className="text-gray-500">Введите город для загрузки пунктов выдачи СДЭК</p>
         </div>
       </div>
     )
