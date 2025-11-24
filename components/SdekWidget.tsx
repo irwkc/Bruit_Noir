@@ -12,12 +12,14 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const isLoadingRef = useRef(false)
   const currentCityRef = useRef<string>('')
+  const hasInitializedRef = useRef(false)
 
   useEffect(() => {
     if (!city || city.length < 3) {
       setIsLoaded(false)
       isLoadingRef.current = false
       currentCityRef.current = ''
+      hasInitializedRef.current = false
       if (widgetRef.current) {
         widgetRef.current.innerHTML = ''
       }
@@ -29,18 +31,31 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
       return
     }
 
+    // Предотвращаем множественную инициализацию
+    if (hasInitializedRef.current && currentCityRef.current === city) {
+      return
+    }
+
     // Сбрасываем состояние загрузки при смене города
     if (currentCityRef.current !== city) {
-          setIsLoaded(false)
-          isLoadingRef.current = true
-          currentCityRef.current = city
-        }
+      setIsLoaded(false)
+      isLoadingRef.current = true
+      currentCityRef.current = city
+      hasInitializedRef.current = false
+    }
 
     const loadSdekWidget = () => {
+      // Предотвращаем множественную инициализацию
+      if (hasInitializedRef.current && currentCityRef.current === city) {
+        return
+      }
+
       // Remove any existing widget
       if (widgetRef.current) {
         widgetRef.current.innerHTML = ''
       }
+
+      hasInitializedRef.current = true
 
       // Try to load SDEK points directly via API
       const loadSdekPoints = async () => {
@@ -108,25 +123,12 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
       const renderPointsList = (points: any[]) => {
         if (!widgetRef.current) return
         
-        // Ограничиваем отображение до 20 пунктов для производительности
-        const displayPoints = points.slice(0, 20)
-        const hasMore = points.length > 20
-        
-        // Add header with count
-        const header = document.createElement('div')
-        header.className = 'mb-3 p-3 bg-green-50 rounded-lg'
-        header.innerHTML = `
-          <div class="text-sm font-semibold text-green-800">
-            ✅ Найдено пунктов выдачи: ${points.length}${hasMore ? ` (показано ${displayPoints.length})` : ''}
-          </div>
-        `
-        widgetRef.current.appendChild(header)
-        
+        // Показываем все пункты выдачи
         const container = document.createElement('div')
         container.className = 'space-y-2 overflow-y-auto'
         container.style.maxHeight = '500px'
         
-        displayPoints.forEach((point, index) => {
+        points.forEach((point, index) => {
           const pointElement = document.createElement('div')
           pointElement.className = 'p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-gray-400 transition'
           pointElement.setAttribute('data-point-id', point.id)
@@ -198,7 +200,14 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
     }
 
     loadSdekWidget()
-  }, [city, onPointSelect])
+
+    // Cleanup при размонтировании или смене города
+    return () => {
+      if (currentCityRef.current !== city) {
+        hasInitializedRef.current = false
+      }
+    }
+  }, [city]) // Убрали onPointSelect из зависимостей, чтобы избежать лишних перерендеров
 
   if (!city || city.length < 3) {
     return (

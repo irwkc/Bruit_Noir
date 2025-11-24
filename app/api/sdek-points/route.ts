@@ -103,7 +103,7 @@ async function fetchRealSdekPoints(cityName: string) {
     const urlParams = new URLSearchParams({
       type: 'PVZ',
       is_handout: 'true',
-      size: '50',
+      size: '200', // Увеличиваем лимит для получения всех пунктов
     })
     
     if (cityCode) {
@@ -150,10 +150,8 @@ async function fetchRealSdekPoints(cityName: string) {
     // (возможно, API уже отфильтровал правильно)
     const pointsToUse = filteredData.length > 0 ? filteredData : data
 
-    // Ограничиваем количество пунктов до 50 для производительности
-    const limitedData = pointsToUse.slice(0, 50)
-
-    return limitedData.map((point: any) => ({
+    // Возвращаем все пункты выдачи
+    return pointsToUse.map((point: any) => ({
       id: point.code || point.uuid || `sdek-${point.code}`,
       code: point.code,
       name: point.name || `СДЭК - ${point.location?.address || cityName}`,
