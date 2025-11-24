@@ -29,6 +29,8 @@ export default function CartPage() {
     )
   }
 
+  const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0)
+
   return (
     <div className="min-h-screen">
       {/* Desktop Version */}
@@ -163,84 +165,77 @@ export default function CartPage() {
       </div>
 
       {/* Mobile Version */}
-      <div className="block md:hidden pb-24">
-        {/* Mobile Header */}
-        <div className="bg-white/10 backdrop-blur-2xl border-b border-white/20 px-4 py-4 sticky top-0 z-10">
-          <h1 className="text-2xl font-bold text-white">Корзина</h1>
+      <div className="block md:hidden px-4 py-6 space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-white">Корзина</h1>
+          <p className="text-sm text-gray-300">
+            {totalQuantity} товар{totalQuantity !== 1 ? 'ов' : ''}
+          </p>
         </div>
 
-        {/* Mobile Cart Items */}
-        <div className="px-4 py-4 space-y-3">
+        <div className="space-y-4">
           {items.map((item) => (
             <div
               key={`${item.productId}-${item.size}-${item.color}`}
-              className="bg-white/10 backdrop-blur-2xl rounded-lg p-3 flex gap-3 border border-white/20"
+              className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-2xl p-4 shadow-lg"
             >
-              {/* Image */}
-              <div className="relative w-20 h-24 rounded-md overflow-hidden flex-shrink-0">
-                <Image
-                  src={item.image || '/placeholder.jpg'}
-                  alt={item.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              {/* Info */}
-              <div className="flex-grow">
-                <h3 className="font-semibold text-sm text-white mb-1 line-clamp-2">
-                  {item.name}
-                </h3>
-                <p className="text-xs text-gray-300">
-                  {item.size} / <span className="capitalize">{item.color}</span>
-                </p>
-
-                <div className="flex items-center justify-between mt-2">
-                  {/* Quantity */}
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() =>
-                        updateQuantity(
-                          item.productId,
-                          item.size,
-                          item.color,
-                          Math.max(1, item.quantity - 1)
-                        )
-                      }
-                      className="w-7 h-7 border border-white/30 rounded text-sm text-white"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-semibold w-6 text-center text-white">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() =>
-                        updateQuantity(
-                          item.productId,
-                          item.size,
-                          item.color,
-                          Math.min(10, item.quantity + 1)
-                        )
-                      }
-                      className="w-7 h-7 border border-white/30 rounded text-sm text-white"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  {/* Price & Remove */}
-                  <div className="text-right">
-                    <p className="text-base font-bold text-white">
-                      {(item.price * item.quantity).toLocaleString('ru-RU')} ₽
+              <div className="flex space-x-4">
+                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-white/10 bg-white/5 flex-shrink-0">
+                  <Image
+                    src={item.image || '/placeholder.jpg'}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0 space-y-3">
+                  <div>
+                    <h3 className="font-semibold text-white text-base line-clamp-2">
+                      {item.name}
+                    </h3>
+                    <p className="text-xs text-gray-300 mt-1">
+                      {item.size} • <span className="capitalize">{item.color}</span>
                     </p>
+                    <p className="text-lg font-bold text-white mt-2">
+                      {item.price.toLocaleString('ru-RU')} ₽
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center rounded-full border border-white/20 bg-white/10">
+                      <button
+                        onClick={() =>
+                          updateQuantity(
+                            item.productId,
+                            item.size,
+                            item.color,
+                            Math.max(1, item.quantity - 1)
+                          )
+                        }
+                        className="px-3 py-2 text-white hover:bg-white/10 transition"
+                      >
+                        −
+                      </button>
+                      <span className="w-12 text-center text-sm font-semibold">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() =>
+                          updateQuantity(
+                            item.productId,
+                            item.size,
+                            item.color,
+                            Math.min(10, item.quantity + 1)
+                          )
+                        }
+                        className="px-3 py-2 text-white hover:bg-white/10 transition"
+                      >
+                        +
+                      </button>
+                    </div>
                     <button
-                      onClick={() =>
-                        removeItem(item.productId, item.size, item.color)
-                      }
-                      className="text-red-400 text-xs flex items-center gap-1 mt-1"
+                      onClick={() => removeItem(item.productId, item.size, item.color)}
+                      className="text-sm text-red-300 hover:text-red-200 transition"
                     >
-                      <TrashIcon className="h-3 w-3" />
                       Удалить
                     </button>
                   </div>
@@ -250,27 +245,28 @@ export default function CartPage() {
           ))}
         </div>
 
-        {/* Mobile Fixed Bottom Summary */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/10 backdrop-blur-2xl border-t border-white/20 p-4">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm text-gray-300">
-              Товары ({items.reduce((sum, item) => sum + item.quantity, 0)}):
-            </span>
-            <span className="text-lg font-bold text-white">
-              {getTotalPrice().toLocaleString('ru-RU')} ₽
-            </span>
+        <div className="space-y-4 pt-2">
+          <div className="rounded-3xl border border-white/15 bg-white/5 backdrop-blur-2xl p-5 shadow-2xl">
+            <div className="flex justify-between text-sm text-gray-300 mb-2">
+              <span>Количество</span>
+              <span>{totalQuantity}</span>
+            </div>
+            <div className="flex justify-between text-lg font-semibold text-white">
+              <span>Итого</span>
+              <span>{getTotalPrice().toLocaleString('ru-RU')} ₽</span>
+            </div>
           </div>
 
           <Link
             href="/checkout"
-            className="block w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition text-center"
+            className="block w-full rounded-full bg-white text-black py-4 text-base font-semibold shadow-lg hover:bg-gray-100 transition text-center"
           >
             Оформить заказ
           </Link>
 
           <Link
             href="/catalog"
-            className="block w-full text-center text-gray-300 hover:text-white mt-2 text-sm"
+            className="block w-full text-center rounded-full border border-white/20 bg-transparent py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
           >
             Продолжить покупки
           </Link>
