@@ -12,8 +12,8 @@ export default function MobileHeader() {
 
   return (
     <header className="bg-black text-white sticky top-0 z-50 md:hidden">
-      <nav className="px-4 py-3">
-        <div className="flex items-center justify-between min-h-[36px]">
+      <nav className="py-3">
+        <div className="flex items-center justify-between min-h-[36px] px-4">
           {/* Logo - smaller for mobile */}
           <Link href="/" className="flex items-center">
             <Image
