@@ -44,25 +44,26 @@ export default function SignInPage() {
     <div className="min-h-screen bg-black relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Анимированный фон */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-gray-900 via-black to-black opacity-50 animate-pulse"></div>
-        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-gray-900 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-gray-800 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gray-900 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-900 via-black to-black"></div>
+        <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-gray-800 rounded-full mix-blend-screen filter blur-[120px] opacity-40 animate-blob"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-gray-700 rounded-full mix-blend-screen filter blur-[100px] opacity-35 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/4 left-1/2 w-[550px] h-[550px] bg-gray-800 rounded-full mix-blend-screen filter blur-[110px] opacity-40 animate-blob animation-delay-4000"></div>
+        <div className="absolute bottom-1/2 right-1/2 w-[450px] h-[450px] bg-gray-900 rounded-full mix-blend-screen filter blur-[90px] opacity-30 animate-blob animation-delay-6000"></div>
       </div>
 
       {/* Форма */}
       <div className="relative max-w-md w-full space-y-8 z-10">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
+        <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 border border-white/20">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-black mb-2 tracking-tight">
+            <h1 className="text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-lg">
               BRUIT NOIR
             </h1>
-            <h2 className="text-2xl font-semibold text-gray-800 mt-6">
+            <h2 className="text-2xl font-semibold text-white mt-6">
               Вход в аккаунт
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-300">
               Или{' '}
-              <Link href="/auth/signup" className="font-medium text-black hover:underline">
+              <Link href="/auth/signup" className="font-medium text-white hover:underline">
                 создайте новый аккаунт
               </Link>
             </p>
@@ -70,14 +71,14 @@ export default function SignInPage() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg">
+              <div className="bg-red-500/20 backdrop-blur-sm border-l-4 border-red-500 text-red-200 px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
 
             <div className="space-y-5">
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">
+                <label htmlFor="email" className="block text-sm font-semibold text-white mb-2">
                   Email
                 </label>
                 <div className="relative">
@@ -88,13 +89,13 @@ export default function SignInPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
                     placeholder="your@email.com"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-800 mb-2">
+                <label htmlFor="password" className="block text-sm font-semibold text-white mb-2">
                   Пароль
                 </label>
                 <div className="relative">
@@ -105,7 +106,7 @@ export default function SignInPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
                     placeholder="Ваш пароль"
                   />
                 </div>
