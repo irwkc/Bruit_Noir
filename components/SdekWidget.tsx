@@ -125,21 +125,20 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
         
         // Показываем все пункты выдачи
         const container = document.createElement('div')
-        container.className = 'space-y-2 overflow-y-auto'
+        container.className = 'space-y-3 overflow-y-auto'
         container.style.maxHeight = '500px'
         
         points.forEach((point, index) => {
           const pointElement = document.createElement('div')
-          pointElement.className = 'p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-gray-400 transition'
+          pointElement.className =
+            'bg-white/10 backdrop-blur-2xl border border-white/15 rounded-2xl p-4 cursor-pointer transition hover:bg-white/15'
           pointElement.setAttribute('data-point-id', point.id)
           pointElement.innerHTML = `
-            <div class="flex items-start space-x-3">
-              <input type="radio" name="sdek-point" value="${point.id}" id="point-${index}" class="mt-1 w-4 h-4">
+            <div class="flex items-center gap-3">
+              <input type="radio" name="sdek-point" value="${point.id}" id="point-${index}" class="mt-1 w-4 h-4 accent-white">
               <label for="point-${index}" class="flex-1 cursor-pointer">
-                <div class="font-semibold text-sm text-gray-900">${point.name}</div>
-                <div class="text-xs text-gray-600 mt-1">${point.address}</div>
-                ${point.workingHours ? `<div class="text-xs text-gray-500 mt-1">🕐 ${point.workingHours}</div>` : ''}
-                ${point.phone ? `<div class="text-xs text-blue-600 mt-1">📞 ${point.phone}</div>` : ''}
+                <div class="font-semibold text-sm text-white line-clamp-2">${point.name}</div>
+                <div class="text-xs text-gray-300 mt-1">${point.address}</div>
               </label>
             </div>
           `
@@ -147,13 +146,13 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
           pointElement.addEventListener('click', () => {
             // Clear other selections
             container.querySelectorAll('[data-point-id]').forEach((el: any) => {
-              el.classList.remove('border-black', 'bg-gray-50')
-              el.classList.add('border-gray-200')
+              el.classList.remove('border-white', 'bg-white/15')
+              el.classList.add('border-white/15')
             })
             
             // Highlight selected
-            pointElement.classList.remove('border-gray-200')
-            pointElement.classList.add('border-black', 'bg-gray-50')
+            pointElement.classList.remove('border-white/15')
+            pointElement.classList.add('border-white', 'bg-white/15')
             
             // Select this point
             const radio = pointElement.querySelector('input[type="radio"]') as HTMLInputElement
