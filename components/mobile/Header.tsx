@@ -2,17 +2,36 @@
 
 import Link from 'next/link'
 import { useCartStore } from '@/lib/store'
-import { ShoppingCartIcon, UserIcon, Bars3Icon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
+import {
+  ShoppingCartIcon,
+  UserIcon,
+  Bars3Icon,
+  Squares2X2Icon,
+  InformationCircleIcon,
+  EnvelopeIcon,
+} from '@heroicons/react/24/outline'
+import { useState, type ComponentProps } from 'react'
 import Image from 'next/image'
 
 export default function MobileHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const totalItems = useCartStore((state) => state.getTotalItems())
 
+  type MenuItem = {
+    label: string
+    href: string
+    icon: (props: ComponentProps<'svg'>) => JSX.Element
+  }
+
+  const menuItems: MenuItem[] = [
+    { label: 'Каталог', href: '/catalog', icon: Squares2X2Icon },
+    { label: 'О бренде', href: '/about', icon: InformationCircleIcon },
+    { label: 'Контакты', href: '/contact', icon: EnvelopeIcon },
+  ]
+
   return (
-    <header className="bg-black text-white sticky top-0 z-50 md:hidden">
-      <nav className="py-3">
+    <header className="sticky top-0 z-50 md:hidden">
+      <nav className="py-3 backdrop-blur-2xl bg-black/40 border-b border-white/10 text-white">
         <div className="flex items-center justify-between min-h-[36px] px-4">
           {/* Logo - smaller for mobile */}
           <Link href="/" className="flex items-center">
@@ -28,19 +47,27 @@ export default function MobileHeader() {
 
           {/* Icons - compact layout */}
           <div className="flex items-center space-x-3">
-            <Link href="/profile" className="p-2 hover:bg-gray-800 rounded-full transition">
+            <Link
+              href="/profile"
+              className="p-2.5 bg-white/5 border border-white/15 rounded-full hover:bg-white/10 transition"
+            >
               <UserIcon className="h-5 w-5" />
             </Link>
-            <Link href="/cart" className="relative p-2 hover:bg-gray-800 rounded-full transition">
+            <Link
+              href="/cart"
+              className="relative p-2.5 bg-white/5 border border-white/15 rounded-full hover:bg-white/10 transition"
+            >
               <ShoppingCartIcon className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
             </Link>
             <button
-              className="p-2 hover:bg-gray-800 rounded-full transition"
+              className={`p-2.5 rounded-full border border-white/15 transition ${
+                mobileMenuOpen ? 'bg-white/20' : 'bg-white/5 hover:bg-white/10'
+              }`}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <Bars3Icon className="h-5 w-5" />
@@ -50,29 +77,27 @@ export default function MobileHeader() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="mt-4 pb-4 border-t border-gray-800">
-            <div className="pt-4 space-y-3">
-              <Link
-                href="/catalog"
-                className="block py-2 text-sm font-medium hover:text-gray-300 transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Каталог
-              </Link>
-              <Link
-                href="/about"
-                className="block py-2 text-sm font-medium hover:text-gray-300 transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                О бренде
-              </Link>
-              <Link
-                href="/contact"
-                className="block py-2 text-sm font-medium hover:text-gray-300 transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Контакты
-              </Link>
+          <div className="px-4 pt-4 pb-6">
+            <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl p-4 space-y-2 shadow-2xl">
+              {menuItems.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold hover:bg-white/10 transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <span>{item.label}</span>
+                    </div>
+                    <span className="text-xs text-gray-300">→</span>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}
