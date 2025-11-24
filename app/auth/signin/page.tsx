@@ -147,10 +147,10 @@ export default function SignInPage() {
           </div>
         </main>
 
-        <div className="hidden md:block mt-auto pt-8">
+        <div className="hidden md:block mt-auto pt-24 pb-6">
           <Footer />
         </div>
-        <div className="md:hidden mt-auto pt-6">
+        <div className="md:hidden mt-auto pt-16 pb-4">
           <MobileFooter />
         </div>
       </div>
