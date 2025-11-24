@@ -223,7 +223,7 @@ export default function CheckoutPage() {
                         required
                         value={customerLastName}
                         onChange={(e) => setCustomerLastName(e.target.value)}
-                        className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                        className="ios-legacy-input w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                       />
                     </div>
                   <div>
@@ -235,18 +235,18 @@ export default function CheckoutPage() {
                       required
                         value={customerFirstName}
                         onChange={(e) => setCustomerFirstName(e.target.value)}
-                        className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                      className="ios-legacy-input w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
                         Отчество
                       </label>
-                      <input
+                    <input
                         type="text"
                         value={customerMiddleName}
                         onChange={(e) => setCustomerMiddleName(e.target.value)}
-                        className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                      className="ios-legacy-input w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                     />
                     </div>
                   </div>
@@ -259,7 +259,7 @@ export default function CheckoutPage() {
                       required
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                      className="ios-legacy-input w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                     />
                   </div>
                   <div>
@@ -272,7 +272,7 @@ export default function CheckoutPage() {
                       value={customerPhone}
                       onChange={handlePhoneChange}
                       placeholder="+7 (999) 123-45-67"
-                      className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                      className="ios-legacy-input w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                     />
                   </div>
                 </div>
@@ -292,11 +292,11 @@ export default function CheckoutPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Город
                     </label>
-                    <CityAutocomplete
+                  <CityAutocomplete
                       value={selectedCity}
                       onChange={setSelectedCity}
                       placeholder="Введите город для поиска пунктов выдачи"
-                      className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                    className="ios-legacy-input w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                     />
                     <p className="text-xs text-gray-400 mt-1">
                       Доставка СДЭК доступна во все города России
@@ -432,7 +432,7 @@ export default function CheckoutPage() {
                   required
                   value={customerLastName}
                   onChange={(e) => setCustomerLastName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  className="ios-legacy-input w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
@@ -444,7 +444,7 @@ export default function CheckoutPage() {
                   required
                   value={customerFirstName}
                   onChange={(e) => setCustomerFirstName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  className="ios-legacy-input w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
@@ -455,7 +455,7 @@ export default function CheckoutPage() {
                   type="text"
                   value={customerMiddleName}
                   onChange={(e) => setCustomerMiddleName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  className="ios-legacy-input w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
@@ -467,7 +467,7 @@ export default function CheckoutPage() {
                   required
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  className="ios-legacy-input w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
@@ -480,7 +480,7 @@ export default function CheckoutPage() {
                   value={customerPhone}
                   onChange={handlePhoneChange}
                   placeholder="+7 (999) 123-45-67"
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  className="ios-legacy-input w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
             </div>
@@ -504,7 +504,7 @@ export default function CheckoutPage() {
                   value={selectedCity}
                   onChange={setSelectedCity}
                   placeholder="Введите город для поиска пунктов выдачи"
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+                  className="ios-legacy-input w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
                 <p className="text-xs text-gray-400 mt-1">
                   Доставка СДЭК доступна во все города России
