@@ -162,20 +162,41 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
         }
       }
 
-      // Проверяем, нет ли уже активных виджетов на странице (защита от StrictMode и множественных экземпляров)
-      // Разрешаем только один активный виджет на странице
-      if (activeWidgets.size > 0) {
-        // Проверяем, есть ли уже отрендеренный виджет в любом контейнере
-        const existingWidget = document.querySelector('[data-cdek-widget="ready"], [data-cdek-widget="initializing"]')
-        if (existingWidget && existingWidget.id !== currentContainerId) {
-          console.log('Another widget is already active on the page, skipping initialization for:', currentContainerId)
+      // СТРОГАЯ ПРОВЕРКА: разрешаем только один активный виджет на странице
+      // Проверяем, есть ли уже отрендеренный виджет в любом контейнере на странице
+      const existingWidget = document.querySelector('[data-cdek-widget="ready"], [data-cdek-widget="initializing"]')
+      if (existingWidget) {
+        const existingId = existingWidget.id
+        // Если это не наш контейнер, блокируем инициализацию
+        if (existingId !== currentContainerId) {
+          console.log('Another widget is already active on the page:', existingId, '- skipping initialization for:', currentContainerId)
           hasInitializedRef.current = true
+          // Скрываем этот контейнер, так как виджет уже отображается в другом месте
+          if (container) {
+            container.style.display = 'none'
+          }
           return true
         }
-        // Если это тот же контейнер, разрешаем инициализацию
-        if (!activeWidgets.has(currentContainerId)) {
-          console.log('Other widgets are initializing, waiting...')
-          return false
+      }
+      
+      // Дополнительная проверка через реестр активных виджетов
+      if (activeWidgets.size > 0 && !activeWidgets.has(currentContainerId)) {
+        console.log('Other widgets are in registry, checking if they are visible...')
+        // Проверяем, действительно ли другие виджеты видны на странице
+        let hasVisibleWidget = false
+        activeWidgets.forEach((widgetId) => {
+          const widgetContainer = document.getElementById(widgetId)
+          if (widgetContainer && widgetContainer.offsetParent !== null) {
+            hasVisibleWidget = true
+          }
+        })
+        if (hasVisibleWidget) {
+          console.log('Visible widget found, skipping initialization for:', currentContainerId)
+          hasInitializedRef.current = true
+          if (container) {
+            container.style.display = 'none'
+          }
+          return true
         }
       }
 
