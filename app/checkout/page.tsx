@@ -11,7 +11,9 @@ import dynamicImport from 'next/dynamic'
 // Dynamically import SDEK widget to avoid SSR issues
 const CdekWidget = dynamicImport(() => import('@/components/CdekWidget'), { ssr: false })
 
+// Force dynamic rendering to avoid SSR issues with CDEK widget
 export const dynamic = 'force-dynamic'
+export const dynamicParams = true
 
 interface DeliveryPoint {
   id: string

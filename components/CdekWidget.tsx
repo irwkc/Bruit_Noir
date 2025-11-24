@@ -179,6 +179,12 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       destroyWidget()
 
       try {
+        // Дополнительная проверка на клиентскую сторону перед инициализацией
+        if (typeof window === 'undefined' || !window.location) {
+          console.log('Skipping widget initialization: not in browser environment')
+          return false
+        }
+
         console.log('Initializing CDEK widget with:', {
           from: DEFAULT_ORIGIN_CITY,
           defaultLocation: city,
