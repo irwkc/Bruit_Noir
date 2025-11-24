@@ -162,11 +162,21 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
         }
       }
 
-      // Проверяем, нет ли уже активных виджетов (защита от StrictMode)
-      if (activeWidgets.size > 0 && !activeWidgets.has(currentContainerId)) {
-        // Даем небольшую задержку, чтобы дать время первому виджету инициализироваться
-        console.log('Other widgets are initializing, waiting...')
-        return false
+      // Проверяем, нет ли уже активных виджетов на странице (защита от StrictMode и множественных экземпляров)
+      // Разрешаем только один активный виджет на странице
+      if (activeWidgets.size > 0) {
+        // Проверяем, есть ли уже отрендеренный виджет в любом контейнере
+        const existingWidget = document.querySelector('[data-cdek-widget="ready"], [data-cdek-widget="initializing"]')
+        if (existingWidget && existingWidget.id !== currentContainerId) {
+          console.log('Another widget is already active on the page, skipping initialization for:', currentContainerId)
+          hasInitializedRef.current = true
+          return true
+        }
+        // Если это тот же контейнер, разрешаем инициализацию
+        if (!activeWidgets.has(currentContainerId)) {
+          console.log('Other widgets are initializing, waiting...')
+          return false
+        }
       }
 
       // Помечаем, что начинаем инициализацию
