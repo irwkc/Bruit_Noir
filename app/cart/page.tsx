@@ -211,11 +211,11 @@ export default function CartPage() {
                             Math.max(1, item.quantity - 1)
                           )
                         }
-                        className="px-3 py-2 text-white hover:bg-white/10 transition"
+                        className="px-3 py-2 text-white hover:bg-white/20 transition focus:outline-none"
                       >
                         −
                       </button>
-                      <span className="w-12 text-center text-sm font-semibold">
+                      <span className="w-12 text-center text-sm font-semibold text-white">
                         {item.quantity}
                       </span>
                       <button
@@ -227,14 +227,14 @@ export default function CartPage() {
                             Math.min(10, item.quantity + 1)
                           )
                         }
-                        className="px-3 py-2 text-white hover:bg-white/10 transition"
+                        className="px-3 py-2 text-white hover:bg-white/20 transition focus:outline-none"
                       >
                         +
                       </button>
                     </div>
                     <button
                       onClick={() => removeItem(item.productId, item.size, item.color)}
-                      className="text-sm text-red-300 hover:text-red-200 transition"
+                      className="inline-flex items-center gap-2 rounded-full border border-red-300/30 bg-red-300/10 px-4 py-2 text-xs font-semibold text-red-200 hover:bg-red-300/20 transition"
                     >
                       Удалить
                     </button>
