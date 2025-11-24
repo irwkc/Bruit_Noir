@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -12,6 +12,26 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Загружаем данные из формы оформления заказа при монтировании компонента
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('checkoutFormData')
+      if (savedData) {
+        const formData = JSON.parse(savedData)
+        if (formData.name) {
+          setName(formData.name)
+        }
+        if (formData.email) {
+          setEmail(formData.email)
+        }
+        // Очищаем данные после использования
+        localStorage.removeItem('checkoutFormData')
+      }
+    } catch (error) {
+      console.error('Error loading checkout form data:', error)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,11 +61,17 @@ export default function SignUpPage() {
       if (!res.ok) {
         setError(data.error || 'Ошибка при регистрации')
       } else {
+        // Очищаем данные формы оформления заказа после успешной регистрации
+        localStorage.removeItem('checkoutFormData')
+        
         // Redirect to verification page
         if (data.requiresVerification && data.userId) {
           router.push(`/auth/verify?userId=${data.userId}`)
         } else {
-          router.push('/auth/signin')
+          // Если есть callbackUrl, используем его, иначе на страницу входа
+          const urlParams = new URLSearchParams(window.location.search)
+          const callbackUrl = urlParams.get('callbackUrl')
+          router.push(callbackUrl || '/auth/signin')
         }
       }
     } catch (error) {

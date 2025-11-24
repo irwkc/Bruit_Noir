@@ -669,6 +669,19 @@ export default function CheckoutPage() {
                 </p>
                 <button
                   onClick={() => {
+                    // Сохраняем данные формы в localStorage для передачи на страницу регистрации
+                    const fullName = [customerLastName, customerFirstName, customerMiddleName]
+                      .filter(Boolean)
+                      .join(' ')
+                      .trim()
+                    
+                    if (fullName || customerEmail) {
+                      localStorage.setItem('checkoutFormData', JSON.stringify({
+                        name: fullName || customerFirstName || '',
+                        email: customerEmail || '',
+                      }))
+                    }
+                    
                     setShowAuthModal(false)
                     router.push('/auth/signup?callbackUrl=/checkout')
                   }}
