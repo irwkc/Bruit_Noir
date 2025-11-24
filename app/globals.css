@@ -6,12 +6,10 @@
 html {
   scroll-behavior: smooth;
   background-color: #000000;
-  overscroll-behavior: none;
 }
 
 body {
   background-color: #000000;
-  overscroll-behavior: none;
 }
 
 @layer utilities {
