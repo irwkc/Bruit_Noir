@@ -67,7 +67,7 @@ export default function SignInPage() {
               />
             </div>
             <h2 className="text-2xl font-semibold text-white mt-6">
-              Вход в аккаунт
+              Войдите в аккаунт
             </h2>
             <p className="mt-2 text-sm text-gray-300">
               Или{' '}
