@@ -32,3 +32,22 @@ html {
     display: none;
   }
 }
+
+/* Изоляция стилей для виджета CDEK
+ * Виджет использует normalize.css (Reset CSS), что может влиять на стили страницы
+ * См. https://github.com/cdek-it/widget/wiki
+ * Используем CSS containment и isolation для минимизации влияния
+ */
+.cdek-widget-wrapper {
+  /* CSS isolation для предотвращения влияния normalize.css на остальную страницу */
+  isolation: isolate;
+  /* Создаем новый stacking context */
+  position: relative;
+  z-index: 0;
+}
+
+.cdek-widget-container {
+  /* CSS containment для изоляции layout, style и paint */
+  contain: layout style paint;
+  /* Изоляция стилей для предотвращения влияния normalize.css виджета на остальную страницу */
+}

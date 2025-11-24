@@ -409,17 +409,22 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
     )
   }
 
+  // ВАЖНО: Виджет CDEK использует normalize.css (Reset CSS), что может влиять на стили страницы
+  // См. https://github.com/cdek-it/widget/wiki
+  // Также при использовании с Яндекс-картами стабильность не гарантируется
+  // Изолируем виджет в отдельном контейнере для минимизации влияния на остальную страницу
   return (
     <div 
       key={componentKeyRef.current || containerId}
-      className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden" 
+      className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden cdek-widget-wrapper" 
       suppressHydrationWarning
+      style={{ isolation: 'isolate' }} // CSS isolation для предотвращения влияния normalize.css на остальную страницу
     >
       <div
         id={containerId}
         key={containerId}
-        style={{ width: '100%', height: '600px', minHeight: '600px' }}
-        className="w-full"
+        style={{ width: '100%', height: '600px', minHeight: '600px', contain: 'layout style paint' }}
+        className="w-full cdek-widget-container"
         suppressHydrationWarning
         data-cdek-container={containerId}
       />
