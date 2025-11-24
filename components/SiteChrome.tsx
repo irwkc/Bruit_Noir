@@ -19,7 +19,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden">
+    <>
       {/* Анимированный фон */}
       <div className="fixed inset-0 overflow-hidden" style={{ zIndex: 0 }}>
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-900 via-black to-black"></div>
@@ -29,12 +29,12 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <div className="absolute bottom-1/2 right-1/2 w-[450px] h-[450px] bg-gray-900 rounded-full mix-blend-screen filter blur-[90px] opacity-30 animate-blob animation-delay-6000"></div>
       </div>
 
-      <div className="relative" style={{ zIndex: 10 }}>
+      <div className="relative min-h-screen bg-black" style={{ zIndex: 10 }}>
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
       </div>
-    </div>
+    </>
   )
 }
 

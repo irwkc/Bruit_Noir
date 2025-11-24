@@ -24,7 +24,7 @@ export default function MobileSiteChrome({ children }: MobileSiteChromeProps) {
   }
 
   return (
-    <div className="relative min-h-dvh bg-black overflow-hidden">
+    <>
       {/* Анимированный фон */}
       <div className="fixed inset-0 overflow-hidden" style={{ zIndex: 0 }}>
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-900 via-black to-black"></div>
@@ -34,11 +34,11 @@ export default function MobileSiteChrome({ children }: MobileSiteChromeProps) {
         <div className="absolute bottom-1/2 right-1/2 w-[450px] h-[450px] bg-gray-900 rounded-full mix-blend-screen filter blur-[90px] opacity-30 animate-blob animation-delay-6000"></div>
       </div>
 
-      <div className="relative flex flex-col min-h-dvh" style={{ zIndex: 10 }}>
+      <div className="relative flex flex-col min-h-dvh bg-black" style={{ zIndex: 10 }}>
         <MobileHeader />
         <main className="flex-1">{children}</main>
         <MobileFooter />
       </div>
-    </div>
+    </>
   )
 }
