@@ -10,18 +10,31 @@ interface SdekWidgetProps {
 export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
   const widgetRef = useRef<HTMLDivElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
+  const isLoadingRef = useRef(false)
+  const currentCityRef = useRef<string>('')
 
   useEffect(() => {
     if (!city || city.length < 3) {
       setIsLoaded(false)
+      isLoadingRef.current = false
+      currentCityRef.current = ''
       if (widgetRef.current) {
         widgetRef.current.innerHTML = ''
       }
       return
     }
 
+    // Предотвращаем множественные запросы для одного города
+    if (isLoadingRef.current && currentCityRef.current === city) {
+      return
+    }
+
     // Сбрасываем состояние загрузки при смене города
-    setIsLoaded(false)
+    if (currentCityRef.current !== city) {
+          setIsLoaded(false)
+          isLoadingRef.current = true
+          currentCityRef.current = city
+        }
 
     const loadSdekWidget = () => {
       // Remove any existing widget
@@ -49,6 +62,7 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
             console.error('API error:', errorData)
             renderError(errorData.error || `Ошибка ${response.status}`)
             setIsLoaded(true)
+            isLoadingRef.current = false
             return
           }
           
@@ -59,6 +73,7 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
             console.error('API returned error:', data.error)
             renderError(data.error)
             setIsLoaded(true)
+            isLoadingRef.current = false
             return
           }
           
@@ -70,10 +85,12 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
               renderNoPoints()
             }
             setIsLoaded(true)
+            isLoadingRef.current = false
           } else {
             console.error('Invalid response format:', data)
             renderError('Неверный формат ответа от сервера')
             setIsLoaded(true)
+            isLoadingRef.current = false
           }
         } catch (error) {
           if (error instanceof Error && error.name === 'AbortError') {
@@ -84,27 +101,32 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
             renderError(error instanceof Error ? error.message : 'Ошибка загрузки')
           }
           setIsLoaded(true)
+          isLoadingRef.current = false
         }
       }
 
       const renderPointsList = (points: any[]) => {
         if (!widgetRef.current) return
         
+        // Ограничиваем отображение до 20 пунктов для производительности
+        const displayPoints = points.slice(0, 20)
+        const hasMore = points.length > 20
+        
         // Add header with count
         const header = document.createElement('div')
         header.className = 'mb-3 p-3 bg-green-50 rounded-lg'
         header.innerHTML = `
           <div class="text-sm font-semibold text-green-800">
-            ✅ Найдено пунктов выдачи: ${points.length}
+            ✅ Найдено пунктов выдачи: ${points.length}${hasMore ? ` (показано ${displayPoints.length})` : ''}
           </div>
         `
         widgetRef.current.appendChild(header)
         
         const container = document.createElement('div')
         container.className = 'space-y-2 overflow-y-auto'
-        container.style.maxHeight = '400px'
+        container.style.maxHeight = '500px'
         
-        points.forEach((point, index) => {
+        displayPoints.forEach((point, index) => {
           const pointElement = document.createElement('div')
           pointElement.className = 'p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-gray-400 transition'
           pointElement.setAttribute('data-point-id', point.id)

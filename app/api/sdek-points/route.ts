@@ -49,7 +49,8 @@ async function fetchRealSdekPoints(city: string) {
     const token = await getCdekAuthToken()
     
     // Получаем пункты выдачи через официальный API СДЭК v2
-    const response = await fetch(`${CDEK_BASE_URL}/deliverypoints?city=${encodeURIComponent(city)}&type=PVZ&is_handout=true`, {
+    // Ограничиваем количество пунктов для производительности
+    const response = await fetch(`${CDEK_BASE_URL}/deliverypoints?city=${encodeURIComponent(city)}&type=PVZ&is_handout=true&size=50`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -75,7 +76,10 @@ async function fetchRealSdekPoints(city: string) {
       return []
     }
 
-    return data.map((point: any) => ({
+    // Ограничиваем количество пунктов до 50 для производительности
+    const limitedData = data.slice(0, 50)
+
+    return limitedData.map((point: any) => ({
       id: point.code || point.uuid || `sdek-${point.code}`,
       code: point.code,
       name: point.name || `СДЭК - ${point.location?.address || city}`,
