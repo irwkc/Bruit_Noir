@@ -83,7 +83,16 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-black relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Анимированный фон */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-900 via-black to-black"></div>
+        <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-gray-800 rounded-full mix-blend-screen filter blur-[120px] opacity-40 animate-blob"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-gray-700 rounded-full mix-blend-screen filter blur-[100px] opacity-35 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/4 left-1/2 w-[550px] h-[550px] bg-gray-800 rounded-full mix-blend-screen filter blur-[110px] opacity-40 animate-blob animation-delay-4000"></div>
+        <div className="absolute bottom-1/2 right-1/2 w-[450px] h-[450px] bg-gray-900 rounded-full mix-blend-screen filter blur-[90px] opacity-30 animate-blob animation-delay-6000"></div>
+      </div>
+
       {/* Форма */}
       <div className="relative max-w-md w-full space-y-8 z-10">
         <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 border border-white/20">
