@@ -69,7 +69,6 @@ export default function MobileCartPage() {
                   </div>
                   <div className="flex-1 min-w-0 space-y-3">
                     <div>
-                      <p className="text-sm text-white/80 uppercase tracking-wide">{item.category}</p>
                       <h3 className="font-semibold text-white text-base">{item.name}</h3>
                       <p className="text-lg font-bold text-white mt-1">{item.price.toLocaleString()} ₽</p>
                     </div>
