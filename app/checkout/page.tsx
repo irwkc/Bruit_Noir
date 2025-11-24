@@ -201,14 +201,6 @@ export default function CheckoutPage() {
                           }}
                         />
                       </div>
-                      
-                      {selectedDeliveryPoint && (
-                        <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                          <p className="text-sm text-green-800 font-semibold">
-                            ✅ Пункт выдачи выбран
-                          </p>
-                        </div>
-                      )}
                     </div>
                   ) : (
                     <p className="text-gray-600">
@@ -395,14 +387,6 @@ export default function CheckoutPage() {
                       }}
                     />
                   </div>
-                  
-                  {selectedDeliveryPoint && (
-                    <div className="mt-2 p-2 bg-green-50 rounded-lg border border-green-200">
-                      <p className="text-xs text-green-800 font-semibold">
-                        ✅ Пункт выдачи выбран
-                      </p>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <p className="text-gray-600 text-sm">
