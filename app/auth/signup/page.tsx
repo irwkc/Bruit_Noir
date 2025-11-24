@@ -16,8 +16,13 @@ export default function SignUpPage() {
 
   // Загружаем данные из формы оформления заказа при монтировании компонента
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     try {
-      const savedData = localStorage.getItem('checkoutFormData')
+      const savedData =
+        localStorage.getItem('checkoutFormData') ||
+        sessionStorage.getItem('checkoutFormData')
+
       if (savedData) {
         const formData = JSON.parse(savedData)
         if (formData.name) {
@@ -26,9 +31,16 @@ export default function SignUpPage() {
         if (formData.email) {
           setEmail(formData.email)
         }
-        // Очищаем данные после использования
         localStorage.removeItem('checkoutFormData')
+        sessionStorage.removeItem('checkoutFormData')
+        return
       }
+
+      const params = new URLSearchParams(window.location.search)
+      const prefillName = params.get('prefillName')
+      const prefillEmail = params.get('prefillEmail')
+      if (prefillName) setName(prefillName)
+      if (prefillEmail) setEmail(prefillEmail)
     } catch (error) {
       console.error('Error loading checkout form data:', error)
     }
@@ -64,6 +76,7 @@ export default function SignUpPage() {
       } else {
         // Очищаем данные формы оформления заказа после успешной регистрации
         localStorage.removeItem('checkoutFormData')
+        sessionStorage.removeItem('checkoutFormData')
         
         // Redirect to verification page
         if (data.requiresVerification && data.userId) {
@@ -108,104 +121,104 @@ export default function SignUpPage() {
               />
             </div>
             <h2 className="text-2xl font-semibold text-white mt-6">
-              Создать аккаунт
-            </h2>
+            Создать аккаунт
+          </h2>
             <p className="mt-2 text-sm text-gray-300">
-              Уже есть аккаунт?{' '}
+            Уже есть аккаунт?{' '}
               <Link href="/auth/signin" className="font-medium text-white hover:underline">
-                Войти
-              </Link>
-            </p>
-          </div>
+              Войти
+            </Link>
+          </p>
+        </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
+          {error && (
               <div className="bg-red-500/20 backdrop-blur-sm border-l-4 border-red-500 text-red-200 px-4 py-3 rounded-lg">
-                {error}
-              </div>
-            )}
+              {error}
+            </div>
+          )}
 
             <div className="space-y-5">
-              <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-white mb-2">
-                  Имя
-                </label>
-                <div className="relative">
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
-                    placeholder="Ваше имя"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-white mb-2">
-                  Email
-                </label>
-                <div className="relative">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
-                    placeholder="your@email.com"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-white mb-2">
-                  Пароль
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
-                    placeholder="Минимум 6 символов"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-white mb-2">
-                  Подтвердите пароль
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
-                    placeholder="Повторите пароль"
-                  />
-                </div>
-              </div>
-            </div>
-
             <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 px-4 bg-black text-white font-semibold rounded-xl hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                {loading ? 'Регистрация...' : 'Зарегистрироваться'}
-              </button>
+                <label htmlFor="name" className="block text-sm font-semibold text-white mb-2">
+                Имя
+              </label>
+                <div className="relative">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
+                placeholder="Ваше имя"
+              />
+                </div>
             </div>
-          </form>
+            <div>
+                <label htmlFor="email" className="block text-sm font-semibold text-white mb-2">
+                Email
+              </label>
+                <div className="relative">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
+                placeholder="your@email.com"
+              />
+                </div>
+            </div>
+            <div>
+                <label htmlFor="password" className="block text-sm font-semibold text-white mb-2">
+                Пароль
+              </label>
+                <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
+                placeholder="Минимум 6 символов"
+              />
+                </div>
+            </div>
+            <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-white mb-2">
+                Подтвердите пароль
+              </label>
+                <div className="relative">
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-md border-2 border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:border-white/60 focus:ring-2 focus:ring-white/30 transition-all duration-200"
+                placeholder="Повторите пароль"
+              />
+                </div>
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+                className="w-full py-3.5 px-4 bg-black text-white font-semibold rounded-xl hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              {loading ? 'Регистрация...' : 'Зарегистрироваться'}
+            </button>
+          </div>
+        </form>
         </div>
       </div>
     </div>

@@ -226,13 +226,13 @@ export default function CheckoutPage() {
                         className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                       />
                     </div>
-                    <div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Имя *
-                      </label>
-                      <input
-                        type="text"
-                        required
+                      Имя *
+                    </label>
+                    <input
+                      type="text"
+                      required
                         value={customerFirstName}
                         onChange={(e) => setCustomerFirstName(e.target.value)}
                         className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
@@ -247,7 +247,7 @@ export default function CheckoutPage() {
                         value={customerMiddleName}
                         onChange={(e) => setCustomerMiddleName(e.target.value)}
                         className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
-                      />
+                    />
                     </div>
                   </div>
                   <div>
@@ -669,17 +669,25 @@ export default function CheckoutPage() {
                 </p>
                 <button
                   onClick={() => {
-                    // Сохраняем данные формы в localStorage для передачи на страницу регистрации
-                    // Используем только имя (customerFirstName), а не полное ФИО
-                    if (customerFirstName || customerEmail) {
-                      localStorage.setItem('checkoutFormData', JSON.stringify({
-                        name: customerFirstName || '',
-                        email: customerEmail || '',
-                      }))
+                    const payload = {
+                      name: customerFirstName || '',
+                      email: customerEmail || '',
                     }
-                    
+                    try {
+                      if (typeof window !== 'undefined') {
+                        localStorage.setItem('checkoutFormData', JSON.stringify(payload))
+                        sessionStorage.setItem('checkoutFormData', JSON.stringify(payload))
+                      }
+                    } catch (error) {
+                      console.error('Failed to persist checkout form data', error)
+                    }
+
+                    const params = new URLSearchParams({ callbackUrl: '/checkout' })
+                    if (payload.name) params.set('prefillName', payload.name)
+                    if (payload.email) params.set('prefillEmail', payload.email)
+
                     setShowAuthModal(false)
-                    router.push('/auth/signup?callbackUrl=/checkout')
+                    router.push(`/auth/signup?${params.toString()}`)
                   }}
                   className="w-full px-4 py-2 border-2 border-white text-white rounded-lg font-medium hover:bg-white/10 transition"
                 >
