@@ -20,18 +20,18 @@ async function getCdekAuthToken(): Promise<string> {
 
   const response = await fetch(`${CDEK_BASE_URL}/oauth/token`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
     body: formData.toString(),
-  })
+        })
 
   if (!response.ok) {
     throw new Error('Failed to get CDEK auth token')
   }
 
-  const data = await response.json()
-
+          const data = await response.json()
+          
   if (!data.access_token) {
     throw new Error('No access token in CDEK response')
   }
@@ -43,14 +43,76 @@ async function getCdekAuthToken(): Promise<string> {
   return newToken
 }
 
-// Используем реальный API СДЭК v2
-async function fetchRealSdekPoints(city: string) {
+// Получаем код города по названию через API локаций СДЭК
+async function getCityCode(cityName: string): Promise<number | null> {
   try {
     const token = await getCdekAuthToken()
     
-    // Получаем пункты выдачи через официальный API СДЭК v2
-    // Ограничиваем количество пунктов для производительности
-    const response = await fetch(`${CDEK_BASE_URL}/deliverypoints?city=${encodeURIComponent(city)}&type=PVZ&is_handout=true&size=50`, {
+    // Ищем город по названию через API локаций
+    const response = await fetch(`${CDEK_BASE_URL}/location/cities?city=${encodeURIComponent(cityName)}&size=1`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+
+    if (!response.ok) {
+      console.error(`CDEK location API error (${response.status})`)
+      return null
+    }
+
+    const data = await response.json()
+    
+    // API возвращает массив городов
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      console.log(`City "${cityName}" not found in CDEK API`)
+      return null
+    }
+
+    // Берем первый найденный город
+    const city = data[0]
+    const cityCode = city.code || city.city_code || null
+    
+    if (cityCode) {
+      console.log(`Found city code for "${cityName}": ${cityCode}`)
+    }
+    
+    return cityCode
+  } catch (error) {
+    console.error('Error fetching city code:', error)
+    return null
+  }
+}
+
+// Используем реальный API СДЭК v2
+async function fetchRealSdekPoints(cityName: string) {
+  try {
+    const token = await getCdekAuthToken()
+    
+    // Сначала получаем код города
+    const cityCode = await getCityCode(cityName)
+    
+    if (!cityCode) {
+      console.log(`City code not found for "${cityName}", trying to search by name directly`)
+      // Если код не найден, пробуем искать по названию (может сработать для некоторых городов)
+    }
+    
+    // Формируем URL для получения пунктов выдачи
+    // Используем city_code если найден, иначе city (название)
+    const urlParams = new URLSearchParams({
+      type: 'PVZ',
+      is_handout: 'true',
+      size: '50',
+    })
+    
+    if (cityCode) {
+      urlParams.append('city_code', cityCode.toString())
+    } else {
+      urlParams.append('city', cityName)
+    }
+    
+    const response = await fetch(`${CDEK_BASE_URL}/deliverypoints?${urlParams.toString()}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -76,15 +138,27 @@ async function fetchRealSdekPoints(city: string) {
       return []
     }
 
+    // Фильтруем пункты выдачи по городу (на случай, если API вернул пункты из других городов)
+    const filteredData = data.filter((point: any) => {
+      const pointCity = point.location?.city || point.city || ''
+      // Проверяем, что город пункта выдачи совпадает с запрошенным (без учета регистра)
+      return pointCity.toLowerCase().includes(cityName.toLowerCase()) || 
+             cityName.toLowerCase().includes(pointCity.toLowerCase())
+    })
+
+    // Если после фильтрации ничего не осталось, возвращаем все пункты
+    // (возможно, API уже отфильтровал правильно)
+    const pointsToUse = filteredData.length > 0 ? filteredData : data
+
     // Ограничиваем количество пунктов до 50 для производительности
-    const limitedData = data.slice(0, 50)
+    const limitedData = pointsToUse.slice(0, 50)
 
     return limitedData.map((point: any) => ({
       id: point.code || point.uuid || `sdek-${point.code}`,
       code: point.code,
-      name: point.name || `СДЭК - ${point.location?.address || city}`,
+      name: point.name || `СДЭК - ${point.location?.address || cityName}`,
       address: point.location?.address || point.address || '',
-      city: point.location?.city || city,
+      city: point.location?.city || point.city || cityName,
       country: point.location?.country || 'Россия',
       workingHours: point.work_time || point.workTime || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
       latitude: point.location?.latitude || point.latitude || null,
