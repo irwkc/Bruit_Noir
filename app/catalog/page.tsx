@@ -195,15 +195,15 @@ export default function CatalogPage() {
       {/* Mobile Version */}
       <div className="block md:hidden">
         {/* Mobile Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Каталог</h1>
-          <p className="text-sm text-gray-600">
+        <div className="bg-white/10 backdrop-blur-2xl border-b border-white/20 px-4 py-4">
+          <h1 className="text-2xl font-bold text-white mb-2">Каталог</h1>
+          <p className="text-sm text-gray-300">
             Вся коллекция Bruit Noir
           </p>
         </div>
 
         {/* Mobile Search */}
-        <div className="bg-white px-4 py-3 border-b border-gray-200">
+        <div className="bg-white/10 backdrop-blur-2xl px-4 py-3 border-b border-white/20">
           <div className="relative">
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
@@ -211,13 +211,13 @@ export default function CatalogPage() {
               placeholder="Поиск..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full pl-9 pr-4 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
             />
           </div>
         </div>
 
         {/* Mobile Filters */}
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
+        <div className="sticky top-0 z-10 bg-white/10 backdrop-blur-2xl border-b border-white/20 px-4 py-3">
           {/* Categories */}
           <div className="flex overflow-x-auto gap-2 mb-2 pb-2 -mx-4 px-4 scrollbar-hide">
             {categories.map((cat) => (
@@ -226,8 +226,8 @@ export default function CatalogPage() {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`flex-shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   selectedCategory === cat.id
-                    ? 'border-black bg-black text-white'
-                    : 'bg-white text-black border-gray-300'
+                    ? 'border-white bg-white text-black'
+                    : 'bg-white/10 text-white border-white/30'
                 }`}
               >
                 {cat.name}
@@ -248,8 +248,8 @@ export default function CatalogPage() {
                 onClick={() => setSortBy(opt.id)}
                 className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
                   sortBy === opt.id
-                    ? 'bg-black text-white'
-                    : 'bg-gray-100 text-black'
+                    ? 'bg-white text-black'
+                    : 'bg-white/10 text-white border border-white/30'
                 }`}
               >
                 {opt.label}
