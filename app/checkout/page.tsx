@@ -593,12 +593,12 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            <div className="border-t pt-3 space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
+            <div className="border-t border-white/20 pt-3 space-y-2">
+              <div className="flex justify-between text-sm text-gray-300">
                 <span>Доставка:</span>
                 <span>Бесплатно</span>
               </div>
-              <div className="flex justify-between text-lg font-bold">
+              <div className="flex justify-between text-lg font-bold text-white">
                 <span>Итого:</span>
                 <span>{getTotalPrice().toLocaleString('ru-RU')} ₽</span>
               </div>
