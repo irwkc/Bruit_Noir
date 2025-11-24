@@ -122,33 +122,40 @@ export async function POST(request: NextRequest) {
 
     // Создаем или находим пункт выдачи, если передан полный объект deliveryPoint
     let finalDeliveryPointId: string | null = null
-    if (deliveryPoint && deliveryMethod === 'sdek') {
+    if (deliveryPoint && typeof deliveryPoint === 'object' && deliveryMethod === 'sdek') {
       try {
-        // Ищем существующий пункт выдачи по адресу и городу
-        const existingPoint = await prisma.deliveryPoint.findFirst({
-          where: {
-            address: deliveryPoint.address || '',
-            city: deliveryPoint.city || '',
-          },
-        })
-
-        if (existingPoint) {
-          finalDeliveryPointId = existingPoint.id
+        // Проверяем, что есть хотя бы адрес или город
+        if (!deliveryPoint.address && !deliveryPoint.city) {
+          console.warn('Delivery point missing address and city, skipping creation')
         } else {
-          // Создаем новый пункт выдачи с полной информацией
-          const newDeliveryPoint = await prisma.deliveryPoint.create({
-            data: {
-              name: deliveryPoint.name || `СДЭК ${deliveryPoint.code || ''}`,
+          // Ищем существующий пункт выдачи по адресу и городу
+          const existingPoint = await prisma.deliveryPoint.findFirst({
+            where: {
               address: deliveryPoint.address || '',
               city: deliveryPoint.city || '',
-              country: deliveryPoint.country || 'Россия',
-              phone: deliveryPoint.phone || null,
-              workingHours: deliveryPoint.workingHours || null,
-              latitude: deliveryPoint.latitude ? Number(deliveryPoint.latitude) : null,
-              longitude: deliveryPoint.longitude ? Number(deliveryPoint.longitude) : null,
             },
           })
-          finalDeliveryPointId = newDeliveryPoint.id
+
+          if (existingPoint) {
+            finalDeliveryPointId = existingPoint.id
+            console.log('Found existing delivery point:', existingPoint.id)
+          } else {
+            // Создаем новый пункт выдачи с полной информацией
+            const newDeliveryPoint = await prisma.deliveryPoint.create({
+              data: {
+                name: deliveryPoint.name || `СДЭК ${deliveryPoint.code || ''}`,
+                address: deliveryPoint.address || '',
+                city: deliveryPoint.city || '',
+                country: deliveryPoint.country || 'Россия',
+                phone: deliveryPoint.phone || null,
+                workingHours: deliveryPoint.workingHours || null,
+                latitude: deliveryPoint.latitude ? Number(deliveryPoint.latitude) : null,
+                longitude: deliveryPoint.longitude ? Number(deliveryPoint.longitude) : null,
+              },
+            })
+            finalDeliveryPointId = newDeliveryPoint.id
+            console.log('Created new delivery point:', newDeliveryPoint.id)
+          }
         }
       } catch (deliveryPointError) {
         console.error('Error creating/finding delivery point:', deliveryPointError)
