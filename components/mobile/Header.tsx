@@ -10,7 +10,7 @@ import {
   InformationCircleIcon,
   EnvelopeIcon,
 } from '@heroicons/react/24/outline'
-import { useState, type ComponentProps, type ReactElement } from 'react'
+import { useState, type ComponentProps, type ComponentType } from 'react'
 import Image from 'next/image'
 
 export default function MobileHeader() {
@@ -20,7 +20,7 @@ export default function MobileHeader() {
   type MenuItem = {
     label: string
     href: string
-    icon: (props: ComponentProps<'svg'>) => ReactElement
+    icon: ComponentType<ComponentProps<'svg'>>
   }
 
   const menuItems: MenuItem[] = [
