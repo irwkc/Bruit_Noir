@@ -646,7 +646,7 @@ export default function CheckoutPage() {
               <p className="text-sm text-gray-600 mb-6">
                 Для оформления заказа необходимо войти в личный кабинет
               </p>
-              <div className="flex gap-3">
+              <div className="flex gap-3 mb-4">
                 <button
                   onClick={() => setShowAuthModal(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
@@ -661,6 +661,20 @@ export default function CheckoutPage() {
                   className="flex-1 px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition"
                 >
                   Войти
+                </button>
+              </div>
+              <div className="pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600 mb-3 text-center">
+                  Если еще нет аккаунта
+                </p>
+                <button
+                  onClick={() => {
+                    setShowAuthModal(false)
+                    router.push('/auth/signup?callbackUrl=/checkout')
+                  }}
+                  className="w-full px-4 py-2 border-2 border-black text-black rounded-lg font-medium hover:bg-gray-50 transition"
+                >
+                  Зарегистрироваться
                 </button>
               </div>
             </div>
