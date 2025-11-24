@@ -4,12 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
-import Script from 'next/script'
 import CityAutocomplete from '@/components/CityAutocomplete'
-import dynamicImport from 'next/dynamic'
-
-// Dynamically import SDEK widget to avoid SSR issues
-const CdekWidget = dynamicImport(() => import('@/components/CdekWidget'), { ssr: false })
+import SdekWidget from '@/components/SdekWidget'
 
 // Force dynamic rendering to avoid SSR issues with CDEK widget
 export const dynamic = 'force-dynamic'
@@ -43,7 +39,6 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
-  const [scriptsLoaded, setScriptsLoaded] = useState(false)
 
   useEffect(() => {
     if (session?.user) {
@@ -56,21 +51,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     setSelectedDeliveryPoint('')
   }, [selectedCity])
-
-  // Initialize Yandex Maps ready flag after scripts are loaded
-  useEffect(() => {
-    if (scriptsLoaded && typeof window !== 'undefined') {
-      const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
-        const win = window as any
-        win.__ymaps_loaded = true
-        win.__ymaps_ready = true
-        window.dispatchEvent(new Event('ymaps-ready'))
-      }, 1500)
-      return () => {
-        clearTimeout(timerId)
-      }
-    }
-  }, [scriptsLoaded])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -127,42 +107,7 @@ export default function CheckoutPage() {
 
   return (
     <>
-      {/* Load CDEK scripts only on checkout page - afterInteractive for faster loading */}
-      <Script
-        src="https://api-maps.yandex.ru/2.1/?apikey=f366a46d-5c10-4875-a6ee-263f3678b026&lang=ru_RU"
-        strategy="afterInteractive"
-        onLoad={() => {
-          console.log('Yandex Maps script loaded')
-          setScriptsLoaded(true)
-          // Инициализируем ymaps после загрузки
-          if (typeof window !== 'undefined' && (window as any).ymaps) {
-            (window as any).ymaps.ready(() => {
-              console.log('Yandex Maps ready')
-              ;(window as any).__ymaps_ready = true
-              window.dispatchEvent(new Event('ymaps-ready'))
-            })
-          }
-        }}
-        onError={(e) => {
-          console.error('Failed to load Yandex Maps:', e)
-          alert('Ошибка загрузки Яндекс.Карт. Пожалуйста, обновите страницу.')
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3"
-        strategy="afterInteractive"
-        onLoad={() => {
-          console.log('CDEK widget script loaded')
-          if (typeof window !== 'undefined') {
-            (window as any).__cdek_widget_loaded = true
-            window.dispatchEvent(new Event('cdek-widget-ready'))
-          }
-        }}
-        onError={(e) => {
-          console.error('Failed to load CDEK widget:', e)
-          alert('Ошибка загрузки виджета СДЭК. Пожалуйста, обновите страницу.')
-        }}
-      />
+      {/* SDEK Widget использует API напрямую, скрипты не нужны */}
       <div className="min-h-screen bg-gray-50">
         {/* Desktop Version */}
         <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -245,20 +190,14 @@ export default function CheckoutPage() {
                     <div className="space-y-4">
                       <h3 className="font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
                       
-                      {/* CDEK Widget */}
+                      {/* SDEK Widget - используем простой виджет без официального CDEK виджета */}
                       <div className="w-full">
-                        <CdekWidget
+                        <SdekWidget
                           city={selectedCity}
                           onPointSelect={(point) => {
-                            const chosenId =
-                              point?.code ||
-                              point?.id ||
-                              point?.uuid ||
-                              point?.pvz_code ||
-                              point?.number ||
-                              ''
+                            const chosenId = point?.id || point?.code || ''
                             setSelectedDeliveryPoint(chosenId)
-                            console.log('Selected CDEK point:', point)
+                            console.log('Selected SDEK point:', point)
                           }}
                         />
                       </div>
@@ -445,20 +384,14 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
                   
-                  {/* CDEK Widget */}
+                  {/* SDEK Widget - используем простой виджет без официального CDEK виджета */}
                   <div className="w-full">
-                    <CdekWidget
+                    <SdekWidget
                       city={selectedCity}
                       onPointSelect={(point) => {
-                        const chosenId =
-                          point?.code ||
-                          point?.id ||
-                          point?.uuid ||
-                          point?.pvz_code ||
-                          point?.number ||
-                          ''
+                        const chosenId = point?.id || point?.code || ''
                         setSelectedDeliveryPoint(chosenId)
-                        console.log('Selected CDEK point:', point)
+                        console.log('Selected SDEK point:', point)
                       }}
                     />
                   </div>
