@@ -13,10 +13,15 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     return <>{children}</>
   }
 
+  // Страницы входа/регистрации рендерятся без SiteChrome (у них свой фон)
+  if (isAuthPage) {
+    return <>{children}</>
+  }
+
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
       {/* Анимированный фон */}
-      <div className="fixed inset-0 overflow-hidden -z-10">
+      <div className="fixed inset-0 overflow-hidden" style={{ zIndex: 0 }}>
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-900 via-black to-black"></div>
         <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-gray-800 rounded-full mix-blend-screen filter blur-[120px] opacity-40 animate-blob"></div>
         <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-gray-700 rounded-full mix-blend-screen filter blur-[100px] opacity-35 animate-blob animation-delay-2000"></div>
@@ -24,10 +29,10 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <div className="absolute bottom-1/2 right-1/2 w-[450px] h-[450px] bg-gray-900 rounded-full mix-blend-screen filter blur-[90px] opacity-30 animate-blob animation-delay-6000"></div>
       </div>
 
-      <div className="relative z-10">
-        {!isAuthPage && <Header />}
+      <div className="relative" style={{ zIndex: 10 }}>
+        <Header />
         <main className="flex-grow">{children}</main>
-        {!isAuthPage && <Footer />}
+        <Footer />
       </div>
     </div>
   )

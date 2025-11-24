@@ -200,22 +200,22 @@ export default function CheckoutPage() {
   return (
     <>
       {/* SDEK Widget использует API напрямую, скрипты не нужны */}
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         {/* Desktop Version */}
         <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Оформление заказа</h1>
+        <h1 className="text-4xl font-bold text-white mb-8">Оформление заказа</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Form */}
             <div className="lg:col-span-2 space-y-8">
               {/* Contact Information */}
-              <div className="bg-white rounded-lg p-6">
-                <h2 className="text-xl font-bold mb-4">Контактная информация</h2>
+              <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-6 border border-white/20">
+                <h2 className="text-xl font-bold mb-4 text-white">Контактная информация</h2>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Фамилия *
                       </label>
                       <input
@@ -223,11 +223,11 @@ export default function CheckoutPage() {
                         required
                         value={customerLastName}
                         onChange={(e) => setCustomerLastName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                        className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Имя *
                       </label>
                       <input
@@ -235,23 +235,23 @@ export default function CheckoutPage() {
                         required
                         value={customerFirstName}
                         onChange={(e) => setCustomerFirstName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                        className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Отчество
                       </label>
                       <input
                         type="text"
                         value={customerMiddleName}
                         onChange={(e) => setCustomerMiddleName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                        className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Email *
                     </label>
                     <input
@@ -259,11 +259,11 @@ export default function CheckoutPage() {
                       required
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Телефон *
                     </label>
                     <input
@@ -272,40 +272,40 @@ export default function CheckoutPage() {
                       value={customerPhone}
                       onChange={handlePhoneChange}
                       placeholder="+7 (999) 123-45-67"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Delivery */}
-              <div className="bg-white rounded-lg p-6">
-                <h2 className="text-xl font-bold mb-4">Способ доставки</h2>
+              <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-6 border border-white/20">
+                <h2 className="text-xl font-bold mb-4 text-white">Способ доставки</h2>
                 
-                <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="font-semibold text-gray-900">СДЭК Пункт выдачи</p>
-                  <p className="text-sm text-gray-600 mt-1">Доставка от 1 дня, от 425 ₽</p>
+                <div className="mb-4 p-4 bg-white/5 backdrop-blur-md rounded-lg border border-white/20">
+                  <p className="font-semibold text-white">СДЭК Пункт выдачи</p>
+                  <p className="text-sm text-gray-300 mt-1">Доставка от 1 дня, от 425 ₽</p>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Город
                     </label>
                     <CityAutocomplete
                       value={selectedCity}
                       onChange={setSelectedCity}
                       placeholder="Введите город для поиска пунктов выдачи"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="w-full px-4 py-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-400 mt-1">
                       Доставка СДЭК доступна во все города России
                     </p>
                   </div>
 
                   {selectedCity && selectedCity.length >= 3 ? (
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
+                      <h3 className="font-semibold text-white mb-2">Выберите пункт выдачи:</h3>
                       
                       {/* SDEK Widget - используем простой виджет без официального CDEK виджета */}
                       <div className="w-full">
@@ -319,7 +319,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-gray-600">
+                    <p className="text-gray-300">
                       Введите город для поиска пунктов выдачи СДЭК
                     </p>
                   )}
@@ -327,10 +327,10 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment */}
-              <div className="bg-white rounded-lg p-6">
-                <h2 className="text-xl font-bold mb-4">Способ оплаты</h2>
+              <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-6 border border-white/20">
+                <h2 className="text-xl font-bold mb-4 text-white">Способ оплаты</h2>
                 <div className="space-y-2">
-                  <label className="flex items-center p-4 border-2 rounded-lg cursor-pointer hover:border-gray-300 transition">
+                  <label className="flex items-center p-4 border-2 border-white/30 rounded-lg cursor-pointer hover:border-white/50 transition bg-white/5">
                     <input
                       type="radio"
                       name="payment"
@@ -340,13 +340,13 @@ export default function CheckoutPage() {
                       className="mr-3"
                     />
                     <div>
-                      <p className="font-semibold">Банковская карта</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-semibold text-white">Банковская карта</p>
+                      <p className="text-sm text-gray-300">
                         Visa, Mastercard, МИР
                       </p>
                     </div>
                   </label>
-                  <label className="flex items-center p-4 border-2 rounded-lg cursor-pointer hover:border-gray-300 transition">
+                  <label className="flex items-center p-4 border-2 border-white/30 rounded-lg cursor-pointer hover:border-white/50 transition bg-white/5">
                     <input
                       type="radio"
                       name="payment"
@@ -356,8 +356,8 @@ export default function CheckoutPage() {
                       className="mr-3"
                     />
                     <div>
-                      <p className="font-semibold">Наличные при получении</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-semibold text-white">Наличные при получении</p>
+                      <p className="text-sm text-gray-300">
                         Оплата в пункте выдачи
                       </p>
                     </div>
@@ -368,8 +368,8 @@ export default function CheckoutPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg p-6 sticky top-24">
-                <h2 className="text-xl font-bold mb-4">Ваш заказ</h2>
+              <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-6 sticky top-24 border border-white/20">
+                <h2 className="text-xl font-bold mb-4 text-white">Ваш заказ</h2>
 
                 <div className="space-y-3 mb-6">
                   {items.map((item) => (
@@ -377,22 +377,22 @@ export default function CheckoutPage() {
                       key={`${item.productId}-${item.size}-${item.color}`}
                       className="flex justify-between text-sm"
                     >
-                      <span className="text-gray-600">
+                      <span className="text-gray-300">
                         {item.name} x{item.quantity}
                       </span>
-                      <span className="font-medium">
+                      <span className="font-medium text-white">
                         {(item.price * item.quantity).toLocaleString('ru-RU')} ₽
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t pt-4 space-y-2 mb-6">
-                  <div className="flex justify-between text-gray-600">
+                <div className="border-t border-white/20 pt-4 space-y-2 mb-6">
+                  <div className="flex justify-between text-gray-300">
                     <span>Доставка:</span>
                     <span>Бесплатно</span>
                   </div>
-                  <div className="flex justify-between text-xl font-bold">
+                  <div className="flex justify-between text-xl font-bold text-white">
                     <span>Итого:</span>
                     <span>{getTotalPrice().toLocaleString('ru-RU')} ₽</span>
                   </div>
@@ -414,17 +414,17 @@ export default function CheckoutPage() {
       {/* Mobile Version */}
       <div className="block md:hidden">
         {/* Mobile Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-10">
-          <h1 className="text-2xl font-bold text-gray-900">Оформление</h1>
+        <div className="bg-white/10 backdrop-blur-2xl border-b border-white/20 px-4 py-4 sticky top-0 z-10">
+          <h1 className="text-2xl font-bold text-white">Оформление</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="px-4 py-4 space-y-4">
           {/* Contact Information */}
-          <div className="bg-white rounded-lg p-4">
-            <h2 className="text-lg font-bold mb-3">Контакты</h2>
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <h2 className="text-lg font-bold mb-3 text-white">Контакты</h2>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-300 mb-1">
                   Фамилия *
                 </label>
                 <input
@@ -432,11 +432,11 @@ export default function CheckoutPage() {
                   required
                   value={customerLastName}
                   onChange={(e) => setCustomerLastName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-300 mb-1">
                   Имя *
                 </label>
                 <input
@@ -444,22 +444,22 @@ export default function CheckoutPage() {
                   required
                   value={customerFirstName}
                   onChange={(e) => setCustomerFirstName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-300 mb-1">
                   Отчество
                 </label>
                 <input
                   type="text"
                   value={customerMiddleName}
                   onChange={(e) => setCustomerMiddleName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-300 mb-1">
                   Email *
                 </label>
                 <input
@@ -467,11 +467,11 @@ export default function CheckoutPage() {
                   required
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-300 mb-1">
                   Телефон *
                 </label>
                 <input
@@ -480,40 +480,40 @@ export default function CheckoutPage() {
                   value={customerPhone}
                   onChange={handlePhoneChange}
                   placeholder="+7 (999) 123-45-67"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
               </div>
             </div>
           </div>
 
           {/* Delivery */}
-          <div className="bg-white rounded-lg p-4">
-            <h2 className="text-lg font-bold mb-3">Способ доставки</h2>
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <h2 className="text-lg font-bold mb-3 text-white">Способ доставки</h2>
             
-            <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-sm font-semibold text-gray-900">СДЭК Пункт выдачи</p>
-              <p className="text-xs text-gray-600 mt-1">Доставка от 1 дня, от 425 ₽</p>
+            <div className="mb-3 p-3 bg-white/5 backdrop-blur-md rounded-lg border border-white/20">
+              <p className="text-sm font-semibold text-white">СДЭК Пункт выдачи</p>
+              <p className="text-xs text-gray-300 mt-1">Доставка от 1 дня, от 425 ₽</p>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-300 mb-1">
                   Город
                 </label>
                 <CityAutocomplete
                   value={selectedCity}
                   onChange={setSelectedCity}
                   placeholder="Введите город для поиска пунктов выдачи"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Доставка СДЭК доступна во все города России
                 </p>
               </div>
 
               {selectedCity && selectedCity.length >= 3 ? (
                 <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Выберите пункт выдачи:</h3>
+                  <h3 className="text-sm font-semibold text-white mb-2">Выберите пункт выдачи:</h3>
                   
                   {/* SDEK Widget - используем простой виджет без официального CDEK виджета */}
                   <div className="w-full">
@@ -527,7 +527,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-300 text-sm">
                   Введите город для поиска пунктов выдачи СДЭК
                 </p>
               )}
@@ -535,10 +535,10 @@ export default function CheckoutPage() {
           </div>
 
           {/* Payment */}
-          <div className="bg-white rounded-lg p-4">
-            <h2 className="text-lg font-bold mb-3">Оплата</h2>
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <h2 className="text-lg font-bold mb-3 text-white">Оплата</h2>
             <div className="space-y-2">
-              <label className="flex items-center p-3 border-2 rounded-lg cursor-pointer">
+              <label className="flex items-center p-3 border-2 border-white/30 rounded-lg cursor-pointer bg-white/5">
                 <input
                   type="radio"
                   name="payment"
@@ -548,13 +548,13 @@ export default function CheckoutPage() {
                   className="mr-2"
                 />
                 <div>
-                  <p className="font-semibold text-sm">Банковская карта</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="font-semibold text-sm text-white">Банковская карта</p>
+                  <p className="text-xs text-gray-300">
                     Visa, Mastercard, МИР
                   </p>
                 </div>
               </label>
-              <label className="flex items-center p-3 border-2 rounded-lg cursor-pointer">
+              <label className="flex items-center p-3 border-2 border-white/30 rounded-lg cursor-pointer bg-white/5">
                 <input
                   type="radio"
                   name="payment"
@@ -564,8 +564,8 @@ export default function CheckoutPage() {
                   className="mr-2"
                 />
                 <div>
-                  <p className="font-semibold text-sm">Наличные</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="font-semibold text-sm text-white">Наличные</p>
+                  <p className="text-xs text-gray-300">
                     Оплата при получении
                   </p>
                 </div>
@@ -574,8 +574,8 @@ export default function CheckoutPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="bg-white rounded-lg p-4">
-            <h2 className="text-lg font-bold mb-3">Ваш заказ</h2>
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <h2 className="text-lg font-bold mb-3 text-white">Ваш заказ</h2>
 
             <div className="space-y-2 mb-4">
               {items.map((item) => (
@@ -583,7 +583,7 @@ export default function CheckoutPage() {
                   key={`${item.productId}-${item.size}-${item.color}`}
                   className="flex justify-between text-xs"
                 >
-                  <span className="text-gray-600">
+                  <span className="text-gray-300">
                     {item.name} x{item.quantity}
                   </span>
                   <span className="font-medium">
@@ -622,12 +622,12 @@ export default function CheckoutPage() {
 
       {/* Модальное окно для авторизации */}
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style={{ zIndex: 9999 }}>
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg shadow-xl max-w-md w-full p-6 border border-white/20">
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-white/20 mb-4">
                 <svg
-                  className="h-6 w-6 text-gray-600"
+                  className="h-6 w-6 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -640,16 +640,16 @@ export default function CheckoutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-white mb-2">
                 Требуется авторизация
               </h3>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-gray-300 mb-6">
                 Для оформления заказа необходимо войти в личный кабинет
               </p>
               <div className="flex gap-3 mb-4">
                 <button
                   onClick={() => setShowAuthModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                  className="flex-1 px-4 py-2 border border-white/30 rounded-lg text-white font-medium hover:bg-white/10 transition"
                 >
                   Отмена
                 </button>
@@ -663,8 +663,8 @@ export default function CheckoutPage() {
                   Войти
                 </button>
               </div>
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600 mb-3 text-center">
+              <div className="pt-4 border-t border-white/20">
+                <p className="text-sm text-gray-300 mb-3 text-center">
                   Если еще нет аккаунта
                 </p>
                 <button
@@ -681,7 +681,7 @@ export default function CheckoutPage() {
                     setShowAuthModal(false)
                     router.push('/auth/signup?callbackUrl=/checkout')
                   }}
-                  className="w-full px-4 py-2 border-2 border-black text-black rounded-lg font-medium hover:bg-gray-50 transition"
+                  className="w-full px-4 py-2 border-2 border-white text-white rounded-lg font-medium hover:bg-white/10 transition"
                 >
                   Зарегистрироваться
                 </button>
