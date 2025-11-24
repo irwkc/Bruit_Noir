@@ -147,12 +147,17 @@ export default function CheckoutPage() {
         clearCart()
         router.push(`/orders/${order.id}`)
       } else {
-        const error = await res.json()
-        alert(error.error || 'Ошибка при оформлении заказа')
+        const error = await res.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Order creation error:', error)
+        const errorMessage = error.details 
+          ? `${error.error || 'Ошибка при оформлении заказа'}: ${error.details}`
+          : error.error || 'Ошибка при оформлении заказа'
+        alert(errorMessage)
       }
     } catch (error) {
       console.error('Error creating order:', error)
-      alert('Ошибка при оформлении заказа')
+      const errorMessage = error instanceof Error ? error.message : 'Ошибка при оформлении заказа'
+      alert(`Ошибка при оформлении заказа: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

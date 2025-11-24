@@ -123,32 +123,37 @@ export async function POST(request: NextRequest) {
     // Создаем или находим пункт выдачи, если передан полный объект deliveryPoint
     let finalDeliveryPointId: string | null = null
     if (deliveryPoint && deliveryMethod === 'sdek') {
-      // Ищем существующий пункт выдачи по коду
-      const existingPoint = await prisma.deliveryPoint.findFirst({
-        where: {
-          name: deliveryPoint.name || '',
-          address: deliveryPoint.address || '',
-          city: deliveryPoint.city || '',
-        },
-      })
-
-      if (existingPoint) {
-        finalDeliveryPointId = existingPoint.id
-      } else {
-        // Создаем новый пункт выдачи с полной информацией
-        const newDeliveryPoint = await prisma.deliveryPoint.create({
-          data: {
-            name: deliveryPoint.name || `СДЭК ${deliveryPoint.code || ''}`,
+      try {
+        // Ищем существующий пункт выдачи по адресу и городу
+        const existingPoint = await prisma.deliveryPoint.findFirst({
+          where: {
             address: deliveryPoint.address || '',
             city: deliveryPoint.city || '',
-            country: deliveryPoint.country || 'Россия',
-            phone: deliveryPoint.phone || null,
-            workingHours: deliveryPoint.workingHours || null,
-            latitude: deliveryPoint.latitude || null,
-            longitude: deliveryPoint.longitude || null,
           },
         })
-        finalDeliveryPointId = newDeliveryPoint.id
+
+        if (existingPoint) {
+          finalDeliveryPointId = existingPoint.id
+        } else {
+          // Создаем новый пункт выдачи с полной информацией
+          const newDeliveryPoint = await prisma.deliveryPoint.create({
+            data: {
+              name: deliveryPoint.name || `СДЭК ${deliveryPoint.code || ''}`,
+              address: deliveryPoint.address || '',
+              city: deliveryPoint.city || '',
+              country: deliveryPoint.country || 'Россия',
+              phone: deliveryPoint.phone || null,
+              workingHours: deliveryPoint.workingHours || null,
+              latitude: deliveryPoint.latitude ? Number(deliveryPoint.latitude) : null,
+              longitude: deliveryPoint.longitude ? Number(deliveryPoint.longitude) : null,
+            },
+          })
+          finalDeliveryPointId = newDeliveryPoint.id
+        }
+      } catch (deliveryPointError) {
+        console.error('Error creating/finding delivery point:', deliveryPointError)
+        // Продолжаем без пункта выдачи, если не удалось создать
+        finalDeliveryPointId = null
       }
     } else if (deliveryPointId) {
       // Если передан только ID (для обратной совместимости)
@@ -227,7 +232,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(order, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create order'
+    console.error('Error details:', {
+      message: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    })
+    return NextResponse.json(
+      { 
+        error: 'Failed to create order',
+        details: errorMessage,
+      },
+      { status: 500 }
+    )
   }
 }
 
