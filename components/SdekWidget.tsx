@@ -12,7 +12,16 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    if (!city || city.length < 3) return
+    if (!city || city.length < 3) {
+      setIsLoaded(false)
+      if (widgetRef.current) {
+        widgetRef.current.innerHTML = ''
+      }
+      return
+    }
+
+    // Сбрасываем состояние загрузки при смене города
+    setIsLoaded(false)
 
     const loadSdekWidget = () => {
       // Remove any existing widget
@@ -23,19 +32,57 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
       // Try to load SDEK points directly via API
       const loadSdekPoints = async () => {
         try {
-          const response = await fetch(`/api/sdek-points?city=${encodeURIComponent(city)}`)
-          const points = await response.json()
+          setIsLoaded(false)
           
-          if (points && points.length > 0) {
-            renderPointsList(points)
+          // Добавляем таймаут для запроса (30 секунд)
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 30000)
+          
+          const response = await fetch(`/api/sdek-points?city=${encodeURIComponent(city)}`, {
+            signal: controller.signal,
+          })
+          
+          clearTimeout(timeoutId)
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+            console.error('API error:', errorData)
+            renderError(errorData.error || `Ошибка ${response.status}`)
+            setIsLoaded(true)
+            return
+          }
+          
+          const data = await response.json()
+          
+          // Проверяем, что это массив, а не объект с ошибкой
+          if (data.error) {
+            console.error('API returned error:', data.error)
+            renderError(data.error)
+            setIsLoaded(true)
+            return
+          }
+          
+          // Проверяем, что это массив
+          if (Array.isArray(data)) {
+            if (data.length > 0) {
+              renderPointsList(data)
+            } else {
+              renderNoPoints()
+            }
             setIsLoaded(true)
           } else {
-            renderNoPoints()
+            console.error('Invalid response format:', data)
+            renderError('Неверный формат ответа от сервера')
             setIsLoaded(true)
           }
         } catch (error) {
-          console.error('Failed to load SDEK points:', error)
-          renderError()
+          if (error instanceof Error && error.name === 'AbortError') {
+            console.error('Request timeout')
+            renderError('Превышено время ожидания ответа от сервера')
+          } else {
+            console.error('Failed to load SDEK points:', error)
+            renderError(error instanceof Error ? error.message : 'Ошибка загрузки')
+          }
           setIsLoaded(true)
         }
       }
@@ -112,14 +159,15 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
         `
       }
 
-      const renderError = () => {
+      const renderError = (errorMessage?: string) => {
         if (!widgetRef.current) return
         
         widgetRef.current.innerHTML = `
           <div class="p-6 text-center text-red-500">
             <div class="text-4xl mb-2">⚠️</div>
-            <p>Ошибка загрузки пунктов выдачи</p>
-            <p class="text-sm mt-2">Попробуйте обновить страницу</p>
+            <p class="font-semibold">Ошибка загрузки пунктов выдачи</p>
+            ${errorMessage ? `<p class="text-sm mt-2 text-gray-600">${errorMessage}</p>` : ''}
+            <p class="text-sm mt-2">Попробуйте обновить страницу или ввести другой город</p>
           </div>
         `
       }
