@@ -30,7 +30,7 @@ export default function CheckoutPage() {
   const { data: session } = useSession()
   const { items, getTotalPrice, clearCart } = useCartStore()
 
-  const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState('')
+  const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPoint | null>(null)
   const [selectedCity, setSelectedCity] = useState('Москва')
   const [deliveryMethod] = useState('sdek') // Только СДЭК
   const [paymentMethod, setPaymentMethod] = useState('card')
@@ -109,7 +109,7 @@ export default function CheckoutPage() {
 
   // Clear selected point when city changes
   useEffect(() => {
-    setSelectedDeliveryPoint('')
+    setSelectedDeliveryPoint(null)
   }, [selectedCity])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,7 +134,7 @@ export default function CheckoutPage() {
           body: JSON.stringify({
           items,
           deliveryMethod: 'sdek',
-          deliveryPointId: selectedDeliveryPoint,
+          deliveryPoint: selectedDeliveryPoint, // Отправляем полную информацию о пункте выдачи
           customerName,
           customerEmail,
           customerPhone,
@@ -255,8 +255,7 @@ export default function CheckoutPage() {
                         <SdekWidget
                           city={selectedCity}
                           onPointSelect={(point) => {
-                            const chosenId = point?.id || point?.code || ''
-                            setSelectedDeliveryPoint(chosenId)
+                            setSelectedDeliveryPoint(point)
                             console.log('Selected SDEK point:', point)
                           }}
                         />
@@ -441,8 +440,7 @@ export default function CheckoutPage() {
                     <SdekWidget
                       city={selectedCity}
                       onPointSelect={(point) => {
-                        const chosenId = point?.id || point?.code || ''
-                        setSelectedDeliveryPoint(chosenId)
+                        setSelectedDeliveryPoint(point)
                         console.log('Selected SDEK point:', point)
                       }}
                     />

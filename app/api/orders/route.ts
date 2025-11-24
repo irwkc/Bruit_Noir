@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       items,
       deliveryMethod,
       deliveryPointId,
+      deliveryPoint, // Полная информация о пункте выдачи СДЭК
       address,
       postalCode,
       customerName,
@@ -119,13 +120,48 @@ export async function POST(request: NextRequest) {
       return sum + Number(product.price) * Number(item.quantity)
     }, 0)
 
+    // Создаем или находим пункт выдачи, если передан полный объект deliveryPoint
+    let finalDeliveryPointId: string | null = null
+    if (deliveryPoint && deliveryMethod === 'sdek') {
+      // Ищем существующий пункт выдачи по коду
+      const existingPoint = await prisma.deliveryPoint.findFirst({
+        where: {
+          name: deliveryPoint.name || '',
+          address: deliveryPoint.address || '',
+          city: deliveryPoint.city || '',
+        },
+      })
+
+      if (existingPoint) {
+        finalDeliveryPointId = existingPoint.id
+      } else {
+        // Создаем новый пункт выдачи с полной информацией
+        const newDeliveryPoint = await prisma.deliveryPoint.create({
+          data: {
+            name: deliveryPoint.name || `СДЭК ${deliveryPoint.code || ''}`,
+            address: deliveryPoint.address || '',
+            city: deliveryPoint.city || '',
+            country: deliveryPoint.country || 'Россия',
+            phone: deliveryPoint.phone || null,
+            workingHours: deliveryPoint.workingHours || null,
+            latitude: deliveryPoint.latitude || null,
+            longitude: deliveryPoint.longitude || null,
+          },
+        })
+        finalDeliveryPointId = newDeliveryPoint.id
+      }
+    } else if (deliveryPointId) {
+      // Если передан только ID (для обратной совместимости)
+      finalDeliveryPointId = deliveryPointId
+    }
+
     // Create order with items
     const order = await prisma.order.create({
       data: {
         userId,
         total,
         deliveryMethod,
-        deliveryPointId,
+        deliveryPointId: finalDeliveryPointId,
         address,
         postalCode,
         customerName,
