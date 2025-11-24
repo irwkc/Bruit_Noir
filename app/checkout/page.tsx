@@ -670,14 +670,10 @@ export default function CheckoutPage() {
                 <button
                   onClick={() => {
                     // Сохраняем данные формы в localStorage для передачи на страницу регистрации
-                    const fullName = [customerLastName, customerFirstName, customerMiddleName]
-                      .filter(Boolean)
-                      .join(' ')
-                      .trim()
-                    
-                    if (fullName || customerEmail) {
+                    // Используем только имя (customerFirstName), а не полное ФИО
+                    if (customerFirstName || customerEmail) {
                       localStorage.setItem('checkoutFormData', JSON.stringify({
-                        name: fullName || customerFirstName || '',
+                        name: customerFirstName || '',
                         email: customerEmail || '',
                       }))
                     }
