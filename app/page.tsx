@@ -38,8 +38,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* Desktop Hero Section */}
-      <section className="relative h-screen bg-gradient-to-r from-black to-gray-900 text-white hidden md:block">
-        <div className="absolute inset-0 bg-black opacity-40" />
+      <section className="relative h-screen text-white hidden md:block">
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="max-w-2xl">
             <FadeIn delay={0.2}>
@@ -80,8 +79,7 @@ export default async function HomePage() {
       </section>
 
       {/* Mobile Hero Section */}
-      <section className="relative h-screen bg-gradient-to-b from-black to-gray-900 text-white block md:hidden">
-        <div className="absolute inset-0 bg-black opacity-40" />
+      <section className="relative h-screen text-white block md:hidden">
         <div className="relative z-10 px-4 py-16 h-full flex flex-col justify-center">
           <div className="text-center">
             <FadeIn delay={0.2}>
@@ -141,8 +139,8 @@ export default async function HomePage() {
             </StaggerContainer>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">Товары скоро появятся</p>
-              <Link href="/admin" className="text-blue-600 hover:underline">
+              <p className="text-gray-300 mb-4">Товары скоро появятся</p>
+              <Link href="/admin" className="text-blue-400 hover:underline">
                 Добавить товары в админ-панели
               </Link>
             </div>
@@ -179,8 +177,8 @@ export default async function HomePage() {
             </StaggerContainer>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">Товары скоро появятся</p>
-              <Link href="/admin" className="text-blue-600 hover:underline text-sm">
+              <p className="text-gray-300 mb-4">Товары скоро появятся</p>
+              <Link href="/admin" className="text-blue-400 hover:underline text-sm">
                 Добавить товары в админ-панели
               </Link>
             </div>
