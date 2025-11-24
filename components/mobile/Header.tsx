@@ -11,7 +11,7 @@ export default function MobileHeader() {
   const totalItems = useCartStore((state) => state.getTotalItems())
 
   return (
-    <header className="bg-black text-white sticky top-0 z-50 md:hidden">
+    <header className="bg-black text-white md:hidden">
       <nav className="py-3">
         <div className="flex items-center justify-between min-h-[36px] px-4">
           {/* Logo - smaller for mobile */}

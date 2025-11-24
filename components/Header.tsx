@@ -11,7 +11,7 @@ export default function Header() {
   const totalItems = useCartStore((state) => state.getTotalItems())
 
   return (
-    <header className="bg-black text-white sticky top-0 z-50">
+    <header className="bg-black text-white">
       <nav className="border-b border-transparent">
         <div className="flex min-h-[60px] items-center justify-between py-2 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
