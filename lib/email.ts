@@ -359,9 +359,6 @@ export async function sendOrderShippedNotification(
                   <h1 style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">
                     BRUIT NOIR
                   </h1>
-                  <p style="margin: 10px 0 0; font-size: 18px; color: #4ade80; font-weight: 600;">
-                    ✅ Ваш заказ отправлен!
-                  </p>
                 </td>
               </tr>
               
