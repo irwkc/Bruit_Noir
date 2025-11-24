@@ -88,18 +88,32 @@ body {
 /* Fallback для старых iOS Safari (например, iPhone 11) */
 @supports (-webkit-touch-callout: none) {
   @media (max-width: 430px) {
+    input,
+    textarea,
+    select,
     .ios-legacy-input,
     .ios-legacy-select,
     .ios-legacy-textarea {
-      background-color: rgba(255, 255, 255, 0.16) !important;
-      border-color: rgba(255, 255, 255, 0.35) !important;
+      background-color: rgba(255, 255, 255, 0.18) !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
       color: #ffffff !important;
       -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
     }
 
+    input::placeholder,
+    textarea::placeholder,
     .ios-legacy-input::placeholder,
     .ios-legacy-textarea::placeholder {
       color: rgba(255, 255, 255, 0.65) !important;
+    }
+
+    input:-webkit-autofill,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+      -webkit-text-fill-color: #ffffff !important;
+      -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.18) inset !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
     }
   }
 }
