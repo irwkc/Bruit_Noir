@@ -10,7 +10,7 @@ import {
   InformationCircleIcon,
   EnvelopeIcon,
 } from '@heroicons/react/24/outline'
-import { useState, type ComponentProps } from 'react'
+import { useState, type ComponentProps, type ReactElement } from 'react'
 import Image from 'next/image'
 
 export default function MobileHeader() {
@@ -20,7 +20,7 @@ export default function MobileHeader() {
   type MenuItem = {
     label: string
     href: string
-    icon: (props: ComponentProps<'svg'>) => JSX.Element
+    icon: (props: ComponentProps<'svg'>) => ReactElement
   }
 
   const menuItems: MenuItem[] = [
@@ -30,8 +30,8 @@ export default function MobileHeader() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 md:hidden">
-      <nav className="py-3 backdrop-blur-2xl bg-black/40 border-b border-white/10 text-white">
+    <header className="sticky top-0 z-50 md:hidden bg-black text-white">
+      <nav className="py-3 border-b border-white/10">
         <div className="flex items-center justify-between min-h-[36px] px-4">
           {/* Logo - smaller for mobile */}
           <Link href="/" className="flex items-center">
