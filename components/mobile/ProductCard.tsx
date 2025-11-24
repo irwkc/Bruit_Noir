@@ -22,7 +22,7 @@ export default function MobileProductCard({
 
   return (
     <Link href={`/product/${id}`} className="block">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="rounded-xl border border-white/20 overflow-hidden">
         {/* Image - square aspect ratio for mobile */}
         <div className="relative aspect-square bg-gray-100">
           {images && images.length > 0 ? (
@@ -54,16 +54,16 @@ export default function MobileProductCard({
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-3">
-          <h3 className="font-medium text-gray-900 text-sm leading-tight mb-1 line-clamp-2">
+        {/* Content with glass effect */}
+        <div className="bg-white/10 backdrop-blur-2xl border-t border-white/20 p-3">
+          <h3 className="font-medium text-white text-sm leading-tight mb-1 line-clamp-2">
             {name}
           </h3>
-          <p className="text-lg font-bold text-gray-900">
+          <p className="text-lg font-bold text-white">
             {price.toLocaleString()} ₽
           </p>
           {!isAvailable && (
-            <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-red-500">
+            <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-red-400">
               Скоро в продаже
             </p>
           )}

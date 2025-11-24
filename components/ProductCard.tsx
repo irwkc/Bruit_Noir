@@ -20,7 +20,7 @@ export default function ProductCard({ id, name, price, images, category, availab
   return (
     <Link href={`/product/${id}`} className="block group">
       <div
-        className="relative overflow-hidden rounded-2xl bg-white ring-1 ring-black/5 transition-[transform,box-shadow] duration-300 will-change-transform hover:-translate-y-1 hover:shadow-2xl"
+        className="relative overflow-hidden rounded-2xl border border-white/20 transition-[transform,box-shadow] duration-300 will-change-transform hover:-translate-y-1 hover:shadow-2xl"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -53,27 +53,29 @@ export default function ProductCard({ id, name, price, images, category, availab
 
           {/* Quick CTA */}
           <div className={`absolute inset-x-3 bottom-3 transition-all ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-            <div className="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 shadow-lg backdrop-blur">
-              <span className="truncate pr-2 text-sm font-medium text-gray-900">Быстрый просмотр</span>
-              <span className="text-xs font-semibold text-gray-700">→</span>
+            <div className="flex items-center justify-between rounded-xl bg-white/10 backdrop-blur-2xl border border-white/20 px-3 py-2">
+              <span className="truncate pr-2 text-sm font-medium text-white">Быстрый просмотр</span>
+              <span className="text-xs font-semibold text-white">→</span>
             </div>
           </div>
         </div>
 
-        {/* Info */}
-        <div className="flex items-baseline justify-between px-3 pb-3 pt-3">
-          <h3 className="line-clamp-1 text-base font-medium text-gray-900 group-hover:text-black">
-            {name}
-          </h3>
-          <p className="whitespace-nowrap pl-3 text-lg font-semibold text-gray-900">
-            {price.toLocaleString('ru-RU')} ₽
-          </p>
-        </div>
-        {!isAvailable && (
-          <div className="px-3 pb-3 -mt-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-red-600">Скоро в наличии</p>
+        {/* Info with glass effect */}
+        <div className="bg-white/10 backdrop-blur-2xl border-t border-white/20 px-3 pb-3 pt-3">
+          <div className="flex items-baseline justify-between">
+            <h3 className="line-clamp-1 text-base font-medium text-white group-hover:text-gray-200">
+              {name}
+            </h3>
+            <p className="whitespace-nowrap pl-3 text-lg font-semibold text-white">
+              {price.toLocaleString('ru-RU')} ₽
+            </p>
           </div>
-        )}
+          {!isAvailable && (
+            <div className="mt-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-red-400">Скоро в наличии</p>
+            </div>
+          )}
+        </div>
       </div>
     </Link>
   )
