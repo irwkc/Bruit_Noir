@@ -5,7 +5,7 @@ import { sendOrderShippedNotification } from '@/lib/email'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await authenticateAdminRequest(request)
@@ -14,7 +14,7 @@ export async function PATCH(
   }
 
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const { status } = body
 
