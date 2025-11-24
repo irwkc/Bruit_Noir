@@ -36,7 +36,12 @@ jobs:
             if [ -d "public/uploads" ]; then
               cp -r public/uploads /tmp/uploads-backup
             fi
-            git fetch origin main
+            # Configure git to use token for private repo (if GITHUB_TOKEN is provided)
+            if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
+              git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/" || true
+            fi
+            # Try to fetch using SSH first, fallback to HTTPS with token
+            git fetch origin main || git fetch https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main || true
             git reset --hard origin/main
             git clean -fd
             rm -rf .next .turbo
