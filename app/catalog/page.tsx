@@ -95,8 +95,8 @@ export default function CatalogPage() {
             />
           </div>
 
-          {/* Category & Sort */}
-          <div className="sticky top-16 z-10 -mx-4 bg-white/10 backdrop-blur-2xl px-4 py-3 border-b border-white/20">
+          {/* Category */}
+          <div className="sticky top-16 z-10 -mx-4 px-4 py-3">
             <div className="flex flex-wrap items-center gap-2">
               {categories.map((cat) => (
                 <button
@@ -111,27 +111,6 @@ export default function CatalogPage() {
                   {cat.name}
                 </button>
               ))}
-
-              <div className="ml-auto flex items-center gap-2">
-                {[
-                  { id: 'newest', label: 'Новые' },
-                  { id: 'price-asc', label: 'Цена ↑' },
-                  { id: 'price-desc', label: 'Цена ↓' },
-                  { id: 'name', label: 'A→Z' },
-                ].map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setSortBy(opt.id)}
-                    className={`rounded-full px-3 py-2 text-sm transition ${
-                      sortBy === opt.id
-                        ? 'bg-white text-black'
-                        : 'bg-white/10 text-white border border-white/30 hover:border-white/50'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -217,9 +196,9 @@ export default function CatalogPage() {
         </div>
 
         {/* Mobile Filters */}
-        <div className="sticky top-0 z-10 bg-white/10 backdrop-blur-2xl border-b border-white/20 px-4 py-3">
+        <div className="sticky top-0 z-10 px-4 py-3">
           {/* Categories */}
-          <div className="flex overflow-x-auto gap-2 mb-2 pb-2 -mx-4 px-4 scrollbar-hide">
+          <div className="flex overflow-x-auto gap-2 -mx-4 px-4 scrollbar-hide">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -231,28 +210,6 @@ export default function CatalogPage() {
                 }`}
               >
                 {cat.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Sort */}
-          <div className="flex overflow-x-auto gap-2 -mx-4 px-4 scrollbar-hide">
-            {[
-              { id: 'newest', label: 'Новые' },
-              { id: 'price-asc', label: 'Цена ↑' },
-              { id: 'price-desc', label: 'Цена ↓' },
-              { id: 'name', label: 'A→Z' },
-            ].map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => setSortBy(opt.id)}
-                className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                  sortBy === opt.id
-                    ? 'bg-white text-black'
-                    : 'bg-white/10 text-white border border-white/30'
-                }`}
-              >
-                {opt.label}
               </button>
             ))}
           </div>
