@@ -41,6 +41,7 @@ export default function CheckoutPage() {
   const [customerMiddleName, setCustomerMiddleName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('+7 ')
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   useEffect(() => {
     if (session?.user) {
@@ -169,10 +170,16 @@ export default function CheckoutPage() {
       } else {
         const error = await res.json().catch(() => ({ error: 'Unknown error' }))
         console.error('Order creation error:', error)
-        const errorMessage = error.details 
-          ? `${error.error || 'Ошибка при оформлении заказа'}: ${error.details}`
-          : error.error || 'Ошибка при оформлении заказа'
-        alert(errorMessage)
+        
+        // Если ошибка авторизации, показываем модальное окно
+        if (res.status === 401 || error.error === 'Unauthorized') {
+          setShowAuthModal(true)
+        } else {
+          const errorMessage = error.details 
+            ? `${error.error || 'Ошибка при оформлении заказа'}: ${error.details}`
+            : error.error || 'Ошибка при оформлении заказа'
+          alert(errorMessage)
+        }
       }
     } catch (error) {
       console.error('Error creating order:', error)
@@ -612,6 +619,54 @@ export default function CheckoutPage() {
         </form>
       </div>
       </div>
+
+      {/* Модальное окно для авторизации */}
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+                <svg
+                  className="h-6 w-6 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Требуется авторизация
+              </h3>
+              <p className="text-sm text-gray-600 mb-6">
+                Для оформления заказа необходимо войти в личный кабинет
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowAuthModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAuthModal(false)
+                    router.push('/auth/signin?callbackUrl=/checkout')
+                  }}
+                  className="flex-1 px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition"
+                >
+                  Войти
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
