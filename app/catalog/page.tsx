@@ -70,13 +70,13 @@ export default function CatalogPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Desktop Version */}
       <div className="hidden md:block mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Каталог</h1>
-          <p className="text-lg text-gray-600">
+          <h1 className="text-4xl font-bold text-white mb-4">Каталог</h1>
+          <p className="text-lg text-gray-300">
             Вся коллекция Bruit Noir в одном месте
           </p>
         </div>
@@ -91,12 +91,12 @@ export default function CatalogPage() {
               placeholder="Поиск товаров..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
             />
           </div>
 
           {/* Category & Sort */}
-          <div className="sticky top-16 z-10 -mx-4 bg-gray-50/80 px-4 py-3 backdrop-blur">
+          <div className="sticky top-16 z-10 -mx-4 bg-white/10 backdrop-blur-2xl px-4 py-3 border-b border-white/20">
             <div className="flex flex-wrap items-center gap-2">
               {categories.map((cat) => (
                 <button
@@ -104,8 +104,8 @@ export default function CatalogPage() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`rounded-full border px-4 py-2 text-sm transition ${
                     selectedCategory === cat.id
-                      ? 'border-black bg-black text-white'
-                      : 'bg-white text-black border-gray-300 hover:border-gray-400'
+                      ? 'border-white bg-white text-black'
+                      : 'bg-white/10 text-white border-white/30 hover:border-white/50'
                   }`}
                 >
                   {cat.name}
@@ -124,8 +124,8 @@ export default function CatalogPage() {
                     onClick={() => setSortBy(opt.id)}
                     className={`rounded-full px-3 py-2 text-sm transition ${
                       sortBy === opt.id
-                        ? 'bg-black text-white'
-                        : 'bg-white text-black border border-gray-300 hover:border-gray-400'
+                        ? 'bg-white text-black'
+                        : 'bg-white/10 text-white border border-white/30 hover:border-white/50'
                     }`}
                   >
                     {opt.label}
@@ -140,10 +140,10 @@ export default function CatalogPage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="animate-pulse overflow-hidden rounded-2xl bg-white p-3 ring-1 ring-black/5">
-                <div className="mb-3 aspect-[3/4] rounded-xl bg-gray-200" />
-                <div className="mb-2 h-4 w-2/3 rounded bg-gray-200" />
-                <div className="h-4 w-24 rounded bg-gray-200" />
+              <div key={i} className="animate-pulse overflow-hidden rounded-2xl bg-white/10 backdrop-blur-md p-3 border border-white/20">
+                <div className="mb-3 aspect-[3/4] rounded-xl bg-white/10" />
+                <div className="mb-2 h-4 w-2/3 rounded bg-white/10" />
+                <div className="h-4 w-24 rounded bg-white/10" />
               </div>
             ))}
           </div>
@@ -164,7 +164,7 @@ export default function CatalogPage() {
           </StaggerContainer>
         ) : (
           <div className="text-center py-20">
-            <p className="text-gray-600 text-lg mb-4">
+            <p className="text-gray-300 text-lg mb-4">
               {searchQuery ? 'Товары не найдены' : 'Товары скоро появятся'}
             </p>
             {searchQuery && (
