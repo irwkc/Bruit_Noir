@@ -1,65 +1,119 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// SDEK Widget API integration
+const CDEK_LOGIN = 'WZZgKAtswgunooJgz6cON4erHC7GUfeq'
+const CDEK_SECRET = 'DIpAX2MTgYBxmj6TASdVZ9OkkOkhMiR7'
+const CDEK_BASE_URL = 'https://api.cdek.ru/v2'
+
+let authToken: string | null = null
+let tokenExpiry: number = 0
+
+async function getCdekAuthToken(): Promise<string> {
+  // Проверяем, есть ли валидный токен
+  if (authToken && Date.now() < tokenExpiry) {
+    return authToken
+  }
+
+  const formData = new URLSearchParams()
+  formData.append('grant_type', 'client_credentials')
+  formData.append('client_id', CDEK_LOGIN)
+  formData.append('client_secret', CDEK_SECRET)
+
+  const response = await fetch(`${CDEK_BASE_URL}/oauth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData.toString(),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get CDEK auth token')
+  }
+
+  const data = await response.json()
+
+  if (!data.access_token) {
+    throw new Error('No access token in CDEK response')
+  }
+
+  const newToken = data.access_token
+  authToken = newToken
+  tokenExpiry = Date.now() + (data.expires_in || 3500) * 1000
+
+  return newToken
+}
+
+// Используем реальный API СДЭК v2
 async function fetchRealSdekPoints(city: string) {
   try {
-    // Try multiple SDEK API endpoints
-    const endpoints = [
-      // Widget API
-      {
-        url: `https://widget.cdek.ru/widget/scripts/rest/api/pvzlist.php`,
-        method: 'POST',
-        body: new URLSearchParams({
-          'citypost': city,
-          'type': 'json'
-        })
+    const token = await getCdekAuthToken()
+    
+    // Получаем пункты выдачи через официальный API СДЭК v2
+    const response = await fetch(`${CDEK_BASE_URL}/deliverypoints?city=${encodeURIComponent(city)}&type=PVZ&is_handout=true`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
-      // Alternative widget endpoint
-      {
-        url: `https://widget.cdek.ru/widget/scripts/rest/api/pvzlist.php?citypost=${encodeURIComponent(city)}&type=json`,
-        method: 'GET'
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      
+      // API СДЭК v2 возвращает массив пунктов выдачи
+      if (data && Array.isArray(data) && data.length > 0) {
+        return data.map((point: any) => ({
+          id: point.code || point.uuid || `sdek-${point.code}`,
+          code: point.code,
+          name: point.name || `СДЭК - ${point.location?.address || city}`,
+          address: point.location?.address || point.address || '',
+          city: point.location?.city || city,
+          country: point.location?.country || 'Россия',
+          workingHours: point.work_time || point.workTime || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
+          latitude: point.location?.latitude || point.latitude || null,
+          longitude: point.location?.longitude || point.longitude || null,
+          phone: point.phones?.[0]?.number || point.phone || '',
+          email: point.email || '',
+          type: point.type || 'PVZ',
+          pvz_code: point.code,
+        }))
       }
-    ]
+    }
+    
+    // Fallback: пробуем старый widget API
+    try {
+      const widgetResponse = await fetch(`https://widget.cdek.ru/widget/scripts/rest/api/pvzlist.php?citypost=${encodeURIComponent(city)}&type=json`, {
+        method: 'GET',
+      })
 
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint.url, {
-          method: endpoint.method,
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: endpoint.body
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          
-          // Transform SDEK Widget data to our format
-          if (data && Array.isArray(data) && data.length > 0) {
-            return data.map((point: any, index: number) => ({
-              id: point.Code || point.code || `sdek-widget-${city}-${index}`,
-              name: point.Name || point.name || `СДЭК - ${city}`,
-              address: point.Address || point.address || `${city}`,
-              city: city,
-              country: 'Россия',
-              workingHours: point.WorkTime || point.work_time || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
-              latitude: parseFloat(point.coordY || point.coord_y || point.latitude) || null,
-              longitude: parseFloat(point.coordX || point.coord_x || point.longitude) || null,
-              phone: point.Phone || point.phone || '',
-              email: point.Email || point.email || '',
-              type: point.Type || point.type || 'PVZ'
-            }))
-          }
+      if (widgetResponse.ok) {
+        const widgetData = await widgetResponse.json()
+        
+        if (widgetData && Array.isArray(widgetData) && widgetData.length > 0) {
+          return widgetData.map((point: any, index: number) => ({
+            id: point.Code || point.code || `sdek-widget-${city}-${index}`,
+            code: point.Code || point.code,
+            name: point.Name || point.name || `СДЭК - ${city}`,
+            address: point.Address || point.address || `${city}`,
+            city: city,
+            country: 'Россия',
+            workingHours: point.WorkTime || point.work_time || 'Пн-Пт: 9:00-21:00, Сб-Вс: 10:00-18:00',
+            latitude: parseFloat(point.coordY || point.coord_y || point.latitude) || null,
+            longitude: parseFloat(point.coordX || point.coord_x || point.longitude) || null,
+            phone: point.Phone || point.phone || '',
+            email: point.Email || point.email || '',
+            type: point.Type || point.type || 'PVZ',
+            pvz_code: point.Code || point.code,
+          }))
         }
-      } catch (endpointError) {
-        console.error(`Endpoint ${endpoint.url} failed:`, endpointError)
-        continue
       }
+    } catch (widgetError) {
+      console.error('Widget API fallback failed:', widgetError)
     }
     
     return null
   } catch (error) {
-    console.error('SDEK Widget API error:', error)
+    console.error('SDEK API error:', error)
     return null
   }
 }
