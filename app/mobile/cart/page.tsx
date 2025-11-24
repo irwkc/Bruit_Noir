@@ -115,9 +115,12 @@ export default function MobileCartPage() {
               </div>
             </div>
 
-            <button className="w-full rounded-full bg-white text-black py-4 text-base font-semibold shadow-lg hover:bg-gray-100 transition">
+            <Link
+              href="/checkout"
+              className="block w-full rounded-full bg-white text-black text-center py-4 text-base font-semibold shadow-lg hover:bg-gray-100 transition"
+            >
               Оформить заказ
-            </button>
+            </Link>
 
             <Link
               href="/catalog"
