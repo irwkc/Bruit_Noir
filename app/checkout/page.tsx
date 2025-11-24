@@ -36,13 +36,23 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [loading, setLoading] = useState(false)
 
-  const [customerName, setCustomerName] = useState('')
+  const [customerLastName, setCustomerLastName] = useState('')
+  const [customerFirstName, setCustomerFirstName] = useState('')
+  const [customerMiddleName, setCustomerMiddleName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('+7 ')
 
   useEffect(() => {
     if (session?.user) {
-      setCustomerName(session.user.name || '')
+      // Если в имени есть пробелы, разбиваем на ФИО
+      const nameParts = (session.user.name || '').split(' ')
+      if (nameParts.length >= 2) {
+        setCustomerLastName(nameParts[0] || '')
+        setCustomerFirstName(nameParts[1] || '')
+        setCustomerMiddleName(nameParts[2] || '')
+      } else if (nameParts.length === 1) {
+        setCustomerFirstName(nameParts[0] || '')
+      }
       setCustomerEmail(session.user.email || '')
     }
   }, [session])
@@ -128,11 +138,17 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
+      // Объединяем ФИО в полное имя
+      const fullName = [customerLastName, customerFirstName, customerMiddleName]
+        .filter(Boolean)
+        .join(' ')
+        .trim()
+
       const orderData = {
         items,
         deliveryMethod: 'sdek',
         deliveryPoint: selectedDeliveryPoint, // Отправляем полную информацию о пункте выдачи
-        customerName,
+        customerName: fullName,
         customerEmail,
         customerPhone,
         paymentMethod,
@@ -190,17 +206,42 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-lg p-6">
                 <h2 className="text-xl font-bold mb-4">Контактная информация</h2>
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Имя *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Фамилия *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={customerLastName}
+                        onChange={(e) => setCustomerLastName(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Имя *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={customerFirstName}
+                        onChange={(e) => setCustomerFirstName(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Отчество
+                      </label>
+                      <input
+                        type="text"
+                        value={customerMiddleName}
+                        onChange={(e) => setCustomerMiddleName(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -377,13 +418,36 @@ export default function CheckoutPage() {
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Фамилия *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={customerLastName}
+                  onChange={(e) => setCustomerLastName(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Имя *
                 </label>
                 <input
                   type="text"
                   required
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
+                  value={customerFirstName}
+                  onChange={(e) => setCustomerFirstName(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Отчество
+                </label>
+                <input
+                  type="text"
+                  value={customerMiddleName}
+                  onChange={(e) => setCustomerMiddleName(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                 />
               </div>
