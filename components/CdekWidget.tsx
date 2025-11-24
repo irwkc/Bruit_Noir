@@ -25,6 +25,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   const isInitializingRef = useRef(false)
   const [mounted, setMounted] = useState(false)
   const containerIdRef = useRef<string | null>(null)
+  const hasInitializedRef = useRef(false)
 
   // Генерируем ID только на клиенте после монтирования
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
     if (typeof window === 'undefined' || !mounted || !containerIdRef.current) return
     if (!city || city.length < 3) {
       destroyWidget()
+      hasInitializedRef.current = false
       return
     }
 
@@ -55,12 +57,13 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
 
     const initWidget = () => {
       // Предотвращаем множественную инициализацию
-      if (isInitializingRef.current) {
+      if (isInitializingRef.current || hasInitializedRef.current) {
         return false
       }
 
       // Если виджет уже инициализирован, не создаём новый
       if (widgetInstanceRef.current) {
+        hasInitializedRef.current = true
         return true
       }
 
@@ -84,15 +87,24 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       
       console.log('All dependencies loaded, initializing widget...')
 
-      // Убеждаемся, что контейнер существует
+      // Убеждаемся, что контейнер существует и пуст
       const container = document.getElementById(containerId)
       if (!container) {
         return false
       }
 
+      // Проверяем, не инициализирован ли уже виджет в этом контейнере
+      if (container.children.length > 0 && container.querySelector('[class*="cdek"]')) {
+        console.log('Widget already rendered in container, skipping initialization')
+        hasInitializedRef.current = true
+        return true
+      }
+
       // Помечаем, что начинаем инициализацию
       isInitializingRef.current = true
 
+      // Очищаем контейнер перед инициализацией
+      container.innerHTML = ''
       destroyWidget()
 
       try {
@@ -113,6 +125,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           onReady: () => {
             console.log('CDEK widget initialized successfully')
             isInitializingRef.current = false
+            hasInitializedRef.current = true
           },
           onChoose: (point: any) => {
             console.log('CDEK point selected:', point)
@@ -121,15 +134,23 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           onError: (error: any) => {
             console.error('CDEK widget error:', error)
             isInitializingRef.current = false
+            hasInitializedRef.current = false
             
-            // Показываем сообщение об ошибке пользователю
+            // Игнорируем ошибки 404/403 - это нормально для некоторых ресурсов виджета
+            const errorMessage = error?.message || ''
+            if (errorMessage.includes('404') || errorMessage.includes('403')) {
+              console.log('Ignoring 404/403 error from CDEK widget (expected for some resources)')
+              return
+            }
+            
+            // Показываем сообщение об ошибке пользователю только для критических ошибок
             const container = document.getElementById(containerId)
-            if (container) {
+            if (container && !errorMessage.includes('canceled')) {
               container.innerHTML = `
                 <div class="p-6 text-center text-red-500">
                   <div class="text-4xl mb-2">⚠️</div>
                   <p class="font-semibold mb-2">Ошибка загрузки виджета СДЭК</p>
-                  <p class="text-sm text-gray-600">${error?.message || 'Попробуйте обновить страницу'}</p>
+                  <p class="text-sm text-gray-600">${errorMessage || 'Попробуйте обновить страницу'}</p>
                   <button 
                     onclick="window.location.reload()" 
                     class="mt-4 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
@@ -233,6 +254,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
       if (initTimeout) clearTimeout(initTimeout)
       if (checkInterval) clearInterval(checkInterval)
       isInitializingRef.current = false
+      // Не сбрасываем hasInitializedRef здесь, чтобы избежать повторной инициализации
       destroyWidget()
     }
   }, [city, destroyWidget, onPointSelect, mounted])
@@ -274,6 +296,7 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
         id={containerIdRef.current}
         style={{ width: '100%', height: '600px', minHeight: '600px' }}
         className="w-full"
+        suppressHydrationWarning
       />
     </div>
   )
