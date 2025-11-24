@@ -31,6 +31,14 @@ export default function CartPage() {
 
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0)
 
+  const getItemsLabel = (count: number) => {
+    const mod10 = count % 10
+    const mod100 = count % 100
+    if (mod10 === 1 && mod100 !== 11) return 'товар'
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'товара'
+    return 'товаров'
+  }
+
   return (
     <div className="min-h-screen">
       {/* Desktop Version */}
@@ -169,7 +177,7 @@ export default function CartPage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-white">Корзина</h1>
           <p className="text-sm text-gray-300">
-            {totalQuantity} товар{totalQuantity !== 1 ? 'ов' : ''}
+            {totalQuantity} {getItemsLabel(totalQuantity)}
           </p>
         </div>
 
@@ -249,7 +257,9 @@ export default function CartPage() {
           <div className="rounded-3xl border border-white/15 bg-white/5 backdrop-blur-2xl p-5 shadow-2xl">
             <div className="flex justify-between text-sm text-gray-300 mb-2">
               <span>Количество</span>
-              <span>{totalQuantity}</span>
+              <span>
+                {totalQuantity} {getItemsLabel(totalQuantity)}
+              </span>
             </div>
             <div className="flex justify-between text-lg font-semibold text-white">
               <span>Итого</span>
