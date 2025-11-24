@@ -134,12 +134,6 @@ export default function ProfilePage() {
                         <p className="text-lg font-bold text-white">
                           {order.total.toLocaleString('ru-RU')} ₽
                         </p>
-                        <Link
-                          href={`/orders/${order.id}`}
-                          className="text-blue-400 hover:text-blue-300 hover:underline text-sm"
-                        >
-                          Подробнее
-                        </Link>
                       </div>
                     </div>
                   ))}
@@ -210,12 +204,6 @@ export default function ProfilePage() {
                     <p className="text-base font-bold text-white">
                       {order.total.toLocaleString('ru-RU')} ₽
                     </p>
-                    <Link
-                      href={`/orders/${order.id}`}
-                      className="text-blue-400 hover:text-blue-300 hover:underline text-xs"
-                    >
-                      Подробнее
-                    </Link>
                   </div>
                 </div>
               ))}
