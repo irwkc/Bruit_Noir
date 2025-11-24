@@ -44,23 +44,12 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
   const colors = (product.colors as string[]) || []
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10">
-        <div className="flex items-center justify-between">
-          <Link href="/catalog" className="text-gray-600">
-            ← Назад
-          </Link>
-          <h1 className="text-lg font-semibold">Товар</h1>
-          <div className="w-6" />
-        </div>
-      </div>
-
+    <div className="min-h-screen">
       <div className="pb-20">
         {/* Images - mobile carousel */}
-        <div className="bg-white">
+        <div>
           {images.length > 0 ? (
-            <div className="relative aspect-square">
+            <div className="relative aspect-square border-b border-white/20">
               <Image
                 src={images[0]}
                 alt={product.name}
@@ -70,27 +59,27 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
               />
             </div>
           ) : (
-            <div className="aspect-square bg-gray-100 flex items-center justify-center">
+            <div className="aspect-square bg-white/5 flex items-center justify-center border-b border-white/20">
               <span className="text-gray-400">Нет фото</span>
             </div>
           )}
         </div>
 
         {/* Product Info */}
-        <div className="bg-white p-4">
-          <div className="mb-4">
-            <h1 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h1>
-            <p className="text-2xl font-bold text-gray-900 mb-3">
+        <div className="px-4 py-4 space-y-4">
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <h1 className="text-xl font-bold text-white mb-2">{product.name}</h1>
+            <p className="text-2xl font-bold text-white mb-3">
               {product.price.toLocaleString()} ₽
             </p>
             <div className="flex items-center space-x-2 mb-3">
-              <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-sm">
+              <span className="bg-black text-white px-2 py-1 rounded-full text-sm">
                 {product.category}
               </span>
               <span className={`px-2 py-1 rounded-full text-sm ${
                 product.available && product.stock > 0
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-white/10 text-gray-400'
               }`}>
                 {product.available && product.stock > 0 ? 'В наличии' : 'Нет в наличии'}
               </span>
@@ -98,22 +87,22 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Description */}
-          <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-2">Описание</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <h3 className="font-semibold text-white mb-2">Описание</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
               {product.description}
             </p>
           </div>
 
           {/* Sizes */}
           {sizes.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Размеры</h3>
+            <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+              <h3 className="font-semibold text-white mb-3">Размеры</h3>
               <div className="flex flex-wrap gap-2">
                 {sizes.map((size) => (
                   <button
                     key={size}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition"
+                    className="px-3 py-2 border border-white/30 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition"
                   >
                     {size}
                   </button>
@@ -124,13 +113,13 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
 
           {/* Colors */}
           {colors.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Цвета</h3>
+            <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+              <h3 className="font-semibold text-white mb-3">Цвета</h3>
               <div className="flex flex-wrap gap-2">
                 {colors.map((color) => (
                   <button
                     key={color}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition"
+                    className="px-3 py-2 border border-white/30 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition capitalize"
                   >
                     {color}
                   </button>
@@ -143,16 +132,16 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
           <div className="space-y-3">
             <button
               disabled={!product.available || product.stock === 0}
-              className={`w-full py-4 rounded-lg font-semibold text-lg transition ${
+              className={`w-full py-4 rounded-full font-semibold text-lg transition ${
                 product.available && product.stock > 0
-                  ? 'bg-black text-white hover:bg-gray-800'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-white/10 backdrop-blur-2xl text-white border border-white/20 hover:bg-white/20'
+                  : 'bg-white/5 text-gray-400 cursor-not-allowed border border-white/10'
               }`}
             >
               {product.available && product.stock > 0 ? 'Добавить в корзину' : 'Нет в наличии'}
             </button>
             
-            <button className="w-full py-3 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition">
+            <button className="w-full py-3 border border-white/20 bg-white/10 backdrop-blur-2xl text-white rounded-full font-semibold hover:bg-white/20 transition">
               В избранное
             </button>
           </div>

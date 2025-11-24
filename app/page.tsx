@@ -149,7 +149,7 @@ export default async function HomePage() {
           <div className="text-center mt-12">
             <Link
               href="/catalog"
-              className="inline-block bg-black text-white px-8 py-3 rounded-md font-semibold hover:bg-gray-800 transition"
+              className="inline-block bg-white/10 backdrop-blur-2xl text-white px-8 py-3 rounded-full font-semibold border border-white/20 hover:bg-white/20 transition"
             >
               Смотреть все товары
             </Link>
@@ -187,7 +187,7 @@ export default async function HomePage() {
           <div className="text-center mt-8">
             <Link
               href="/catalog"
-              className="inline-block bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition text-sm"
+              className="inline-block bg-white/10 backdrop-blur-2xl text-white px-6 py-3 rounded-full font-semibold border border-white/20 hover:bg-white/20 transition text-sm"
             >
               Смотреть все товары
             </Link>

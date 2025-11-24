@@ -78,7 +78,7 @@ export default function ProductPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
       </div>
     )
   }
@@ -86,8 +86,8 @@ export default function ProductPage() {
   if (!product) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-2xl font-bold mb-4">Товар не найден</h2>
-        <Link href="/catalog" className="text-blue-600 hover:underline">
+        <h2 className="text-2xl font-bold mb-4 text-white">Товар не найден</h2>
+        <Link href="/catalog" className="text-blue-400 hover:underline">
           Вернуться в каталог
         </Link>
       </div>
@@ -97,7 +97,7 @@ export default function ProductPage() {
   const isOutOfStock = !product.available || product.stock === 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Toast
         message="Товар добавлен в корзину!"
         show={showToast}
@@ -110,7 +110,7 @@ export default function ProductPage() {
           {/* Images */}
           <div>
             {/* Main Image */}
-            <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden bg-white">
+            <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden border border-white/20">
               <Image
                 src={product.images[selectedImage] || '/placeholder.jpg'}
                 alt={product.name}
@@ -127,8 +127,8 @@ export default function ProductPage() {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`relative aspect-square rounded-lg overflow-hidden ${
-                      selectedImage === index ? 'ring-2 ring-black' : ''
+                    className={`relative aspect-square rounded-lg overflow-hidden border ${
+                      selectedImage === index ? 'border-white ring-2 ring-white/50' : 'border-white/20'
                     }`}
                   >
                     <Image
@@ -144,26 +144,26 @@ export default function ProductPage() {
           </div>
 
           {/* Product Info */}
-          <div>
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-6 border border-white/20">
             <div className="bg-black text-white inline-block px-3 py-1 text-xs font-semibold uppercase mb-4">
               {product.category}
             </div>
 
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-white mb-4">
               {product.name}
             </h1>
 
-            <p className="text-3xl font-bold text-black mb-6">
+            <p className="text-3xl font-bold text-white mb-6">
               {product.price.toLocaleString('ru-RU')} ₽
             </p>
 
-            <p className="text-gray-600 mb-8 leading-relaxed">
+            <p className="text-gray-300 mb-8 leading-relaxed">
               {product.description}
             </p>
 
             {/* Size Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-900 mb-3">
+              <label className="block text-sm font-semibold text-white mb-3">
                 Размер
               </label>
               <div className="flex flex-wrap gap-2">
@@ -173,8 +173,8 @@ export default function ProductPage() {
                     onClick={() => setSelectedSize(size)}
                     className={`px-4 py-2 border-2 rounded-md font-medium transition ${
                       selectedSize === size
-                        ? 'border-black bg-black text-white'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? 'border-white bg-white text-black'
+                        : 'border-white/30 bg-white/10 text-white hover:border-white/50'
                     }`}
                   >
                     {size}
@@ -185,7 +185,7 @@ export default function ProductPage() {
 
             {/* Color Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-900 mb-3">
+              <label className="block text-sm font-semibold text-white mb-3">
                 Цвет
               </label>
               <div className="flex flex-wrap gap-2">
@@ -195,8 +195,8 @@ export default function ProductPage() {
                     onClick={() => setSelectedColor(color)}
                     className={`px-4 py-2 border-2 rounded-md font-medium transition capitalize ${
                       selectedColor === color
-                        ? 'border-black bg-black text-white'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? 'border-white bg-white text-black'
+                        : 'border-white/30 bg-white/10 text-white hover:border-white/50'
                     }`}
                   >
                     {color}
@@ -207,24 +207,24 @@ export default function ProductPage() {
 
             {/* Quantity */}
             <div className="mb-8">
-              <label className="block text-sm font-semibold text-gray-900 mb-3">
+              <label className="block text-sm font-semibold text-white mb-3">
                 Количество
               </label>
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                   disabled={isOutOfStock}
-                  className="w-10 h-10 border-2 border-gray-300 rounded-md transition disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 hover:border-gray-400"
+                  className="w-10 h-10 border-2 border-white/30 bg-white/10 text-white rounded-md transition disabled:cursor-not-allowed disabled:border-white/10 disabled:text-white/40 hover:border-white/50"
                 >
                   -
                 </button>
-                <span className="text-xl font-semibold w-12 text-center">
+                <span className="text-xl font-semibold w-12 text-center text-white">
                   {quantity}
                 </span>
                 <button
                   onClick={() => setQuantity((prev) => Math.min(10, prev + 1))}
                   disabled={isOutOfStock}
-                  className="w-10 h-10 border-2 border-gray-300 rounded-md transition disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 hover:border-gray-400"
+                  className="w-10 h-10 border-2 border-white/30 bg-white/10 text-white rounded-md transition disabled:cursor-not-allowed disabled:border-white/10 disabled:text-white/40 hover:border-white/50"
                 >
                   +
                 </button>
@@ -244,7 +244,7 @@ export default function ProductPage() {
             </button>
 
             {/* Stock Info */}
-            <p className="text-sm text-gray-600 mt-4">
+            <p className="text-sm text-gray-300 mt-4">
               {product.available
                 ? `В наличии: ${product.stock} шт.`
                 : 'Этот товар временно недоступен для заказа'}
@@ -256,8 +256,8 @@ export default function ProductPage() {
       {/* Mobile Version */}
       <div className="block md:hidden">
         {/* Mobile Images */}
-        <div className="bg-white">
-          <div className="relative aspect-[3/4]">
+        <div>
+          <div className="relative aspect-[3/4] border-b border-white/20">
             <Image
               src={product.images[selectedImage] || '/placeholder.jpg'}
               alt={product.name}
@@ -269,13 +269,13 @@ export default function ProductPage() {
 
           {/* Thumbnails */}
           {product.images.length > 1 && (
-            <div className="flex gap-2 p-3 overflow-x-auto">
+            <div className="flex gap-2 p-3 overflow-x-auto bg-white/5">
               {product.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden ${
-                    selectedImage === index ? 'ring-2 ring-black' : ''
+                  className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border ${
+                    selectedImage === index ? 'border-white ring-2 ring-white/50' : 'border-white/20'
                   }`}
                 >
                   <Image
@@ -292,25 +292,27 @@ export default function ProductPage() {
 
         {/* Mobile Product Info */}
         <div className="px-4 py-4 space-y-4">
-          <div className="bg-black text-white inline-block px-2 py-1 text-xs font-semibold uppercase">
-            {product.category}
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <div className="bg-black text-white inline-block px-2 py-1 text-xs font-semibold uppercase mb-3">
+              {product.category}
+            </div>
+
+            <h1 className="text-2xl font-bold text-white mb-2">
+              {product.name}
+            </h1>
+
+            <p className="text-2xl font-bold text-white mb-3">
+              {product.price.toLocaleString('ru-RU')} ₽
+            </p>
+
+            <p className="text-sm text-gray-300 leading-relaxed">
+              {product.description}
+            </p>
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900">
-            {product.name}
-          </h1>
-
-          <p className="text-2xl font-bold text-black">
-            {product.price.toLocaleString('ru-RU')} ₽
-          </p>
-
-          <p className="text-sm text-gray-600 leading-relaxed">
-            {product.description}
-          </p>
-
           {/* Size Selection */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <label className="block text-sm font-semibold text-white mb-2">
               Размер
             </label>
             <div className="flex flex-wrap gap-2">
@@ -320,8 +322,8 @@ export default function ProductPage() {
                   onClick={() => setSelectedSize(size)}
                   className={`px-3 py-2 border-2 rounded-md text-sm font-medium transition ${
                     selectedSize === size
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300'
+                      ? 'border-white bg-white text-black'
+                      : 'border-white/30 bg-white/10 text-white'
                   }`}
                 >
                   {size}
@@ -331,8 +333,8 @@ export default function ProductPage() {
           </div>
 
           {/* Color Selection */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <label className="block text-sm font-semibold text-white mb-2">
               Цвет
             </label>
             <div className="flex flex-wrap gap-2">
@@ -342,8 +344,8 @@ export default function ProductPage() {
                   onClick={() => setSelectedColor(color)}
                   className={`px-3 py-2 border-2 rounded-md text-sm font-medium transition capitalize ${
                     selectedColor === color
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300'
+                      ? 'border-white bg-white text-black'
+                      : 'border-white/30 bg-white/10 text-white'
                   }`}
                 >
                   {color}
@@ -353,23 +355,23 @@ export default function ProductPage() {
           </div>
 
           {/* Quantity */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
+          <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
+            <label className="block text-sm font-semibold text-white mb-2">
               Количество
             </label>
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 border-2 border-gray-300 rounded-md"
+                className="w-10 h-10 border-2 border-white/30 bg-white/10 text-white rounded-md"
               >
                 -
               </button>
-              <span className="text-lg font-semibold w-12 text-center">
+              <span className="text-lg font-semibold w-12 text-center text-white">
                 {quantity}
               </span>
               <button
                 onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                className="w-10 h-10 border-2 border-gray-300 rounded-md"
+                className="w-10 h-10 border-2 border-white/30 bg-white/10 text-white rounded-md"
               >
                 +
               </button>
@@ -377,7 +379,7 @@ export default function ProductPage() {
           </div>
 
           {/* Stock Info */}
-          <p className="text-xs text-gray-600 mb-4">
+          <p className="text-xs text-gray-300 mb-4">
             {product.available
               ? `В наличии: ${product.stock} шт.`
               : 'Этот товар временно недоступен для заказа'}
