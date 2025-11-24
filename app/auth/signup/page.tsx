@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -96,9 +97,16 @@ export default function SignUpPage() {
       <div className="relative max-w-md w-full space-y-8 z-10">
         <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 border border-white/20">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-lg">
-              BRUIT NOIR
-            </h1>
+            <div className="mb-6 flex justify-center">
+              <Image
+                src="/logo.png"
+                alt="Bruit Noir"
+                width={400}
+                height={88}
+                className="h-20 w-auto"
+                priority
+              />
+            </div>
             <h2 className="text-2xl font-semibold text-white mt-6">
               Создать аккаунт
             </h2>

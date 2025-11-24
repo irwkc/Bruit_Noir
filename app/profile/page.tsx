@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 interface Order {
@@ -16,15 +17,21 @@ interface Order {
 
 export default function ProfilePage() {
   const { data: session, status } = useSession()
+  const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
 
 
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin?callbackUrl=/profile')
+      return
+    }
+    
     if (session) {
       fetchOrders()
     }
-  }, [session])
+  }, [session, status, router])
 
   async function fetchOrders() {
     try {
@@ -40,18 +47,20 @@ export default function ProfilePage() {
     }
   }
 
+  // Показываем загрузку пока проверяем сессию
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+      </div>
+    )
+  }
+
+  // Если не авторизован, редирект уже произошел, показываем загрузку
   if (!session) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Вы не авторизованы</h2>
-          <Link
-            href="/auth/signin"
-            className="inline-block bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
-          >
-            Войти
-          </Link>
-        </div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
       </div>
     )
   }
