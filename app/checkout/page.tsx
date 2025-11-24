@@ -128,18 +128,22 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
+      const orderData = {
+        items,
+        deliveryMethod: 'sdek',
+        deliveryPoint: selectedDeliveryPoint, // Отправляем полную информацию о пункте выдачи
+        customerName,
+        customerEmail,
+        customerPhone,
+        paymentMethod,
+      }
+      
+      console.log('Sending order data:', orderData)
+      
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-          items,
-          deliveryMethod: 'sdek',
-          deliveryPoint: selectedDeliveryPoint, // Отправляем полную информацию о пункте выдачи
-          customerName,
-          customerEmail,
-          customerPhone,
-          paymentMethod,
-        }),
+        body: JSON.stringify(orderData),
       })
 
       if (res.ok) {
