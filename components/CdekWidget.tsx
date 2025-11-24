@@ -22,6 +22,26 @@ const READY_EVENT = 'cdek-widget-ready'
 
 // Глобальный счетчик для уникальных ID контейнеров
 let widgetCounter = 0
+// Глобальный реестр активных виджетов для предотвращения множественной инициализации
+const activeWidgets = new Set<string>()
+
+// Глобальный обработчик для подавления необработанных ошибок CanceledError
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    const error = event.reason
+    const errorMessage = String(error?.message || error || '').toLowerCase()
+    
+    // Подавляем CanceledError и другие некритичные ошибки виджета
+    if (
+      errorMessage.includes('canceled') ||
+      errorMessage.includes('aborted') ||
+      error?.name === 'CanceledError'
+    ) {
+      event.preventDefault()
+      console.debug('Suppressed CanceledError from CDEK widget:', error)
+    }
+  })
+}
 
 export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   const widgetInstanceRef = useRef<{ destroy?: () => void } | null>(null)
@@ -29,12 +49,16 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   const [mounted, setMounted] = useState(false)
   const containerIdRef = useRef<string | null>(null)
   const hasInitializedRef = useRef(false)
+  const componentKeyRef = useRef<string | null>(null)
 
   // Генерируем стабильный ID только один раз при первом рендере
   const containerId = useMemo(() => {
     if (typeof window !== 'undefined') {
       widgetCounter++
-      return `cdek-widget-${widgetCounter}`
+      const id = `cdek-widget-${widgetCounter}`
+      // Генерируем уникальный ключ для компонента, чтобы React правильно различал экземпляры
+      componentKeyRef.current = `cdek-widget-component-${Date.now()}-${Math.random()}`
+      return id
     }
     return null
   }, [])
@@ -49,8 +73,20 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
 
   const destroyWidget = useCallback(() => {
     if (widgetInstanceRef.current?.destroy) {
-      widgetInstanceRef.current.destroy()
+      try {
+        widgetInstanceRef.current.destroy()
+      } catch (error) {
+        console.warn('Error destroying widget:', error)
+      }
       widgetInstanceRef.current = null
+    }
+    // Удаляем из реестра активных виджетов
+    if (containerIdRef.current) {
+      activeWidgets.delete(containerIdRef.current)
+      const container = document.getElementById(containerIdRef.current)
+      if (container) {
+        container.removeAttribute('data-cdek-widget')
+      }
     }
   }, [])
 
@@ -70,12 +106,21 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
     const initWidget = () => {
       // Предотвращаем множественную инициализацию
       if (isInitializingRef.current || hasInitializedRef.current) {
+        console.log('Widget initialization blocked: already initializing or initialized')
         return false
+      }
+
+      // Проверяем, не инициализирован ли уже виджет в этом контейнере глобально
+      if (activeWidgets.has(currentContainerId)) {
+        console.log('Widget already active for container:', currentContainerId)
+        hasInitializedRef.current = true
+        return true
       }
 
       // Если виджет уже инициализирован, не создаём новый
       if (widgetInstanceRef.current) {
         hasInitializedRef.current = true
+        activeWidgets.add(currentContainerId)
         return true
       }
 
@@ -108,19 +153,29 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
 
       // Проверяем, не инициализирован ли уже виджет в этом контейнере
       if (container.children.length > 0) {
-        const hasCdekContent = container.querySelector('[class*="cdek"], [id*="cdek"], iframe')
+        const hasCdekContent = container.querySelector('[class*="cdek"], [id*="cdek"], iframe, [data-cdek-widget]')
         if (hasCdekContent) {
           console.log('Widget already rendered in container, skipping initialization')
           hasInitializedRef.current = true
+          activeWidgets.add(currentContainerId)
           return true
         }
       }
 
+      // Проверяем, нет ли уже активных виджетов (защита от StrictMode)
+      if (activeWidgets.size > 0 && !activeWidgets.has(currentContainerId)) {
+        // Даем небольшую задержку, чтобы дать время первому виджету инициализироваться
+        console.log('Other widgets are initializing, waiting...')
+        return false
+      }
+
       // Помечаем, что начинаем инициализацию
       isInitializingRef.current = true
+      activeWidgets.add(currentContainerId)
 
       // Очищаем контейнер перед инициализацией
       container.innerHTML = ''
+      container.setAttribute('data-cdek-widget', 'initializing')
       destroyWidget()
 
       try {
@@ -139,9 +194,13 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
           apiKey: YANDEX_API_KEY,
           servicePath: SERVICE_PATH,
           onReady: () => {
-            console.log('CDEK widget initialized successfully')
+            console.log('CDEK widget initialized successfully for container:', currentContainerId)
             isInitializingRef.current = false
             hasInitializedRef.current = true
+            const container = document.getElementById(currentContainerId)
+            if (container) {
+              container.setAttribute('data-cdek-widget', 'ready')
+            }
           },
           onChoose: (point: any) => {
             console.log('CDEK point selected:', point)
@@ -314,12 +373,18 @@ export default function CdekWidget({ city, onPointSelect }: CdekWidgetProps) {
   }
 
   return (
-    <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden" suppressHydrationWarning>
+    <div 
+      key={componentKeyRef.current || containerId}
+      className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden" 
+      suppressHydrationWarning
+    >
       <div
         id={containerId}
+        key={containerId}
         style={{ width: '100%', height: '600px', minHeight: '600px' }}
         className="w-full"
         suppressHydrationWarning
+        data-cdek-container={containerId}
       />
     </div>
   )
