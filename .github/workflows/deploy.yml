@@ -36,12 +36,7 @@ jobs:
             if [ -d "public/uploads" ]; then
               cp -r public/uploads /tmp/uploads-backup
             fi
-            # Configure git to use token for private repo (if GITHUB_TOKEN is provided)
-            if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
-              git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/" || true
-            fi
-            # Try to fetch using SSH first, fallback to HTTPS with token
-            git fetch origin main || git fetch https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main || true
+            git fetch origin main
             git reset --hard origin/main
             git clean -fd
             rm -rf .next .turbo
@@ -52,6 +47,8 @@ jobs:
               rm -rf /tmp/uploads-backup
             fi
             chmod 755 public/uploads
+            # Remove node_modules before clean install
+            rm -rf node_modules
             # Use npm ci for faster, reliable installs
             npm ci --prefer-offline
             npx prisma generate
