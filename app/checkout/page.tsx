@@ -38,7 +38,7 @@ export default function CheckoutPage() {
 
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
-  const [customerPhone, setCustomerPhone] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('+7 ')
 
   useEffect(() => {
     if (session?.user) {
@@ -46,6 +46,66 @@ export default function CheckoutPage() {
       setCustomerEmail(session.user.email || '')
     }
   }, [session])
+
+  // Форматирование номера телефона
+  const formatPhoneNumber = (value: string): string => {
+    // Удаляем все нецифровые символы, кроме +
+    let digits = value.replace(/[^\d+]/g, '')
+    
+    // Если нет +7 в начале, добавляем
+    if (!digits.startsWith('+7')) {
+      if (digits.startsWith('7')) {
+        digits = '+7' + digits.slice(1)
+      } else if (digits.startsWith('8')) {
+        digits = '+7' + digits.slice(1)
+      } else {
+        digits = '+7' + digits.replace(/^\+/, '')
+      }
+    }
+    
+    // Ограничиваем длину (максимум 12 символов: +7 и 10 цифр)
+    if (digits.length > 12) {
+      digits = digits.slice(0, 12)
+    }
+    
+    // Форматируем: +7 (999) 123-45-67
+    if (digits.length <= 2) {
+      return digits
+    }
+    
+    const code = digits.slice(2, 5) // 999
+    const part1 = digits.slice(5, 8) // 123
+    const part2 = digits.slice(8, 10) // 45
+    const part3 = digits.slice(10, 12) // 67
+    
+    let formatted = '+7'
+    
+    if (code) {
+      formatted += ` (${code}`
+      if (part1 || part2 || part3) {
+        formatted += ')'
+      }
+    }
+    
+    if (part1) {
+      formatted += ` ${part1}`
+    }
+    
+    if (part2) {
+      formatted += `-${part2}`
+    }
+    
+    if (part3) {
+      formatted += `-${part3}`
+    }
+    
+    return formatted
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value)
+    setCustomerPhone(formatted)
+  }
 
   // Clear selected point when city changes
   useEffect(() => {
@@ -153,7 +213,7 @@ export default function CheckoutPage() {
                       type="tel"
                       required
                       value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      onChange={handlePhoneChange}
                       placeholder="+7 (999) 123-45-67"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                     />
@@ -339,7 +399,7 @@ export default function CheckoutPage() {
                   type="tel"
                   required
                   value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  onChange={handlePhoneChange}
                   placeholder="+7 (999) 123-45-67"
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                 />
