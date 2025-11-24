@@ -18,6 +18,15 @@ type FeaturedProduct = {
 
 export const dynamic = 'force-dynamic'
 
+function SectionDivider({ className = '' }: { className?: string }) {
+  return (
+    <div className={`relative mx-auto my-12 flex w-full max-w-6xl items-center justify-center px-6 ${className}`}>
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      <div className="absolute h-1 w-32 bg-gradient-to-r from-transparent via-white/70 to-transparent blur-[1px]" />
+    </div>
+  )
+}
+
 async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
   try {
     const products = await prisma.product.findMany({
@@ -118,6 +127,10 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <SectionDivider className="hidden md:flex" />
+
+      <SectionDivider className="md:hidden" />
 
       {/* Desktop Featured Products */}
       <section className="py-16 hidden md:block">
