@@ -36,6 +36,10 @@ export default async function AdminDashboard() {
           <div className="text-xl font-semibold mb-2">Заказы</div>
           <div className="text-gray-600 text-sm">Управление заказами</div>
         </Link>
+        <Link href="/admin/analytics" className="block rounded-xl border bg-white p-6 hover:shadow">
+          <div className="text-xl font-semibold mb-2">Аналитика</div>
+          <div className="text-gray-600 text-sm">Графики посещаемости и источники</div>
+        </Link>
       </div>
     </div>
   )

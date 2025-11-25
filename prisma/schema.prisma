@@ -31,6 +31,7 @@ model User {
 
   orders Order[]
   accounts Account[]
+  analyticsEvents AnalyticsEvent[]
 }
 
 model Account {
@@ -126,5 +127,28 @@ model SiteSettings {
   siteLocked      Boolean  @default(false)
   siteLockPassword String? // bcrypt hash
   updatedAt       DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  eventType   String   @default("page_view")
+  path        String
+  fullUrl     String?
+  referrer    String?
+  sessionId   String?
+  visitorId   String?
+  userAgent   String?
+  deviceType  String?
+  language    String?
+  ipHash      String?
+  metadata    Json?
+  userId      String?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([eventType])
+  @@index([path])
 }
 
