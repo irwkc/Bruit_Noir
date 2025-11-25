@@ -13,7 +13,7 @@ type AnalyticsPayload = {
   userAgent?: string | null
   deviceType?: string | null
   language?: string | null
-  metadata?: Prisma.JsonValue
+  metadata?: Prisma.InputJsonValue | null
   userId?: string | null
   productId?: string | null
 }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         userAgent,
         deviceType,
         language,
-        metadata,
+        metadata: metadata ?? undefined,
         userId: userId || undefined,
         productId: productId || undefined,
         ipHash,
