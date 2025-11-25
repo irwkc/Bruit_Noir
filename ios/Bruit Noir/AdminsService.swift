@@ -42,7 +42,8 @@ actor AdminsService {
         
         let _: DeleteResponse = try await APIClient.shared.performRequest(
             "DELETE",
-            path: "/api/admin/admins?id=\(id)",
+            path: "/api/admin/admins",
+            queryItems: [URLQueryItem(name: "id", value: id)],
             decode: DeleteResponse.self
         )
     }
