@@ -12,12 +12,14 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     if (!city || city.length < 3) {
       setPoints([])
       setError(null)
       setSelectedPointId(null)
+      setSearchQuery('')
       return
     }
 
@@ -103,6 +105,15 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
     )
   }
 
+  // Фильтруем пункты по поисковому запросу
+  const filteredPoints = points.filter((point) => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase().trim()
+    const address = (point.address || '').toLowerCase()
+    const name = (point.name || '').toLowerCase()
+    return address.includes(query) || name.includes(query)
+  })
+
   if (points.length === 0) {
     return (
       <div className="w-full p-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl text-center text-gray-300">
@@ -113,22 +124,53 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
   }
 
   return (
-    <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-      {points.map((point) => (
-        <button
-          key={point.id}
-          type="button"
-          onClick={() => handleSelect(point)}
-          className={`w-full text-left rounded-2xl border px-4 py-4 transition ${
-            selectedPointId === point.id
-              ? 'bg-white/20 border-white text-white shadow-lg'
-              : 'bg-white/10 border-white/15 text-white hover:bg-white/15'
-          }`}
-        >
-          <div className="text-sm font-semibold line-clamp-2">{point.name}</div>
-          <div className="text-xs text-gray-200 mt-1">{point.address}</div>
-        </button>
-      ))}
+    <div className="space-y-3">
+      {/* Поле поиска */}
+      <div className="relative">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Поиск по адресу или названию..."
+          className="w-full px-4 py-3 bg-white/10 backdrop-blur-md border border-white/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 text-sm ios-legacy-input"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Список пунктов */}
+      {filteredPoints.length === 0 ? (
+        <div className="w-full p-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl text-center text-gray-300 text-sm">
+          По запросу «{searchQuery}» ничего не найдено
+        </div>
+      ) : (
+        <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+          {filteredPoints.map((point) => (
+            <button
+              key={point.id}
+              type="button"
+              onClick={() => handleSelect(point)}
+              className={`w-full text-left rounded-2xl border px-4 py-4 transition ${
+                selectedPointId === point.id
+                  ? 'bg-white/20 border-white text-white shadow-lg'
+                  : 'bg-white/10 border-white/15 text-white hover:bg-white/15'
+              }`}
+            >
+              <div className="text-sm font-semibold line-clamp-2">{point.name}</div>
+              <div className="text-xs text-gray-200 mt-1">{point.address}</div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
