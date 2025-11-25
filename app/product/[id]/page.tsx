@@ -7,6 +7,7 @@ import { useCartStore } from '@/lib/store'
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import Toast from '@/components/Toast'
+import ProductViewTracker from '@/components/ProductViewTracker'
 
 interface Product {
   id: string
@@ -98,6 +99,7 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen">
+      <ProductViewTracker productId={product.id} productName={product.name} />
       <Toast
         message="Товар добавлен в корзину!"
         show={showToast}

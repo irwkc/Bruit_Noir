@@ -69,6 +69,7 @@ model Product {
   updatedAt   DateTime @updatedAt
 
   orderItems OrderItem[]
+  analyticsEvents AnalyticsEvent[]
 }
 
 model Order {
@@ -143,12 +144,15 @@ model AnalyticsEvent {
   ipHash      String?
   metadata    Json?
   userId      String?
+  productId   String?
   createdAt   DateTime @default(now())
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
   @@index([eventType])
   @@index([path])
+  @@index([productId])
 }
 

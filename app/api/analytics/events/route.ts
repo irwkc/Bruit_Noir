@@ -14,6 +14,7 @@ type AnalyticsPayload = {
   language?: string | null
   metadata?: Record<string, unknown>
   userId?: string | null
+  productId?: string | null
 }
 
 export async function POST(request: NextRequest) {
@@ -31,6 +32,7 @@ export async function POST(request: NextRequest) {
       language,
       metadata,
       userId,
+      productId,
     } = body
 
     if (!path) {
@@ -57,6 +59,7 @@ export async function POST(request: NextRequest) {
         language,
         metadata,
         userId: userId || undefined,
+        productId: productId || undefined,
         ipHash,
       },
     })

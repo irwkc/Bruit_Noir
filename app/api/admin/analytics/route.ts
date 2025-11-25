@@ -68,6 +68,23 @@ export async function GET(request: NextRequest) {
       GROUP BY COALESCE(NULLIF("deviceType", ''), 'unknown')
     `
 
+  const productViews =
+    await prisma.$queryRaw<
+      { productId: string | null; productName: string; views: number }[]
+    >`
+      SELECT
+        e."productId" as "productId",
+        COALESCE(p."name", 'Неизвестный товар') as "productName",
+        COUNT(*)::int as views
+      FROM "AnalyticsEvent" e
+      LEFT JOIN "Product" p ON p."id" = e."productId"
+      WHERE e."createdAt" >= ${fromDate}
+        AND e."eventType" = 'product_view'
+        AND e."productId" IS NOT NULL
+      GROUP BY e."productId", p."name"
+      ORDER BY views DESC
+    `
+
   return NextResponse.json({
     rangeDays,
     summary: {
@@ -78,6 +95,7 @@ export async function GET(request: NextRequest) {
     topPages,
     topReferrers,
     devices,
+    productViews,
   })
 }
 

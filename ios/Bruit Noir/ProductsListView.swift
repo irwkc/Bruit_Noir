@@ -24,7 +24,8 @@ struct ProductsListView: View {
                             } label: {
                                 ProductRowView(
                                     product: product,
-                                    isDeleting: appModel.deletingProductIDs.contains(product.id)
+                                    isDeleting: appModel.deletingProductIDs.contains(product.id),
+                                    viewCount: appModel.productViewCount(for: product.id)
                                 )
                             }
                             .buttonStyle(.plain)
@@ -83,6 +84,7 @@ struct ProductsListView: View {
 private struct ProductRowView: View {
     let product: Product
     let isDeleting: Bool
+    let viewCount: Int
 
     var body: some View {
         HStack(spacing: 16) {
@@ -138,6 +140,11 @@ private struct ProductRowView: View {
                 Text("\(product.stock) шт.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                if viewCount > 0 {
+                    Text("\(viewCount) просм.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             if isDeleting {

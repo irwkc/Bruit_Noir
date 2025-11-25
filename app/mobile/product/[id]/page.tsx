@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Image from 'next/image'
 import Link from 'next/link'
+import ProductViewTracker from '@/components/ProductViewTracker'
 
 interface ProductPageProps {
   params: Promise<{ id: string }>
@@ -45,6 +46,7 @@ export default async function MobileProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen">
+      <ProductViewTracker productId={product.id} productName={product.name} />
       <div className="pb-20">
         {/* Images - mobile carousel */}
         <div>

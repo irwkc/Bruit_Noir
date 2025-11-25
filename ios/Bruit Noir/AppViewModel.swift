@@ -35,6 +35,9 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var productsLoading = false
     @Published private(set) var productSaving = false
     @Published private(set) var deletingProductIDs: Set<String> = []
+    @Published private(set) var analyticsRange: Int = 30
+    @Published private(set) var analyticsData: AnalyticsResponse?
+    @Published private(set) var analyticsLoading = false
     @Published var notificationEmail: String = ""
     @Published var notificationMessage: String?
     @Published var showError: Bool = false
@@ -49,6 +52,7 @@ final class AppViewModel: ObservableObject {
     private let settingsService = SettingsService.shared
     private let productsService = ProductsService.shared
     private let adminsService = AdminsService.shared
+    private let analyticsService = AnalyticsService.shared
     private let keychain = KeychainStorage.shared
     private let passcodeStorageKey = "admin.passcode.code"
     private var pendingPasscode: String?
@@ -70,6 +74,7 @@ final class AppViewModel: ObservableObject {
                 await fetchOrders(reset: true)
                 await fetchProducts(force: true)
                 await fetchNotificationEmail()
+                await fetchAnalytics(range: analyticsRange, force: true)
             } catch {
                 await authService.clearSession()
                 authState = .needCredentials
@@ -91,6 +96,7 @@ final class AppViewModel: ObservableObject {
                     await fetchOrders(reset: true)
                     await fetchProducts(force: true)
                     await fetchNotificationEmail()
+                    await fetchAnalytics(range: analyticsRange, force: true)
                 case let .requiresTotp(info):
                     authState = .needTotp(info, PendingCredentials(email: email, password: password))
                 }
@@ -111,10 +117,41 @@ final class AppViewModel: ObservableObject {
         nextCursor = nil
         products = []
         notificationEmail = ""
+        analyticsData = nil
+        analyticsRange = 30
         authState = .needCredentials
         passcodeFlow = .hidden
         passcodeError = nil
         pendingPasscode = nil
+    }
+
+    func fetchAnalytics(range: Int? = nil, force: Bool = false) async {
+        guard case .authenticated = authState else { return }
+        if analyticsLoading { return }
+        let targetRange = range ?? analyticsRange
+        if !force, let analyticsData, analyticsData.rangeDays == targetRange {
+            return
+        }
+        analyticsLoading = true
+        defer { analyticsLoading = false }
+
+        do {
+            let result = try await analyticsService.fetchAnalytics(range: targetRange)
+            analyticsRange = targetRange
+            analyticsData = result
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+        } catch {
+            handle(error)
+        }
+    }
+
+    func updateAnalyticsRange(_ range: Int) {
+        Task { await fetchAnalytics(range: range, force: true) }
+    }
+
+    func productViewCount(for productId: String) -> Int {
+        analyticsData?.productViews.first(where: { $0.productId == productId })?.views ?? 0
     }
 
     func fetchOrders(reset: Bool) async {

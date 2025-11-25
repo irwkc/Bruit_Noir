@@ -167,6 +167,60 @@ struct UploadResponse: Decodable {
     let url: String?
 }
 
+// MARK: - Analytics
+
+struct AnalyticsResponse: Codable {
+    struct Summary: Codable {
+        let visits: Int
+        let uniqueVisitors: Int
+    }
+
+    struct DailyStat: Codable, Identifiable {
+        let date: String
+        let visits: Int
+        let uniques: Int
+
+        var id: String { date }
+    }
+
+    struct PathStat: Codable, Identifiable {
+        let path: String
+        let visits: Int
+
+        var id: String { path }
+    }
+
+    struct ReferrerStat: Codable, Identifiable {
+        let referrer: String
+        let visits: Int
+
+        var id: String { referrer }
+    }
+
+    struct DeviceStat: Codable, Identifiable {
+        let deviceType: String
+        let count: Int
+
+        var id: String { deviceType }
+    }
+
+    struct ProductViewStat: Codable, Identifiable {
+        let productId: String?
+        let productName: String
+        let views: Int
+
+        var id: String { productId ?? productName }
+    }
+
+    let rangeDays: Int
+    let summary: Summary
+    let dailyStats: [DailyStat]
+    let topPages: [PathStat]
+    let topReferrers: [ReferrerStat]
+    let devices: [DeviceStat]
+    let productViews: [ProductViewStat]
+}
+
 extension Product {
     static func resolveImageURL(from value: String) -> URL? {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)

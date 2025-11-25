@@ -9,6 +9,7 @@ type AnalyticsResponse = {
   topPages: { path: string; visits: number }[]
   topReferrers: { referrer: string; visits: number }[]
   devices: { deviceType: string; count: number }[]
+  productViews: { productId: string | null; productName: string; views: number }[]
 }
 
 const RANGE_OPTIONS = [
@@ -108,6 +109,7 @@ export default function AnalyticsDashboard() {
   const topPages = data?.topPages ?? []
   const topReferrers = data?.topReferrers ?? []
   const devices = data?.devices ?? []
+  const productViews = data?.productViews ?? []
 
   return (
     <div className="space-y-8">
@@ -245,6 +247,39 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/20 bg-white/5 p-6 text-white">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Посещения товаров</h2>
+          <span className="text-xs text-white/60">Всего: {productViews.length}</span>
+        </div>
+        {productViews.length === 0 ? (
+          <p className="text-sm text-white/60">Нет просмотров товаров за период</p>
+        ) : (
+          <div className="space-y-3">
+            {productViews.map((product) => (
+              <div key={product.productId ?? product.productName}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="truncate pr-4">{product.productName}</span>
+                  <span className="text-white/70">{product.views}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="h-full bg-white/70"
+                    style={{
+                      width: `${
+                        productViews.length
+                          ? (product.views / productViews[0].views) * 100
+                          : 0
+                      }%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
