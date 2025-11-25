@@ -11,8 +11,8 @@ export default function Header() {
   const totalItems = useCartStore((state) => state.getTotalItems())
 
   return (
-    <header className="bg-black text-white sticky top-0 z-50">
-      <nav className="border-b border-transparent">
+    <header className="bg-white/10 backdrop-blur-2xl border-b border-white/20 text-white sticky top-0 z-50">
+      <nav>
         <div className="flex min-h-[60px] items-center justify-between py-2 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <div className="flex items-center">
@@ -33,19 +33,25 @@ export default function Header() {
 
           {/* Icons */}
           <div className="flex items-center space-x-4">
-            <Link href="/profile" className="hover:text-gray-300 transition">
+            <Link 
+              href="/profile" 
+              className="p-2.5 bg-white/5 border border-white/15 rounded-full hover:bg-white/10 transition"
+            >
               <UserIcon className="h-6 w-6" />
             </Link>
-            <Link href="/cart" className="relative hover:text-gray-300 transition">
+            <Link 
+              href="/cart" 
+              className="relative p-2.5 bg-white/5 border border-white/15 rounded-full hover:bg-white/10 transition"
+            >
               <ShoppingCartIcon className="h-6 w-6" />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
             </Link>
             <button
-              className="md:hidden"
+              className="md:hidden p-2.5 bg-white/5 border border-white/15 rounded-full hover:bg-white/10 transition"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <Bars3Icon className="h-6 w-6" />
