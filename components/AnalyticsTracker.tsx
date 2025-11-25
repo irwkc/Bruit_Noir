@@ -15,6 +15,7 @@ export default function AnalyticsTracker() {
     if (typeof window === 'undefined' || !pathname) return
     const query = searchParams?.toString()
     const fullPath = query ? `${pathname}?${query}` : pathname
+    const fullUrl = window.location.href
 
     if (previousUrl.current === fullPath) return
     previousUrl.current = fullPath
