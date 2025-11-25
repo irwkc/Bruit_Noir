@@ -6,6 +6,7 @@ import MobileSiteChrome from '@/components/mobile/SiteChrome'
 import { Providers } from './providers'
 import Script from 'next/script'
 import AnalyticsTracker from '@/components/AnalyticsTracker'
+import { Suspense } from 'react'
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -64,7 +65,9 @@ export default function RootLayout({
           }}
         />
         <Providers>
-          <AnalyticsTracker />
+          <Suspense fallback={null}>
+            <AnalyticsTracker />
+          </Suspense>
           {/* Desktop version */}
           <div className="hidden md:block">
             <SiteChrome>{children}</SiteChrome>
