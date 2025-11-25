@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
 
     const rawIp =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      request.ip ||
       request.headers.get('cf-connecting-ip') ||
+      request.headers.get('x-real-ip') ||
       undefined
     const ipHash = rawIp ? crypto.createHash('sha256').update(rawIp).digest('hex') : null
 
