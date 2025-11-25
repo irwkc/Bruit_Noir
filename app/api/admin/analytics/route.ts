@@ -14,18 +14,43 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const range = (searchParams.get('range') as RangeOption) || '30'
   const rangeDays = Number(range)
+  const fromParam = searchParams.get('from')
+  const toParam = searchParams.get('to')
 
-  const fromDate = new Date()
-  fromDate.setDate(fromDate.getDate() - rangeDays + 1)
-  fromDate.setHours(0, 0, 0, 0)
+  const now = new Date()
+  let toDate = new Date(now)
+  toDate.setHours(23, 59, 59, 999)
+
+  let fromDate = new Date()
+  let usingCustomRange = false
+
+  if (fromParam && toParam) {
+    const parsedFrom = new Date(fromParam)
+    const parsedTo = new Date(toParam)
+    if (!isNaN(parsedFrom.getTime()) && !isNaN(parsedTo.getTime()) && parsedFrom <= parsedTo) {
+      fromDate = parsedFrom
+      fromDate.setHours(0, 0, 0, 0)
+      toDate = parsedTo
+      toDate.setHours(23, 59, 59, 999)
+      usingCustomRange = true
+    }
+  }
+
+  if (!usingCustomRange) {
+    fromDate = new Date()
+    fromDate.setDate(fromDate.getDate() - rangeDays + 1)
+    fromDate.setHours(0, 0, 0, 0)
+  }
 
   const summary = await prisma.analyticsEvent.aggregate({
-    where: { createdAt: { gte: fromDate } },
+    where: { createdAt: { gte: fromDate, lte: toDate } },
     _count: { id: true },
   })
 
   const uniqueVisitorsResult =
-    await prisma.$queryRaw<{ count: number }[]>`SELECT COUNT(DISTINCT COALESCE("visitorId","sessionId","ipHash"))::int as count FROM "AnalyticsEvent" WHERE "createdAt" >= ${fromDate}`
+    await prisma.$queryRaw<
+      { count: number }[]
+    >`SELECT COUNT(DISTINCT COALESCE("visitorId","sessionId","ipHash"))::int as count FROM "AnalyticsEvent" WHERE "createdAt" BETWEEN ${fromDate} AND ${toDate}`
 
   const dailyStats =
     await prisma.$queryRaw<
@@ -34,7 +59,7 @@ export async function GET(request: NextRequest) {
          COUNT(*)::int as visits,
          COUNT(DISTINCT COALESCE("visitorId","sessionId","ipHash"))::int as uniques
       FROM "AnalyticsEvent"
-      WHERE "createdAt" >= ${fromDate}
+      WHERE "createdAt" BETWEEN ${fromDate} AND ${toDate}
       GROUP BY DATE("createdAt")
       ORDER BY DATE("createdAt") ASC`
 
@@ -42,7 +67,7 @@ export async function GET(request: NextRequest) {
     await prisma.$queryRaw<{ path: string; visits: number }[]>`
       SELECT "path", COUNT(*)::int as visits
       FROM "AnalyticsEvent"
-      WHERE "createdAt" >= ${fromDate}
+      WHERE "createdAt" BETWEEN ${fromDate} AND ${toDate}
       GROUP BY "path"
       ORDER BY visits DESC
       LIMIT 8
@@ -53,7 +78,7 @@ export async function GET(request: NextRequest) {
       SELECT COALESCE(NULLIF("referrer", ''), 'Прямые заходы') as referrer,
              COUNT(*)::int as visits
       FROM "AnalyticsEvent"
-      WHERE "createdAt" >= ${fromDate}
+      WHERE "createdAt" BETWEEN ${fromDate} AND ${toDate}
       GROUP BY COALESCE(NULLIF("referrer", ''), 'Прямые заходы')
       ORDER BY visits DESC
       LIMIT 6
@@ -64,7 +89,7 @@ export async function GET(request: NextRequest) {
       SELECT COALESCE(NULLIF("deviceType", ''), 'unknown') as "deviceType",
              COUNT(*)::int as count
       FROM "AnalyticsEvent"
-      WHERE "createdAt" >= ${fromDate}
+      WHERE "createdAt" BETWEEN ${fromDate} AND ${toDate}
       GROUP BY COALESCE(NULLIF("deviceType", ''), 'unknown')
     `
 
@@ -78,7 +103,7 @@ export async function GET(request: NextRequest) {
         COUNT(*)::int as views
       FROM "AnalyticsEvent" e
       LEFT JOIN "Product" p ON p."id" = e."productId"
-      WHERE e."createdAt" >= ${fromDate}
+      WHERE e."createdAt" BETWEEN ${fromDate} AND ${toDate}
         AND e."eventType" = 'product_view'
         AND e."productId" IS NOT NULL
       GROUP BY e."productId", p."name"
@@ -86,7 +111,9 @@ export async function GET(request: NextRequest) {
     `
 
   return NextResponse.json({
-    rangeDays,
+    rangeDays: usingCustomRange ? null : rangeDays,
+    fromDate: fromDate.toISOString(),
+    toDate: toDate.toISOString(),
     summary: {
       visits: summary._count.id,
       uniqueVisitors: uniqueVisitorsResult[0]?.count ?? 0,

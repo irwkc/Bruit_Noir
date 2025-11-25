@@ -36,6 +36,9 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var productSaving = false
     @Published private(set) var deletingProductIDs: Set<String> = []
     @Published private(set) var analyticsRange: Int = 30
+    @Published private(set) var analyticsFromDate: Date?
+    @Published private(set) var analyticsToDate: Date?
+    @Published private(set) var analyticsUsesCustomRange = false
     @Published private(set) var analyticsData: AnalyticsResponse?
     @Published private(set) var analyticsLoading = false
     @Published var notificationEmail: String = ""
@@ -119,25 +122,34 @@ final class AppViewModel: ObservableObject {
         notificationEmail = ""
         analyticsData = nil
         analyticsRange = 30
+        analyticsFromDate = nil
+        analyticsToDate = nil
+        analyticsUsesCustomRange = false
         authState = .needCredentials
         passcodeFlow = .hidden
         passcodeError = nil
         pendingPasscode = nil
     }
 
-    func fetchAnalytics(range: Int? = nil, force: Bool = false) async {
+    func fetchAnalytics(range: Int? = nil, from: Date? = nil, to: Date? = nil, force: Bool = false) async {
         guard case .authenticated = authState else { return }
         if analyticsLoading { return }
-        let targetRange = range ?? analyticsRange
-        if !force, let analyticsData, analyticsData.rangeDays == targetRange {
-            return
-        }
         analyticsLoading = true
         defer { analyticsLoading = false }
 
         do {
-            let result = try await analyticsService.fetchAnalytics(range: targetRange)
+            let targetFrom = from ?? analyticsFromDate
+            let targetTo = to ?? analyticsToDate
+            let targetRange = range ?? analyticsRange
+            let result = try await analyticsService.fetchAnalytics(
+                range: targetFrom == nil ? targetRange : nil,
+                from: targetFrom,
+                to: targetTo
+            )
             analyticsRange = targetRange
+            analyticsFromDate = targetFrom
+            analyticsToDate = targetTo
+            analyticsUsesCustomRange = targetFrom != nil
             analyticsData = result
         } catch APIClientError.unauthorized {
             await handleUnauthorized()
@@ -147,7 +159,19 @@ final class AppViewModel: ObservableObject {
     }
 
     func updateAnalyticsRange(_ range: Int) {
-        Task { await fetchAnalytics(range: range, force: true) }
+        analyticsUsesCustomRange = false
+        analyticsFromDate = nil
+        analyticsToDate = nil
+        Task { await fetchAnalytics(range: range, from: nil, to: nil, force: true) }
+    }
+
+    func setAnalyticsCustomRange(from: Date, to: Date) {
+        let normalizedFrom = min(from, to)
+        let normalizedTo = max(from, to)
+        analyticsUsesCustomRange = true
+        analyticsFromDate = normalizedFrom
+        analyticsToDate = normalizedTo
+        Task { await fetchAnalytics(range: nil, from: normalizedFrom, to: normalizedTo, force: true) }
     }
 
     func productViewCount(for productId: String) -> Int {

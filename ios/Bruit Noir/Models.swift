@@ -212,7 +212,9 @@ struct AnalyticsResponse: Codable {
         var id: String { productId ?? productName }
     }
 
-    let rangeDays: Int
+    let rangeDays: Int?
+    let fromDate: Date?
+    let toDate: Date?
     let summary: Summary
     let dailyStats: [DailyStat]
     let topPages: [PathStat]
@@ -272,4 +274,15 @@ extension JSONEncoder {
         encoder.outputFormatting = [.withoutEscapingSlashes]
         return encoder
     }
+}
+
+extension DateFormatter {
+    static let analyticsRequest: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
 }
