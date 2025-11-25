@@ -45,9 +45,9 @@ export default function RootLayout({
                 if (document.scripts[j].src === r) { return; }
               }
               k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-            })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=105470314', 'ym');
+            })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=105493777', 'ym');
 
-            ym(105470314, 'init', {
+            ym(105493777, 'init', {
               ssr:true,
               webvisor:true,
               clickmap:true,
@@ -60,7 +60,7 @@ export default function RootLayout({
         <noscript
           dangerouslySetInnerHTML={{
             __html:
-              '<div><img src="https://mc.yandex.ru/watch/105470314" style="position:absolute; left:-9999px;" alt="" /></div>',
+              '<div><img src="https://mc.yandex.ru/watch/105493777" style="position:absolute; left:-9999px;" alt="" /></div>',
           }}
         />
         <Providers>
