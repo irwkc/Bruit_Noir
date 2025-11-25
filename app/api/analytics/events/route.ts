@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import crypto from 'crypto'
 
 type AnalyticsPayload = {
@@ -12,7 +13,7 @@ type AnalyticsPayload = {
   userAgent?: string | null
   deviceType?: string | null
   language?: string | null
-  metadata?: Record<string, unknown>
+  metadata?: Prisma.JsonValue
   userId?: string | null
   productId?: string | null
 }
