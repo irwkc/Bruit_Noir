@@ -15,7 +15,7 @@ struct SettingsView: View {
                 if case let .authenticated(session) = appModel.authState {
                     Section("Профиль") {
                         LabeledContent("Email", value: session.user.email)
-                        LabeledContent("Роль", value: session.user.role)
+                        LabeledContent("Роль", value: session.user.role ?? "Админ")
                     }
                 }
 

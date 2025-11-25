@@ -16,7 +16,9 @@ struct AdminsListView: View {
                 AdminRow(admin: admin)
             }
             .onDelete { offsets in
-                deleteAdmins(at: offsets)
+                if appModel.isSuperAdmin {
+                    deleteAdmins(at: offsets)
+                }
             }
         }
         .navigationTitle("Админы")
