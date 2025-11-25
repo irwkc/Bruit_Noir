@@ -2,6 +2,9 @@
   "name": "bruit-noir-shop",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
+  "author": "Bruit Noir",
+  "copyright": "Copyright (c) 2024 Bruit Noir. All rights reserved.",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
