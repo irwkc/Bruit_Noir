@@ -292,7 +292,7 @@ export default function CheckoutPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Город
                     </label>
-                  <CityAutocomplete
+                    <CityAutocomplete
                       value={selectedCity}
                       onChange={setSelectedCity}
                       placeholder="Введите город для поиска пунктов выдачи"

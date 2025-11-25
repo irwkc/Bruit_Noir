@@ -189,57 +189,57 @@ export default function CartPage() {
             >
               <div className="flex space-x-4">
                 <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-white/10 bg-white/5 flex-shrink-0">
-                  <Image
-                    src={item.image || '/placeholder.jpg'}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+                <Image
+                  src={item.image || '/placeholder.jpg'}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
                 <div className="flex-1 min-w-0 space-y-3">
                   <div>
                     <h3 className="font-semibold text-white text-base line-clamp-2">
-                      {item.name}
-                    </h3>
+                  {item.name}
+                </h3>
                     <p className="text-xs text-gray-300 mt-1">
                       {item.size} • <span className="capitalize">{item.color}</span>
-                    </p>
+                </p>
                     <p className="text-lg font-bold text-white mt-2">
                       {item.price.toLocaleString('ru-RU')} ₽
                     </p>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center rounded-full border border-white/20 bg-white/10">
-                      <button
-                        onClick={() =>
-                          updateQuantity(
-                            item.productId,
-                            item.size,
-                            item.color,
-                            Math.max(1, item.quantity - 1)
-                          )
-                        }
+                    <button
+                      onClick={() =>
+                        updateQuantity(
+                          item.productId,
+                          item.size,
+                          item.color,
+                          Math.max(1, item.quantity - 1)
+                        )
+                      }
                         className="px-3 py-2 text-white hover:bg-white/20 transition focus:outline-none"
-                      >
+                    >
                         −
-                      </button>
+                    </button>
                       <span className="w-12 text-center text-sm font-semibold text-white">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          updateQuantity(
-                            item.productId,
-                            item.size,
-                            item.color,
-                            Math.min(10, item.quantity + 1)
-                          )
-                        }
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() =>
+                        updateQuantity(
+                          item.productId,
+                          item.size,
+                          item.color,
+                          Math.min(10, item.quantity + 1)
+                        )
+                      }
                         className="px-3 py-2 text-white hover:bg-white/20 transition focus:outline-none"
-                      >
-                        +
-                      </button>
-                    </div>
+                    >
+                      +
+                    </button>
+                  </div>
                     <button
                       onClick={() => removeItem(item.productId, item.size, item.color)}
                       className="inline-flex items-center gap-2 rounded-full border border-red-300/30 bg-red-300/10 px-4 py-2 text-xs font-semibold text-red-200 hover:bg-red-300/20 transition"
@@ -259,7 +259,7 @@ export default function CartPage() {
               <span>Количество</span>
               <span>
                 {totalQuantity} {getItemsLabel(totalQuantity)}
-              </span>
+            </span>
             </div>
             <div className="flex justify-between text-lg font-semibold text-white">
               <span>Итого</span>

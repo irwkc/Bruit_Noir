@@ -89,7 +89,7 @@ async function getCityCode(cityName: string): Promise<number | null> {
 async function fetchRealSdekPoints(cityName: string) {
   try {
     const token = await getCdekAuthToken()
-    
+  
     // Сначала получаем код города
     const cityCode = await getCityCode(cityName)
     

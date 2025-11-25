@@ -161,7 +161,7 @@ export default function ProfilePage() {
           <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white shadow-lg">
             <span className="h-2 w-2 rounded-full bg-green-400"></span>
             <span>{session.user?.email}</span>
-          </div>
+        </div>
         </div>
 
         {/* Mobile Orders */}

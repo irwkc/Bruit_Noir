@@ -151,6 +151,10 @@ final class AppViewModel: ObservableObject {
             analyticsToDate = targetTo
             analyticsUsesCustomRange = targetFrom != nil
             analyticsData = result
+        } catch is CancellationError {
+            // Игнорируем отменённые задачи refresh-политикой SwiftUI
+        } catch let error as URLError where error.code == .cancelled {
+            // URLSession кидает собственную ошибку отмены
         } catch APIClientError.unauthorized {
             await handleUnauthorized()
         } catch {
@@ -447,6 +451,9 @@ final class AppViewModel: ObservableObject {
             return true
         } catch APIClientError.unauthorized {
             await handleUnauthorized()
+            return false
+        } catch let error as APIClientError {
+            handle(error)
             return false
         } catch {
             handle(error)

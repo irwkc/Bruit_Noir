@@ -296,20 +296,20 @@ export default function ProductPage() {
         <div className="px-4 py-4 space-y-4">
           <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
             <div className="bg-black text-white inline-block px-2 py-1 text-xs font-semibold uppercase mb-3">
-              {product.category}
-            </div>
+            {product.category}
+          </div>
 
             <h1 className="text-2xl font-bold text-white mb-2">
-              {product.name}
-            </h1>
+            {product.name}
+          </h1>
 
             <p className="text-2xl font-bold text-white mb-3">
-              {product.price.toLocaleString('ru-RU')} ₽
-            </p>
+            {product.price.toLocaleString('ru-RU')} ₽
+          </p>
 
             <p className="text-sm text-gray-300 leading-relaxed">
-              {product.description}
-            </p>
+            {product.description}
+          </p>
           </div>
 
           {/* Size Selection */}

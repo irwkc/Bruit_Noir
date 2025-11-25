@@ -37,17 +37,17 @@ export default function MobileCartPage() {
         <div className="flex flex-col items-center justify-center text-center space-y-4 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl py-12 px-6">
           <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center">
             <svg className="w-10 h-10 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-            </svg>
-          </div>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+              </svg>
+            </div>
           <h2 className="text-xl font-semibold text-white">Корзина пуста</h2>
           <p className="text-gray-300">Добавьте товары, чтобы оформить заказ</p>
-          <Link
-            href="/catalog"
+            <Link
+              href="/catalog"
             className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition"
-          >
-            Перейти в каталог
-          </Link>
+            >
+              Перейти в каталог
+            </Link>
         </div>
       ) : (
         <>
@@ -113,22 +113,22 @@ export default function MobileCartPage() {
                 <span>Итого</span>
                 <span>{totalPrice.toLocaleString()} ₽</span>
               </div>
-            </div>
-
+              </div>
+              
             <Link
               href="/checkout"
               className="block w-full rounded-full bg-white text-black text-center py-4 text-base font-semibold shadow-lg hover:bg-gray-100 transition"
             >
-              Оформить заказ
+                Оформить заказ
             </Link>
-
-            <Link
-              href="/catalog"
+              
+              <Link
+                href="/catalog"
               className="block w-full text-center rounded-full border border-white/20 bg-transparent py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
-            >
-              Продолжить покупки
-            </Link>
-          </div>
+              >
+                Продолжить покупки
+              </Link>
+            </div>
         </>
       )}
     </div>

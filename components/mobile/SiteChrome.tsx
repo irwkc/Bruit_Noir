@@ -35,9 +35,9 @@ export default function MobileSiteChrome({ children }: MobileSiteChromeProps) {
       </div>
 
       <div className="relative flex flex-col min-h-dvh" style={{ zIndex: 10 }}>
-        <MobileHeader />
-        <main className="flex-1">{children}</main>
-        <MobileFooter />
+      <MobileHeader />
+      <main className="flex-1">{children}</main>
+      <MobileFooter />
       </div>
     </div>
   )

@@ -72,6 +72,11 @@ struct Order: Codable, Identifiable, Hashable {
 extension Order {
     static func == (lhs: Order, rhs: Order) -> Bool { lhs.id == rhs.id }
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    
+    var isShipped: Bool {
+        let normalized = status.lowercased()
+        return normalized == "shipped" || normalized == "delivered"
+    }
 }
 
 struct OrderItem: Codable, Identifiable, Hashable {

@@ -18,6 +18,9 @@ struct AnalyticsView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
+                        Text("Аналитика")
+                            .font(.largeTitle.bold())
+                            .foregroundColor(.white)
                         rangePicker
                         summarySection
                         productViewsSection
@@ -25,8 +28,12 @@ struct AnalyticsView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 32)
                 }
+                .refreshable {
+                    await refreshAnalytics()
+                }
             }
             .navigationTitle("Аналитика")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -48,9 +55,6 @@ struct AnalyticsView: View {
                 if appModel.analyticsData == nil {
                     await refreshAnalytics()
                 }
-            }
-            .refreshable {
-                await refreshAnalytics()
             }
         }
     }

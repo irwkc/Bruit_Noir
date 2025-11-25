@@ -64,17 +64,17 @@ export default function ProductCard({ id, name, price, images, category, availab
         <div className="bg-white/10 backdrop-blur-2xl border-t border-white/20 px-3 pb-3 pt-3">
           <div className="flex items-baseline justify-between">
             <h3 className="line-clamp-1 text-base font-medium text-white group-hover:text-gray-200">
-              {name}
-            </h3>
+            {name}
+          </h3>
             <p className="whitespace-nowrap pl-3 text-lg font-semibold text-white">
-              {price.toLocaleString('ru-RU')} ₽
-            </p>
-          </div>
-          {!isAvailable && (
+            {price.toLocaleString('ru-RU')} ₽
+          </p>
+        </div>
+        {!isAvailable && (
             <div className="mt-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-red-400">Скоро в наличии</p>
-            </div>
-          )}
+          </div>
+        )}
         </div>
       </div>
     </Link>

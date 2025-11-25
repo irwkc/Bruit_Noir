@@ -2,6 +2,14 @@ import SwiftUI
 
 struct OrdersListView: View {
     @EnvironmentObject var appModel: AppViewModel
+    
+    private var pendingOrders: [Order] {
+        appModel.orders.filter { !$0.isShipped }
+    }
+    
+    private var shippedOrders: [Order] {
+        appModel.orders.filter(\.isShipped)
+    }
 
     var body: some View {
         NavigationStack {
@@ -17,9 +25,23 @@ struct OrdersListView: View {
                     )
                 } else {
                     List {
-                        ForEach(appModel.orders) { order in
-                            NavigationLink(value: order) {
-                                OrderRowView(order: order)
+                        if !pendingOrders.isEmpty {
+                            Section("Не отправленные") {
+                                ForEach(pendingOrders) { order in
+                                    NavigationLink(value: order) {
+                                        OrderRowView(order: order)
+                                    }
+                                }
+                            }
+                        }
+
+                        if !shippedOrders.isEmpty {
+                            Section("Отправленные") {
+                                ForEach(shippedOrders) { order in
+                                    NavigationLink(value: order) {
+                                        OrderRowView(order: order)
+                                    }
+                                }
                             }
                         }
 

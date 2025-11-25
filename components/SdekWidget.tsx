@@ -31,11 +31,11 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
       setError(null)
       setSelectedPointId(null)
 
-      try {
+        try {
         const response = await fetch(`/api/sdek-points?city=${encodeURIComponent(city)}`, {
           signal: controller.signal,
         })
-
+          
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
           throw new Error(errorData.error || `Ошибка ${response.status}`)
@@ -133,7 +133,7 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Поиск по адресу или названию..."
           className="w-full px-4 py-3 bg-white/10 backdrop-blur-md border border-white/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 text-sm ios-legacy-input"
-        />
+      />
         {searchQuery && (
           <button
             type="button"
@@ -151,7 +151,7 @@ export default function SdekWidget({ city, onPointSelect }: SdekWidgetProps) {
       {filteredPoints.length === 0 ? (
         <div className="w-full p-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl text-center text-gray-300 text-sm">
           По запросу «{searchQuery}» ничего не найдено
-        </div>
+          </div>
       ) : (
         <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
           {filteredPoints.map((point) => (

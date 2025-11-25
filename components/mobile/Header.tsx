@@ -82,12 +82,12 @@ export default function MobileHeader() {
               {menuItems.map((item) => {
                 const Icon = item.icon
                 return (
-                  <Link
+              <Link
                     key={item.label}
                     href={item.href}
                     className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold hover:bg-white/10 transition"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
+                onClick={() => setMobileMenuOpen(false)}
+              >
                     <div className="flex items-center space-x-3">
                       <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
                         <Icon className="h-4 w-4" />
@@ -95,7 +95,7 @@ export default function MobileHeader() {
                       <span>{item.label}</span>
                     </div>
                     <span className="text-xs text-gray-300">→</span>
-                  </Link>
+              </Link>
                 )
               })}
             </div>
