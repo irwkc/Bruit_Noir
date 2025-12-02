@@ -210,6 +210,8 @@ export async function POST(request: NextRequest) {
           amount: total,
           description: `Заказ ${order.id}`,
           returnUrl: `${baseUrl}/profile`,
+          customerEmail,
+          customerPhone,
           metadata: {
             orderId: order.id,
             userId,

@@ -32,6 +32,8 @@ interface CreatePaymentParams {
   description: string
   returnUrl: string
   metadata?: Record<string, unknown>
+  customerEmail?: string
+  customerPhone?: string
 }
 
 export async function createYooKassaPayment(params: CreatePaymentParams): Promise<YooKassaPayment> {
@@ -42,9 +44,11 @@ export async function createYooKassaPayment(params: CreatePaymentParams): Promis
   const idempotenceKey = crypto.randomUUID()
   const auth = Buffer.from(`${YOOKASSA_SHOP_ID}:${YOOKASSA_SECRET_KEY}`).toString('base64')
 
-  const body = {
+  const value = params.amount.toFixed(2)
+
+  const body: any = {
     amount: {
-      value: params.amount.toFixed(2),
+      value,
       currency: params.currency ?? 'RUB',
     },
     capture: true,
@@ -54,6 +58,30 @@ export async function createYooKassaPayment(params: CreatePaymentParams): Promis
     },
     description: params.description.slice(0, 128),
     metadata: params.metadata ?? {},
+  }
+
+  // Формируем чек, чтобы удовлетворить требования ЮKassa
+  const receiptCustomer: Record<string, string> = {}
+  if (params.customerEmail) {
+    receiptCustomer.email = params.customerEmail
+  }
+  if (params.customerPhone) {
+    receiptCustomer.phone = params.customerPhone
+  }
+
+  body.receipt = {
+    ...(Object.keys(receiptCustomer).length > 0 ? { customer: receiptCustomer } : {}),
+    items: [
+      {
+        description: params.description.slice(0, 128),
+        quantity: 1.0,
+        amount: {
+          value,
+          currency: params.currency ?? 'RUB',
+        },
+        vat_code: 1, // без НДС / базовая ставка, можно поменять в будущем
+      },
+    ],
   }
 
   const res = await fetch(`${YOOKASSA_API_URL}/payments`, {
