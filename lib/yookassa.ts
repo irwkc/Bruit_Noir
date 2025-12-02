@@ -73,12 +73,14 @@ export async function createYooKassaPayment(params: CreatePaymentParams): Promis
     items: [
       {
         description: params.description.slice(0, 128),
-        quantity: 1.0,
+        quantity: '1.00',
         amount: {
           value,
           currency: params.currency ?? 'RUB',
         },
         vat_code: 1, // без НДС / базовая ставка, можно поменять в будущем
+        payment_subject: 'commodity', // товар
+        payment_method: 'full_payment', // полная предоплата
       },
     ],
   }
