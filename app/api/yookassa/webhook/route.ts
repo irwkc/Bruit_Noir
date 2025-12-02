@@ -4,6 +4,14 @@ import { prisma } from '@/lib/prisma'
 const YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID
 const YOOKASSA_SECRET_KEY = process.env.YOOKASSA_SECRET_KEY
 
+// GET запрос для проверки URL webhook ЮKassa
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    message: 'YooKassa webhook endpoint is active',
+    shopId: YOOKASSA_SHOP_ID ? 'configured' : 'not configured'
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!YOOKASSA_SHOP_ID || !YOOKASSA_SECRET_KEY) {
@@ -26,8 +34,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Bad payload' }, { status: 400 })
     }
 
+    const orderId = payment.metadata?.orderId as string | undefined
+
     if (event === 'payment.succeeded') {
-      const orderId = payment.metadata?.orderId as string | undefined
       if (orderId) {
         await prisma.order.updateMany({
           where: { id: orderId },
@@ -37,9 +46,29 @@ export async function POST(request: NextRequest) {
           },
         })
       }
+    } else if (event === 'payment.waiting_for_capture') {
+      // Платёж поступил, но требует подтверждения (для двухстадийных платежей)
+      if (orderId) {
+        await prisma.order.updateMany({
+          where: { id: orderId },
+          data: {
+            paymentStatus: 'waiting_for_capture',
+            status: 'pending',
+          },
+        })
+      }
+    } else if (event === 'payment.canceled') {
+      // Платёж отменён или произошла ошибка
+      if (orderId) {
+        await prisma.order.updateMany({
+          where: { id: orderId },
+          data: {
+            paymentStatus: 'canceled',
+            status: 'canceled',
+          },
+        })
+      }
     }
-
-    // На будущее можно обрабатывать и другие события (payment.canceled и т.п.)
 
     return NextResponse.json({ ok: true })
   } catch (error) {
