@@ -15,7 +15,10 @@ export async function GET(request: NextRequest) {
   const cursor = searchParams.get('cursor')
 
   const orders = await prisma.order.findMany({
-    where: status ? { status } : undefined,
+    where: {
+      ...(status ? { status } : {}),
+      paymentStatus: 'paid',
+    },
     include: {
       orderItems: {
         include: { product: true },
