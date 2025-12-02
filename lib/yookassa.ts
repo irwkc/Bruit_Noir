@@ -60,29 +60,29 @@ export async function createYooKassaPayment(params: CreatePaymentParams): Promis
     metadata: params.metadata ?? {},
   }
 
-  // Формируем чек, чтобы удовлетворить требования ЮKassa
-  const receiptCustomer: Record<string, string> = {}
+  // Чек отправляем только если есть email покупателя
+  // Если чек не нужен для магазина, можно убрать этот блок
   if (params.customerEmail) {
-    receiptCustomer.email = params.customerEmail
-  }
-  // Телефон сейчас не отправляем, чтобы не ловить ошибки формата
-
-  body.receipt = {
-    tax_system_code: 1,
-    ...(Object.keys(receiptCustomer).length > 0 ? { customer: receiptCustomer } : {}),
-    items: [
-      {
-        description: params.description.slice(0, 128),
-        quantity: '1.00',
-        amount: {
-          value,
-          currency: params.currency ?? 'RUB',
-        },
-        vat_code: 1, // без НДС / базовая ставка, можно поменять в будущем
-        payment_subject: 'commodity', // товар
-        payment_method: 'full_payment', // полная предоплата
+    body.receipt = {
+      tax_system_code: 1,
+      customer: {
+        email: params.customerEmail,
       },
-    ],
+      items: [
+        {
+          description: params.description.slice(0, 128),
+          quantity: '1.00',
+          amount: {
+            value,
+            currency: params.currency ?? 'RUB',
+          },
+          vat_code: 1,
+          payment_subject: 'commodity',
+          payment_method: 'full_prepayment',
+          payment_mode: 'full_prepayment',
+        },
+      ],
+    }
   }
 
   const res = await fetch(`${YOOKASSA_API_URL}/payments`, {
