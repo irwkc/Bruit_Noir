@@ -66,10 +66,26 @@ export async function createYooKassaPayment(params: CreatePaymentParams): Promis
     receiptCustomer.email = params.customerEmail
   }
   if (params.customerPhone) {
-    receiptCustomer.phone = params.customerPhone
+    // Приводим телефон к формату, который принимает ЮKassa: +7XXXXXXXXXX
+    let digits = params.customerPhone.replace(/[^\d]/g, '')
+
+    // Нормализуем российский номер из 8XXXXXXXXXX → 7XXXXXXXXXX
+    if (digits.length === 11 && digits.startsWith('8')) {
+      digits = `7${digits.slice(1)}`
+    }
+
+    if (digits.length >= 10) {
+      if (!digits.startsWith('7')) {
+        // Если код страны не 7 — просто добавляем плюс
+        receiptCustomer.phone = `+${digits}`
+      } else {
+        receiptCustomer.phone = `+${digits}`
+      }
+    }
   }
 
   body.receipt = {
+    tax_system_code: 1,
     ...(Object.keys(receiptCustomer).length > 0 ? { customer: receiptCustomer } : {}),
     items: [
       {
