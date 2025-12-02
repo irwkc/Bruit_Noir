@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { sendNewOrderNotification } from '@/lib/email'
+import { createYooKassaPayment } from '@/lib/yookassa'
 
 export async function GET(request: NextRequest) {
   try {
@@ -200,6 +201,33 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    let paymentRedirectUrl: string | null = null
+
+    if (paymentMethod === 'card') {
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://bruitnoir.ru'
+      try {
+        const payment = await createYooKassaPayment({
+          amount: total,
+          description: `Заказ ${order.id}`,
+          returnUrl: `${baseUrl}/profile`,
+          metadata: {
+            orderId: order.id,
+            userId,
+          },
+        })
+
+        paymentRedirectUrl = payment.confirmation?.confirmation_url ?? null
+      } catch (paymentError) {
+        console.error('Error creating YooKassa payment:', paymentError)
+        return NextResponse.json(
+          {
+            error: 'Failed to create payment',
+          },
+          { status: 502 }
+        )
+      }
+    }
+
     // Fire-and-forget notifications
     const admins = await prisma.user.findMany({
       where: {
@@ -236,7 +264,13 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    return NextResponse.json(order, { status: 201 })
+    return NextResponse.json(
+      {
+        order,
+        paymentRedirectUrl,
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Error creating order:', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to create order'

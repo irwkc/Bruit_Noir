@@ -164,9 +164,14 @@ export default function CheckoutPage() {
       })
 
       if (res.ok) {
-        const order = await res.json()
+        const data = await res.json()
         clearCart()
-        router.push('/profile')
+
+        if (paymentMethod === 'card' && data.paymentRedirectUrl) {
+          window.location.href = data.paymentRedirectUrl
+        } else {
+          router.push('/profile')
+        }
       } else {
         const error = await res.json().catch(() => ({ error: 'Unknown error' }))
         console.error('Order creation error:', error)
