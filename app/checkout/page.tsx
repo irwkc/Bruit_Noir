@@ -33,7 +33,6 @@ export default function CheckoutPage() {
   const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPoint | null>(null)
   const [selectedCity, setSelectedCity] = useState('Москва')
   const [deliveryMethod] = useState('sdek') // Только СДЭК
-  const [paymentMethod, setPaymentMethod] = useState('card')
   const [loading, setLoading] = useState(false)
 
   const [customerLastName, setCustomerLastName] = useState('')
@@ -152,7 +151,7 @@ export default function CheckoutPage() {
         customerName: fullName,
         customerEmail,
         customerPhone,
-        paymentMethod,
+        paymentMethod: 'card',
       }
       
       console.log('Sending order data:', orderData)
@@ -167,7 +166,7 @@ export default function CheckoutPage() {
         const data = await res.json()
         clearCart()
 
-        if (paymentMethod === 'card' && data.paymentRedirectUrl) {
+        if (data.paymentRedirectUrl) {
           window.location.href = data.paymentRedirectUrl
         } else {
           router.push('/profile')
@@ -334,39 +333,11 @@ export default function CheckoutPage() {
               {/* Payment */}
               <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-6 border border-white/20">
                 <h2 className="text-xl font-bold mb-4 text-white">Способ оплаты</h2>
-                <div className="space-y-2">
-                  <label className="flex items-center p-4 border-2 border-white/30 rounded-lg cursor-pointer hover:border-white/50 transition bg-white/5">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="card"
-                      checked={paymentMethod === 'card'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="mr-3"
-                    />
-                    <div>
-                      <p className="font-semibold text-white">Банковская карта</p>
-                      <p className="text-sm text-gray-300">
-                        Visa, Mastercard, МИР
-                      </p>
-                    </div>
-                  </label>
-                  <label className="flex items-center p-4 border-2 border-white/30 rounded-lg cursor-pointer hover:border-white/50 transition bg-white/5">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="cash"
-                      checked={paymentMethod === 'cash'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="mr-3"
-                    />
-                    <div>
-                      <p className="font-semibold text-white">Наличные при получении</p>
-                      <p className="text-sm text-gray-300">
-                        Оплата в пункте выдачи
-                      </p>
-                    </div>
-                  </label>
+                <div className="p-4 border-2 border-white/30 rounded-lg bg-white/5">
+                  <p className="font-semibold text-white">Банковская карта</p>
+                  <p className="text-sm text-gray-300">
+                    Оплата онлайн банковской картой (Visa, Mastercard, МИР) через ЮKassa
+                  </p>
                 </div>
               </div>
             </div>
@@ -542,39 +513,11 @@ export default function CheckoutPage() {
           {/* Payment */}
           <div className="bg-white/10 backdrop-blur-2xl rounded-lg p-4 border border-white/20">
             <h2 className="text-lg font-bold mb-3 text-white">Оплата</h2>
-            <div className="space-y-2">
-              <label className="flex items-center p-3 border-2 border-white/30 rounded-lg cursor-pointer bg-white/5">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="card"
-                  checked={paymentMethod === 'card'}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <div>
-                  <p className="font-semibold text-sm text-white">Банковская карта</p>
-                  <p className="text-xs text-gray-300">
-                    Visa, Mastercard, МИР
-                  </p>
-                </div>
-              </label>
-              <label className="flex items-center p-3 border-2 border-white/30 rounded-lg cursor-pointer bg-white/5">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="cash"
-                  checked={paymentMethod === 'cash'}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <div>
-                  <p className="font-semibold text-sm text-white">Наличные</p>
-                  <p className="text-xs text-gray-300">
-                    Оплата при получении
-                  </p>
-                </div>
-              </label>
+            <div className="p-3 border-2 border-white/30 rounded-lg bg-white/5">
+              <p className="font-semibold text-sm text-white">Банковская карта</p>
+              <p className="text-xs text-gray-300">
+                Оплата онлайн банковской картой (Visa, Mastercard, МИР) через ЮKassa
+              </p>
             </div>
           </div>
 
