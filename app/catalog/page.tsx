@@ -116,17 +116,7 @@ export default function CatalogPage() {
         </div>
 
         {/* Products Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="animate-pulse overflow-hidden rounded-2xl bg-white/10 backdrop-blur-md p-3 border border-white/20">
-                <div className="mb-3 aspect-[3/4] rounded-xl bg-white/10" />
-                <div className="mb-2 h-4 w-2/3 rounded bg-white/10" />
-                <div className="h-4 w-24 rounded bg-white/10" />
-              </div>
-            ))}
-          </div>
-        ) : filteredProducts.length > 0 ? (
+        {loading && products.length === 0 ? null : filteredProducts.length > 0 ? (
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <StaggerItem key={product.id}>
@@ -217,17 +207,7 @@ export default function CatalogPage() {
 
         {/* Mobile Products Grid */}
         <div className="px-4 py-4">
-          {loading ? (
-            <div className="grid grid-cols-2 gap-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[3/4] rounded-lg bg-white/10 mb-2" />
-                  <div className="h-3 w-2/3 rounded bg-white/10 mb-1" />
-                  <div className="h-3 w-16 rounded bg-white/10" />
-                </div>
-              ))}
-            </div>
-          ) : filteredProducts.length > 0 ? (
+          {loading && products.length === 0 ? null : filteredProducts.length > 0 ? (
             <StaggerContainer className="grid grid-cols-2 gap-3" staggerDelay={0.08}>
               {filteredProducts.map((product) => (
                 <StaggerItem key={product.id}>
