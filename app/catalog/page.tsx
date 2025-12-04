@@ -35,8 +35,8 @@ export default function CatalogPage() {
       setError(null)
       try {
         const params = new URLSearchParams({
-          // Загружаем сразу все товары, фильтруем на клиенте
-          category: 'all',
+          // Категорию фильтруем на сервере
+          category: selectedCategory,
           sort: sortBy,
           page: '1',
           limit: '100',
@@ -67,40 +67,14 @@ export default function CatalogPage() {
     return () => {
       cancelled = true
     }
-  }, [sortBy])
-
-  // Нормализация категорий для устойчивой фильтрации на клиенте
-  function normalizeCategory(rawCategory: string | undefined): string {
-    const cat = (rawCategory || '').toLowerCase().trim()
-
-    if (['hoodies', 'hoodie'].includes(cat)) {
-      return 'hoodies'
-    }
-
-    if (['t-shirts', 'tshirt', 'tshirts', 'tee'].includes(cat)) {
-      return 't-shirts'
-    }
-
-    if (['pants', 'trousers'].includes(cat)) {
-      return 'pants'
-    }
-
-    if (['accessories', 'accessory'].includes(cat)) {
-      return 'accessories'
-    }
-
-    return cat || ''
-  }
+  }, [selectedCategory, sortBy])
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
 
     if (!matchesSearch) return false
 
-    if (selectedCategory === 'all') return true
-
-    const normalized = normalizeCategory(product.category)
-    return normalized === selectedCategory
+    return true
   })
 
   const categories = [
