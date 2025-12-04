@@ -11,11 +11,21 @@ interface ProductCardProps {
   images: string[]
   category: string
   available?: boolean
+  preOrder?: boolean
 }
 
-export default function ProductCard({ id, name, price, images, category, available = true }: ProductCardProps) {
+export default function ProductCard({
+  id,
+  name,
+  price,
+  images,
+  category,
+  available = true,
+  preOrder = false,
+}: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isAvailable = available !== false
+  const isPreOrder = preOrder === true
 
   return (
     <Link href={`/product/${id}`} className="block group">
@@ -38,10 +48,15 @@ export default function ProductCard({ id, name, price, images, category, availab
           />
           {/* Gradient / Top badges */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90" />
-          <div className="absolute top-3 left-3 flex gap-2">
+          <div className="absolute top-3 left-3 flex flex-col gap-2">
             <span className="rounded-full bg-black/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur">
               {category}
             </span>
+            {isPreOrder && (
+              <span className="rounded-full bg-yellow-400 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black shadow-sm">
+                pre-order
+              </span>
+            )}
           </div>
           {!isAvailable && (
             <div className="absolute top-3 right-3">

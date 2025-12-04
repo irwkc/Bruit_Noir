@@ -16,6 +16,7 @@ interface Product {
   sizes: string[]
   colors: string[]
   available?: boolean
+  preOrder?: boolean
 }
 
 export default function CatalogPage() {
@@ -127,6 +128,7 @@ export default function CatalogPage() {
                   images={(product as any).images || []}
                   category={product.category}
                   available={product.available}
+                  preOrder={product.preOrder}
                 />
               </StaggerItem>
             ))}
@@ -219,6 +221,7 @@ export default function CatalogPage() {
                     images={(product as any).images || []}
                     category={product.category}
                     available={product.available}
+                    preOrder={product.preOrder}
                   />
                 </StaggerItem>
               ))}

@@ -18,6 +18,7 @@ type FeaturedProduct = {
   images: unknown
   category: string
   available?: boolean
+  preOrder?: boolean
 }
 
 export const revalidate = 60
@@ -37,6 +38,15 @@ async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
       where: { featured: true },
       take: 6,
       orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        images: true,
+        category: true,
+        available: true,
+        preOrder: true,
+      },
     })
     return products
   } catch (error) {
@@ -150,6 +160,7 @@ export default async function HomePage() {
                     images={((product.images as unknown) as string[]) || []}
                     category={product.category}
                     available={product.available}
+                    preOrder={product.preOrder}
                   />
                 </StaggerItem>
               ))}
@@ -188,6 +199,7 @@ export default async function HomePage() {
                     images={((product.images as unknown) as string[]) || []}
                     category={product.category}
                     available={product.available}
+                    preOrder={product.preOrder}
                   />
                 </StaggerItem>
               ))}

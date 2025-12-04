@@ -17,8 +17,10 @@ export default function MobileProductCard({
   images,
   category,
   available = true,
+  preOrder = false,
 }: MobileProductCardProps) {
   const isAvailable = available !== false
+  const isPreOrder = preOrder === true
 
   return (
     <Link href={`/product/${id}`} className="block">
@@ -39,11 +41,16 @@ export default function MobileProductCard({
             </div>
           )}
           
-          {/* Category badge - smaller for mobile */}
-          <div className="absolute top-2 left-2 flex items-center gap-2">
+          {/* Category + pre-order badges */}
+          <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
             <span className="bg-black/80 text-white text-xs px-2 py-1 rounded-full font-medium">
               {category}
             </span>
+            {isPreOrder && (
+              <span className="bg-yellow-400 text-black text-[11px] px-2 py-0.5 rounded-full font-semibold uppercase">
+                pre-order
+              </span>
+            )}
           </div>
         </div>
 

@@ -132,6 +132,9 @@ private struct ProductRowView: View {
                 if product.featured {
                     Badge(text: "На главной", tint: .black, textColor: .white)
                 }
+                if product.preOrder == true {
+                    Badge(text: "pre-order", tint: .yellow.opacity(0.15), textColor: .yellow)
+                }
                 Badge(
                     text: product.available ? "Активен" : "Нет в наличии",
                     tint: product.available ? .green.opacity(0.15) : .red.opacity(0.15),

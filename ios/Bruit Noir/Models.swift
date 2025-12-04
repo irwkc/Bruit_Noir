@@ -110,6 +110,7 @@ struct Product: Codable, Identifiable, Hashable {
     var stock: Int
     var featured: Bool
     var available: Bool
+    var preOrder: Bool?
     var createdAt: Date?
     var updatedAt: Date?
 
@@ -166,6 +167,7 @@ struct ProductDraft: Encodable {
     var stock: Int
     var featured: Bool
     var available: Bool
+    var preOrder: Bool?
 }
 
 struct UploadResponse: Decodable {

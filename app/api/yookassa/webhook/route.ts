@@ -154,11 +154,11 @@ export async function POST(request: NextRequest) {
           if (!order) {
             console.warn(`[YooKassa webhook] Order not found for notification/stock: ${orderId}`)
           } else {
-            // Уменьшаем остатки по товарам
+            // Уменьшаем остатки по товарам и, если остаток стал 0 или меньше, переводим товар в статус "нет в наличии"
             await prisma.$transaction(async (tx) => {
               for (const item of order.orderItems) {
                 try {
-                  await tx.product.update({
+                  const updated = await tx.product.update({
                     where: { id: item.productId },
                     data: {
                       stock: {
@@ -166,6 +166,13 @@ export async function POST(request: NextRequest) {
                       },
                     },
                   })
+
+                  if (updated.stock <= 0 && updated.available) {
+                    await tx.product.update({
+                      where: { id: item.productId },
+                      data: { available: false },
+                    })
+                  }
                 } catch (stockError) {
                   console.error(
                     `[YooKassa webhook] Failed to decrement stock for product ${item.productId} (order ${orderId}):`,

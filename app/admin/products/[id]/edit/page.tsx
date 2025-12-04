@@ -16,6 +16,7 @@ interface ProductResponse {
   stock: number
   featured: boolean
   available: boolean
+  preOrder?: boolean
 }
 
 const DEFAULT_SIZES = ['S', 'M', 'L']
@@ -40,6 +41,7 @@ export default function EditProductPage() {
     colors: DEFAULT_COLORS,
     featured: false,
     outOfStock: false,
+    preOrder: false,
   })
 
   const hasAnyData = useMemo(
@@ -66,7 +68,7 @@ export default function EditProductPage() {
           throw new Error('Не удалось загрузить данные товара')
         }
 
-        const product = (await res.json()) as ProductResponse
+      const product = (await res.json()) as ProductResponse
 
         setFormData({
           name: product.name,
@@ -78,7 +80,8 @@ export default function EditProductPage() {
           sizes: Array.isArray(product.sizes) && product.sizes.length > 0 ? product.sizes : DEFAULT_SIZES,
           colors: Array.isArray(product.colors) && product.colors.length > 0 ? product.colors : DEFAULT_COLORS,
           featured: Boolean(product.featured),
-          outOfStock: product.available === false,
+        outOfStock: product.available === false,
+        preOrder: product.preOrder === true,
         })
       } catch (fetchError) {
         console.error('Error fetching product:', fetchError)
@@ -126,6 +129,7 @@ export default function EditProductPage() {
           colors: formData.colors.filter((color) => color.trim() !== ''),
           featured: formData.featured,
           available: !formData.outOfStock,
+          preOrder: formData.preOrder,
         }),
       })
 
@@ -268,6 +272,22 @@ export default function EditProductPage() {
                 <span className="font-semibold">Нет в наличии</span>
                 <span className="block text-gray-500">
                   Покупатели увидят пометку «Нет в наличии», количество скроется, а добавление в корзину будет недоступно.
+                </span>
+              </label>
+            </div>
+
+            <div className="flex items-start gap-3 rounded-lg border border-yellow-200 px-4 py-3 bg-yellow-50">
+              <input
+                id="edit-pre-order"
+                type="checkbox"
+                checked={formData.preOrder}
+                onChange={(e) => setFormData((prev) => ({ ...prev, preOrder: e.target.checked }))}
+                className="mt-1 h-4 w-4 rounded border-yellow-400 text-yellow-600 focus:ring-yellow-500"
+              />
+              <label htmlFor="edit-pre-order" className="text-sm text-gray-800">
+                <span className="font-semibold text-yellow-800">Режим pre-order</span>
+                <span className="block text-gray-600">
+                  Если включить, товар останется доступным для заказа как предзаказ, с жёлтым бейджем «pre-order».
                 </span>
               </label>
             </div>

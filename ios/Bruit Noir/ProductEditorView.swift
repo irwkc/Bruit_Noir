@@ -77,6 +77,9 @@ struct ProductEditorView: View {
 
                     Toggle("Показывать на главной", isOn: $formState.featured)
                         .toggleStyle(SwitchToggleStyle(tint: .black))
+
+                    Toggle("Режим pre-order", isOn: $formState.preOrder)
+                        .toggleStyle(SwitchToggleStyle(tint: .black))
                 }
 
                 Section("Изображения") {
@@ -233,6 +236,7 @@ private struct ProductFormState {
     var colorsText: String = "black"
     var featured: Bool = false
     var outOfStock: Bool = false
+    var preOrder: Bool = false
 
     var isValid: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
@@ -253,6 +257,7 @@ private struct ProductFormState {
         colorsText = product.colors.joined(separator: ", ")
         featured = product.featured
         outOfStock = !product.available
+        preOrder = product.preOrder ?? false
     }
 
     func makeDraft() -> ProductDraft {
@@ -279,7 +284,8 @@ private struct ProductFormState {
             colors: colorsArray,
             stock: stockValue,
             featured: featured,
-            available: !outOfStock
+            available: !outOfStock,
+            preOrder: preOrder
         )
     }
 }

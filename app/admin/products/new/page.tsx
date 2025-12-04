@@ -18,6 +18,7 @@ export default function NewProductPage() {
     colors: ['black'],
     featured: false,
     outOfStock: false,
+    preOrder: false,
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,6 +35,7 @@ export default function NewProductPage() {
           stock: formData.stock ? parseInt(formData.stock, 10) : 0,
           images: formData.images.filter((img: string) => img.trim() !== ''),
           available: !formData.outOfStock,
+          preOrder: formData.preOrder,
         }),
       })
 
@@ -165,6 +167,22 @@ export default function NewProductPage() {
               <span className="font-semibold">Нет в наличии</span>
               <span className="block text-gray-500">
                 Покупатели увидят пометку «Нет в наличии», количество скроется, а добавление в корзину будет недоступно.
+              </span>
+            </label>
+          </div>
+
+          <div className="flex items-start gap-3 rounded-lg border border-yellow-200 px-4 py-3 bg-yellow-50">
+            <input
+              id="new-pre-order"
+              type="checkbox"
+              checked={formData.preOrder}
+              onChange={(e) => setFormData({ ...formData, preOrder: e.target.checked })}
+              className="mt-1 h-4 w-4 rounded border-yellow-400 text-yellow-600 focus:ring-yellow-500"
+            />
+            <label htmlFor="new-pre-order" className="text-sm text-gray-800">
+              <span className="font-semibold text-yellow-800">Режим pre-order</span>
+              <span className="block text-gray-600">
+                Товар можно заказывать в предзаказ. На карточке появится жёлтый бейдж «pre-order», а на странице товара будет пометка про сроки предзаказа.
               </span>
             </label>
           </div>

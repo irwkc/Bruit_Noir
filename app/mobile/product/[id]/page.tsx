@@ -23,6 +23,7 @@ async function getProduct(id: string) {
         colors: true,
         stock: true,
         available: true,
+        preOrder: true,
       },
     })
     return product

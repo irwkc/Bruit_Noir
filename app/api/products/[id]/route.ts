@@ -20,6 +20,7 @@ export async function GET(
         colors: true,
         stock: true,
         available: true,
+        preOrder: true,
       },
     })
 
@@ -57,6 +58,7 @@ export async function PUT(
       stock = 0,
       featured = false,
       available = true,
+      preOrder = false,
     } = body
 
     const numericPrice = typeof price === 'string' ? parseFloat(price) : Number(price)
@@ -84,6 +86,7 @@ export async function PUT(
         stock: Number.isFinite(numericStock) ? numericStock : 0,
         featured,
         available,
+        preOrder,
       },
     })
     return NextResponse.json(product)

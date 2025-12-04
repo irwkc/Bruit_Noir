@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
           stock: true,
           featured: true,
           available: true,
+          preOrder: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -92,6 +93,7 @@ export async function POST(request: NextRequest) {
       stock = 0,
       featured = false,
       available = true,
+      preOrder = false,
     } = body
 
     const numericPrice = typeof price === 'string' ? parseFloat(price) : Number(price)
@@ -118,6 +120,7 @@ export async function POST(request: NextRequest) {
         stock: Number.isFinite(numericStock) ? numericStock : 0,
         featured,
         available,
+        preOrder,
       },
     })
     return NextResponse.json(product, { status: 201 })
