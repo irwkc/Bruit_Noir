@@ -10,9 +10,18 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(Number(searchParams.get('limit') || '12'), 48)
     const skip = (page - 1) * limit
 
+    // Нормализация категорий для совместимости со старыми значениями в базе
+    const CATEGORY_ALIASES: Record<string, string[]> = {
+      hoodies: ['hoodies', 'hoodie'],
+      't-shirts': ['t-shirts', 'tshirt', 'tshirts'],
+      pants: ['pants', 'trousers'],
+      accessories: ['accessories', 'accessory'],
+    }
+
     let where: any = {}
     if (category !== 'all') {
-      where = { category }
+      const aliases = CATEGORY_ALIASES[category]
+      where = aliases ? { category: { in: aliases } } : { category }
     }
 
     let orderBy = {}
