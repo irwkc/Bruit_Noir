@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import ProductCard from '@/components/ProductCard'
 import MobileProductCard from '@/components/mobile/ProductCard'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
@@ -25,46 +25,49 @@ export default function CatalogPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const requestIdRef = useRef(0)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    setPage(1)
-  }, [selectedCategory, sortBy, searchQuery])
+    let cancelled = false
 
-  useEffect(() => {
-    fetchProducts(true)
-  }, [selectedCategory, sortBy, page])
-
-  async function fetchProducts(reset = false) {
-    const requestId = ++requestIdRef.current
-    setLoading(true)
-    try {
-      const params = new URLSearchParams({
-        // Всегда запрашиваем все товары, категории фильтруем на клиенте
-        category: 'all',
-        sort: sortBy,
-        page: String(page),
-        limit: '12',
-      })
-      const res = await fetch(`/api/products?${params}`)
-      const json = await res.json()
-
-      // Если за это время был запущен новый запрос — игнорируем старый ответ
-      if (requestId !== requestIdRef.current) {
-        return
+    async function fetchProducts() {
+      setLoading(true)
+      setError(null)
+      try {
+        const params = new URLSearchParams({
+          // Загружаем сразу все товары, фильтруем на клиенте
+          category: 'all',
+          sort: sortBy,
+          page: '1',
+          limit: '100',
+        })
+        const res = await fetch(`/api/products?${params}`, { cache: 'no-store' })
+        if (!res.ok) {
+          throw new Error(`Failed to fetch products: ${res.status}`)
+        }
+        const json = await res.json()
+        const data: Product[] = json.data || []
+        if (!cancelled) {
+          setProducts(data)
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err)
+        if (!cancelled) {
+          setError('Не удалось загрузить товары. Попробуйте обновить страницу.')
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
       }
-      const data: Product[] = json.data || []
-      const meta = json.pagination || { totalPages: 1 }
-      setTotalPages(meta.totalPages || 1)
-      setProducts((prev) => (reset || page === 1 ? data : [...prev, ...data]))
-    } catch (error) {
-      console.error('Error fetching products:', error)
-    } finally {
-      setLoading(false)
     }
-  }
+
+    fetchProducts()
+
+    return () => {
+      cancelled = true
+    }
+  }, [sortBy])
 
   // Нормализация категорий для устойчивой фильтрации на клиенте
   function normalizeCategory(rawCategory: string | undefined): string {
@@ -155,7 +158,11 @@ export default function CatalogPage() {
         </div>
 
         {/* Products Grid */}
-        {loading && products.length === 0 ? null : filteredProducts.length > 0 ? (
+        {error ? (
+          <div className="text-center py-20">
+            <p className="text-red-400 text-lg mb-2">{error}</p>
+          </div>
+        ) : loading && products.length === 0 ? null : filteredProducts.length > 0 ? (
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <StaggerItem key={product.id}>
@@ -188,18 +195,7 @@ export default function CatalogPage() {
           </div>
         )}
 
-        {/* Load more */}
-        {filteredProducts.length > 0 && page < totalPages && (
-          <div className="mt-10 flex justify-center">
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={loading}
-              className="rounded-full border border-gray-300 px-6 py-3 text-sm font-medium hover:border-gray-400 disabled:opacity-50"
-            >
-              {loading ? 'Загрузка...' : 'Показать ещё'}
-            </button>
-          </div>
-        )}
+        {/* Load more — убран, все товары загружаются одним запросом */}
       </div>
 
       {/* Mobile Version */}
@@ -248,7 +244,11 @@ export default function CatalogPage() {
 
         {/* Mobile Products Grid */}
         <div className="px-4 py-4">
-          {loading && products.length === 0 ? null : filteredProducts.length > 0 ? (
+          {error ? (
+            <div className="text-center py-12">
+              <p className="text-red-400 text-sm mb-2">{error}</p>
+            </div>
+          ) : loading && products.length === 0 ? null : filteredProducts.length > 0 ? (
             <StaggerContainer className="grid grid-cols-2 gap-3" staggerDelay={0.08}>
               {filteredProducts.map((product) => (
                 <StaggerItem key={product.id}>
@@ -281,18 +281,7 @@ export default function CatalogPage() {
             </div>
           )}
 
-          {/* Mobile Load more */}
-          {filteredProducts.length > 0 && page < totalPages && (
-            <div className="mt-6 flex justify-center">
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                disabled={loading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium hover:border-gray-400 disabled:opacity-50"
-              >
-                {loading ? 'Загрузка...' : 'Показать ещё'}
-              </button>
-            </div>
-          )}
+          {/* Mobile Load more — убран, все товары загружаются одним запросом */}
         </div>
       </div>
     </div>
