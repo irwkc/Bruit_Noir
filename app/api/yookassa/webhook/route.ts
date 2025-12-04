@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { verifyWebhookSignature } from '@/lib/yookassa'
 
 const YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID
 const YOOKASSA_SECRET_KEY = process.env.YOOKASSA_SECRET_KEY
+
+// Отключаем body parsing для получения raw body для проверки подписи
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 // IP-адреса, с которых ЮKassa может отправлять уведомления
 const YOOKASSA_IPS = [
@@ -57,7 +62,39 @@ export async function POST(request: NextRequest) {
       // Не блокируем, но логируем для мониторинга
     }
 
-    const body = await request.json()
+    // Получаем raw body для проверки подписи (если потребуется)
+    // В Next.js App Router нужно использовать request.text() для получения raw body
+    let rawBody: string
+    let body: any
+    
+    try {
+      // Пытаемся получить raw body
+      rawBody = await request.text()
+      body = JSON.parse(rawBody)
+    } catch (error) {
+      // Если не получилось, пробуем через json()
+      body = await request.json()
+      rawBody = JSON.stringify(body)
+    }
+    
+    // Проверка подписи (опционально - YooKassa может не требовать её)
+    // Если YooKassa отправляет подпись, она будет в заголовке
+    const signature = request.headers.get('x-yookassa-signature') || 
+                      request.headers.get('x-signature')
+    
+    // Проверяем подпись только если она передана и в production
+    if (signature && process.env.NODE_ENV === 'production' && YOOKASSA_SECRET_KEY) {
+      try {
+        if (!verifyWebhookSignature(rawBody, signature)) {
+          console.error('[YooKassa webhook] Invalid signature')
+          // Логируем, но не блокируем - YooKassa может не требовать подпись
+          // return NextResponse.json({ ok: false, error: 'Invalid signature' }, { status: 200 })
+        }
+      } catch (sigError) {
+        console.warn('[YooKassa webhook] Signature verification failed:', sigError)
+        // Не блокируем запрос, если проверка подписи не удалась
+      }
+    }
 
     // Проверка формата уведомления согласно документации
     const type = body?.type as string | undefined

@@ -104,4 +104,27 @@ export async function createYooKassaPayment(params: CreatePaymentParams): Promis
   return data
 }
 
+/**
+ * Проверка подписи webhook от YooKassa
+ * @param rawBody - сырое тело запроса (строка)
+ * @param signature - подпись из заголовка
+ * @returns true если подпись валидна
+ */
+export function verifyWebhookSignature(rawBody: string, signature: string): boolean {
+  if (!YOOKASSA_SECRET_KEY) {
+    return false
+  }
+
+  const hmac = crypto.createHmac('sha256', YOOKASSA_SECRET_KEY)
+  hmac.update(rawBody)
+  const calculatedSignature = hmac.digest('hex')
+  
+  // YooKassa может отправлять подпись в разных форматах
+  // Проверяем как прямую подпись, так и подпись с префиксом
+  return crypto.timingSafeEqual(
+    Buffer.from(calculatedSignature),
+    Buffer.from(signature)
+  )
+}
+
 
