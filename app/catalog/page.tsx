@@ -67,58 +67,25 @@ export default function CatalogPage() {
   }
 
   // Нормализация категорий для устойчивой фильтрации на клиенте
-  function normalizeCategory(rawCategory: string | undefined, name: string): string {
+  function normalizeCategory(rawCategory: string | undefined): string {
     const cat = (rawCategory || '').toLowerCase().trim()
-    const title = name.toLowerCase()
 
-    // Худи
-    if (
-      cat.includes('hood') ||
-      cat.includes('худи') ||
-      title.includes('hoodie') ||
-      title.includes('худи')
-    ) {
+    if (['hoodies', 'hoodie'].includes(cat)) {
       return 'hoodies'
     }
 
-    // Футболки
-    if (
-      cat.includes('t-shirt') ||
-      cat.includes('tshirt') ||
-      cat.includes('tshirts') ||
-      cat.includes('tee') ||
-      cat.includes('футболк') ||
-      title.includes('t-shirt') ||
-      title.includes('tshirt') ||
-      title.includes('tee') ||
-      title.includes('футболк')
-    ) {
+    if (['t-shirts', 'tshirt', 'tshirts', 'tee'].includes(cat)) {
       return 't-shirts'
     }
 
-    // Штаны
-    if (
-      cat.includes('pants') ||
-      cat.includes('trousers') ||
-      cat.includes('штаны') ||
-      cat.includes('брюки') ||
-      title.includes('штаны') ||
-      title.includes('брюки')
-    ) {
+    if (['pants', 'trousers'].includes(cat)) {
       return 'pants'
     }
 
-    // Аксессуары
-    if (
-      cat.includes('accessor') ||
-      cat.includes('аксессуар') ||
-      title.includes('accessor') ||
-      title.includes('аксессуар')
-    ) {
+    if (['accessories', 'accessory'].includes(cat)) {
       return 'accessories'
     }
 
-    // По умолчанию возвращаем исходную категорию (или пустую строку)
     return cat || ''
   }
 
@@ -129,7 +96,7 @@ export default function CatalogPage() {
 
     if (selectedCategory === 'all') return true
 
-    const normalized = normalizeCategory(product.category, product.name)
+    const normalized = normalizeCategory(product.category)
     return normalized === selectedCategory
   })
 
