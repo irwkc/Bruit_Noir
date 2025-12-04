@@ -45,14 +45,6 @@ export default function MobileProductCard({
               {category}
             </span>
           </div>
-          {!isAvailable && (
-            <div className="absolute top-2 right-2">
-              <span
-                className="inline-block h-2.5 w-2.5 rounded-full bg-red-500 border border-white/80 shadow-sm"
-                aria-hidden="true"
-              />
-            </div>
-          )}
         </div>
 
         {/* Content with glass effect */}
