@@ -174,15 +174,15 @@ export default function CatalogPage() {
       {/* Mobile Version */}
       <div className="block md:hidden">
         {/* Mobile Header */}
-        <div className="bg-white/10 backdrop-blur-2xl border-b border-white/20 px-4 py-4">
-          <h1 className="text-2xl font-bold text-white mb-2">Каталог</h1>
+        <div className="px-4 py-4">
+          <h1 className="text-2xl font-bold text-white mb-1">Каталог</h1>
           <p className="text-sm text-gray-300">
             Вся коллекция Bruit Noir
           </p>
         </div>
 
         {/* Mobile Search */}
-        <div className="bg-white/10 backdrop-blur-2xl px-4 py-3 border-b border-white/20">
+        <div className="px-4 pb-2">
           <div className="relative">
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
@@ -190,7 +190,7 @@ export default function CatalogPage() {
               placeholder="Поиск..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm bg-white/10 backdrop-blur-md border border-white/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/30 focus:border-white/50"
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-lg text-white placeholder-gray-400 bg-black/40 border border-white/20 focus:ring-2 focus:ring-white/40 focus:border-white/60 shadow-sm"
             />
           </div>
         </div>
