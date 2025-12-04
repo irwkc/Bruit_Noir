@@ -139,9 +139,10 @@ export default function CatalogPage() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-blue-600 hover:underline"
+                className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 hover:border-white/60 transition"
               >
-                Сбросить поиск
+                <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                <span>Сбросить поиск</span>
               </button>
             )}
           </div>
@@ -230,9 +231,10 @@ export default function CatalogPage() {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-blue-600 hover:underline text-sm"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/5 px-4 py-1.5 text-xs font-medium text-white hover:bg-white/10 hover:border-white/50 transition"
                 >
-                  Сбросить поиск
+                  <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                  <span>Сбросить поиск</span>
                 </button>
               )}
             </div>

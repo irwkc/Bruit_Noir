@@ -236,7 +236,7 @@ export default function ContactPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={loading}
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-2xl border border-white/20 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/50 focus:border-white/50 disabled:bg-white/5 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 text-base bg-white/10 backdrop-blur-2xl border border-white/20 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/50 focus:border-white/50 disabled:bg-white/5 disabled:cursor-not-allowed"
                   required
                 />
               </div>
@@ -250,7 +250,7 @@ export default function ContactPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-2xl border border-white/20 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/50 focus:border-white/50 disabled:bg-white/5 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 text-base bg-white/10 backdrop-blur-2xl border border-white/20 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/50 focus:border-white/50 disabled:bg-white/5 disabled:cursor-not-allowed"
                   required
                 />
               </div>
@@ -264,7 +264,7 @@ export default function ContactPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   disabled={loading}
-                  className="w-full px-3 py-2 text-sm bg-white/10 backdrop-blur-2xl border border-white/20 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/50 focus:border-white/50 disabled:bg-white/5 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 text-base bg-white/10 backdrop-blur-2xl border border-white/20 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-white/50 focus:border-white/50 disabled:bg-white/5 disabled:cursor-not-allowed"
                   required
                 />
               </div>
