@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ProductCard from '@/components/ProductCard'
 import MobileProductCard from '@/components/mobile/ProductCard'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
@@ -27,6 +27,7 @@ export default function CatalogPage() {
   const [sortBy, setSortBy] = useState('newest')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const requestIdRef = useRef(0)
 
   useEffect(() => {
     setPage(1)
@@ -37,6 +38,7 @@ export default function CatalogPage() {
   }, [selectedCategory, sortBy, page])
 
   async function fetchProducts(reset = false) {
+    const requestId = ++requestIdRef.current
     setLoading(true)
     try {
       const params = new URLSearchParams({
@@ -48,6 +50,11 @@ export default function CatalogPage() {
       })
       const res = await fetch(`/api/products?${params}`)
       const json = await res.json()
+
+      // Если за это время был запущен новый запрос — игнорируем старый ответ
+      if (requestId !== requestIdRef.current) {
+        return
+      }
       const data: Product[] = json.data || []
       const meta = json.pagination || { totalPages: 1 }
       setTotalPages(meta.totalPages || 1)
