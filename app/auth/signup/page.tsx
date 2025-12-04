@@ -107,7 +107,16 @@ export default function SignUpPage() {
       </div>
 
       {/* Форма */}
-      <div className="relative max-w-md w-full space-y-8 z-10">
+      <div className="relative max-w-md w-full space-y-4 z-10">
+        <div className="flex justify-start">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-white transition"
+          >
+            <span className="text-lg leading-none">←</span>
+            <span>Назад</span>
+          </Link>
+        </div>
         <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 border border-white/20">
           <div className="text-center mb-8">
             <div className="mb-6 flex justify-center">
