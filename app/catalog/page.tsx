@@ -40,7 +40,8 @@ export default function CatalogPage() {
     setLoading(true)
     try {
       const params = new URLSearchParams({
-        category: selectedCategory,
+        // Всегда запрашиваем все товары, категории фильтруем на клиенте
+        category: 'all',
         sort: sortBy,
         page: String(page),
         limit: '12',
@@ -58,9 +59,30 @@ export default function CatalogPage() {
     }
   }
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  // Нормализация категорий для устойчивой фильтрации на клиенте
+  const CATEGORY_ALIASES: Record<string, string[]> = {
+    hoodies: ['hoodies', 'hoodie'],
+    't-shirts': ['t-shirts', 'tshirt', 'tshirts'],
+    pants: ['pants', 'trousers'],
+    accessories: ['accessories', 'accessory'],
+  }
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
+
+    if (!matchesSearch) return false
+
+    if (selectedCategory === 'all') return true
+
+    const aliases = CATEGORY_ALIASES[selectedCategory]
+    const productCategory = product.category.toLowerCase()
+
+    if (aliases) {
+      return aliases.includes(productCategory)
+    }
+
+    return productCategory === selectedCategory.toLowerCase()
+  })
 
   const categories = [
     { id: 'all', name: 'Все товары' },
