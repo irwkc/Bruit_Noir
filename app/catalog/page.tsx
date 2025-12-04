@@ -143,7 +143,10 @@ export default function CatalogPage() {
               {categories.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => {
+                    setSelectedCategory(cat.id)
+                    setSearchQuery('')
+                  }}
                   className={`rounded-full border px-4 py-2 text-sm transition ${
                     selectedCategory === cat.id
                       ? 'border-white bg-white text-black'
@@ -229,7 +232,10 @@ export default function CatalogPage() {
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
+                onClick={() => {
+                  setSelectedCategory(cat.id)
+                  setSearchQuery('')
+                }}
                 className={`flex-shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   selectedCategory === cat.id
                     ? 'border-white bg-white text-black'
