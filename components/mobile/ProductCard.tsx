@@ -8,6 +8,7 @@ interface MobileProductCardProps {
   images: string[]
   category: string
   available?: boolean
+  preOrder?: boolean
 }
 
 export default function MobileProductCard({
