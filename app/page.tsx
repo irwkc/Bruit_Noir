@@ -1,11 +1,15 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { prisma } from '@/lib/prisma'
 import ProductCard from '@/components/ProductCard'
 import MobileProductCard from '@/components/mobile/ProductCard'
-import FadeIn from '@/components/animations/FadeIn'
-import StaggerContainer from '@/components/animations/StaggerContainer'
-import StaggerItem from '@/components/animations/StaggerItem'
+
+const FadeIn = dynamic(() => import('@/components/animations/FadeIn'), { ssr: true })
+const StaggerContainer = dynamic(() => import('@/components/animations/StaggerContainer'), {
+  ssr: true,
+})
+const StaggerItem = dynamic(() => import('@/components/animations/StaggerItem'), { ssr: true })
 
 type FeaturedProduct = {
   id: string

@@ -70,6 +70,10 @@ model Product {
 
   orderItems OrderItem[]
   analyticsEvents AnalyticsEvent[]
+
+  @@index([category])
+  @@index([featured])
+  @@index([available])
 }
 
 model Order {
@@ -92,6 +96,9 @@ model Order {
   user          User          @relation(fields: [userId], references: [id])
   deliveryPoint DeliveryPoint? @relation(fields: [deliveryPointId], references: [id])
   orderItems    OrderItem[]
+
+  @@index([userId, createdAt])
+  @@index([paymentStatus])
 }
 
 model OrderItem {
