@@ -67,11 +67,59 @@ export default function CatalogPage() {
   }
 
   // Нормализация категорий для устойчивой фильтрации на клиенте
-  const CATEGORY_ALIASES: Record<string, string[]> = {
-    hoodies: ['hoodies', 'hoodie'],
-    't-shirts': ['t-shirts', 'tshirt', 'tshirts'],
-    pants: ['pants', 'trousers'],
-    accessories: ['accessories', 'accessory'],
+  function normalizeCategory(rawCategory: string | undefined, name: string): string {
+    const cat = (rawCategory || '').toLowerCase().trim()
+    const title = name.toLowerCase()
+
+    // Худи
+    if (
+      cat.includes('hood') ||
+      cat.includes('худи') ||
+      title.includes('hoodie') ||
+      title.includes('худи')
+    ) {
+      return 'hoodies'
+    }
+
+    // Футболки
+    if (
+      cat.includes('t-shirt') ||
+      cat.includes('tshirt') ||
+      cat.includes('tshirts') ||
+      cat.includes('tee') ||
+      cat.includes('футболк') ||
+      title.includes('t-shirt') ||
+      title.includes('tshirt') ||
+      title.includes('tee') ||
+      title.includes('футболк')
+    ) {
+      return 't-shirts'
+    }
+
+    // Штаны
+    if (
+      cat.includes('pants') ||
+      cat.includes('trousers') ||
+      cat.includes('штаны') ||
+      cat.includes('брюки') ||
+      title.includes('штаны') ||
+      title.includes('брюки')
+    ) {
+      return 'pants'
+    }
+
+    // Аксессуары
+    if (
+      cat.includes('accessor') ||
+      cat.includes('аксессуар') ||
+      title.includes('accessor') ||
+      title.includes('аксессуар')
+    ) {
+      return 'accessories'
+    }
+
+    // По умолчанию возвращаем исходную категорию (или пустую строку)
+    return cat || ''
   }
 
   const filteredProducts = products.filter((product) => {
@@ -81,14 +129,8 @@ export default function CatalogPage() {
 
     if (selectedCategory === 'all') return true
 
-    const aliases = CATEGORY_ALIASES[selectedCategory]
-    const productCategory = product.category.toLowerCase()
-
-    if (aliases) {
-      return aliases.includes(productCategory)
-    }
-
-    return productCategory === selectedCategory.toLowerCase()
+    const normalized = normalizeCategory(product.category, product.name)
+    return normalized === selectedCategory
   })
 
   const categories = [
