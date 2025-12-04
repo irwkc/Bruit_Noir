@@ -41,6 +41,7 @@ export default function CheckoutPage() {
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('+7 ')
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
 
   useEffect(() => {
     if (session?.user) {
@@ -164,11 +165,17 @@ export default function CheckoutPage() {
 
       if (res.ok) {
         const data = await res.json()
-        clearCart()
 
         if (data.paymentRedirectUrl) {
+          // Устанавливаем флаг редиректа, чтобы не показывать пустую корзину
+          setIsRedirecting(true)
+          // Очищаем корзину и сразу редиректим на оплату
+          clearCart()
+          // Используем window.location.href для немедленного редиректа без перерендера
           window.location.href = data.paymentRedirectUrl
         } else {
+          // Если оплата не требуется, очищаем корзину и идем в профиль
+          clearCart()
           router.push('/profile')
         }
       } else {
@@ -194,7 +201,8 @@ export default function CheckoutPage() {
     }
   }
 
-  if (items.length === 0) {
+  // Не редиректим на корзину, если идет редирект на оплату
+  if (items.length === 0 && !isRedirecting) {
     router.push('/cart')
     return null
   }
