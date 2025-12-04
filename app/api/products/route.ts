@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           name: true,
+          description: true,
           price: true,
           images: true,
           category: true,
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
           featured: true,
           available: true,
           createdAt: true,
+          updatedAt: true,
         },
       }),
     ])
