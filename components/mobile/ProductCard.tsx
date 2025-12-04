@@ -40,16 +40,17 @@ export default function MobileProductCard({
           )}
           
           {/* Category badge - smaller for mobile */}
-          <div className="absolute top-2 left-2">
+          <div className="absolute top-2 left-2 flex items-center gap-2">
             <span className="bg-black/80 text-white text-xs px-2 py-1 rounded-full font-medium">
               {category}
             </span>
           </div>
           {!isAvailable && (
             <div className="absolute top-2 right-2">
-              <span className="rounded-full bg-red-600/90 px-2.5 py-1 text-[10px] font-semibold uppercase text-white">
-                Нет в наличии
-              </span>
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-full bg-red-500 border border-white/80 shadow-sm"
+                aria-hidden="true"
+              />
             </div>
           )}
         </div>

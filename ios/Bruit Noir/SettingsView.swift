@@ -52,7 +52,7 @@ struct SettingsView: View {
                     .disabled(isSavingEmail)
                 }
 
-                Section("Стоимость доставки") {
+                Section {
                     TextField("0", text: $deliveryPriceInput)
                         .keyboardType(.decimalPad)
                         .focused($focusedField, equals: .deliveryPrice)
@@ -82,9 +82,10 @@ struct SettingsView: View {
                         }
                     }
                     .disabled(isSavingDelivery)
-                    .footer {
-                        Text("Эта сумма будет добавляться к стоимости товаров в заказе.")
-                    }
+                } header: {
+                    Text("Стоимость доставки")
+                } footer: {
+                    Text("Эта сумма будет добавляться к стоимости товаров в заказе.")
                 }
                 
                 if appModel.isSuperAdmin {

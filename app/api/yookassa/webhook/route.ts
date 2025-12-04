@@ -122,66 +122,98 @@ export async function POST(request: NextRequest) {
     // Обработка событий
     if (event === 'payment.succeeded') {
       console.log(`[YooKassa webhook] Payment succeeded for order ${orderId}`)
-      await prisma.order.updateMany({
-        where: { id: orderId },
+
+      // Обновляем статус заказа только если он ещё не был отмечен как paid
+      const updateResult = await prisma.order.updateMany({
+        where: {
+          id: orderId,
+          paymentStatus: { not: 'paid' },
+        },
         data: {
           paymentStatus: 'paid',
           status: 'processing',
         },
       })
 
-      try {
-        // Получаем заказ с полной информацией
-        const order = await prisma.order.findUnique({
-          where: { id: orderId },
-          include: {
-            orderItems: {
-              include: { product: true },
+      // Если ничего не обновилось — значит, мы уже обрабатывали этот платеж (повторный webhook)
+      if (updateResult.count === 0) {
+        console.log(`[YooKassa webhook] Order ${orderId} already marked as paid, skipping stock update and notifications`)
+      } else {
+        try {
+          // Получаем заказ с полной информацией
+          const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+              orderItems: {
+                include: { product: true },
+              },
+              deliveryPoint: true,
             },
-            deliveryPoint: true,
-          },
-        })
-
-        if (!order) {
-          console.warn(`[YooKassa webhook] Order not found for notification: ${orderId}`)
-        } else {
-          const admins = await prisma.user.findMany({
-            where: {
-              role: 'admin',
-              orderNotificationEmail: { not: null },
-            },
-            select: { orderNotificationEmail: true },
           })
 
-          if (admins.length > 0) {
-            const payload = {
-              id: order.id,
-              total: order.total,
-              customerName: order.customerName,
-              customerEmail: order.customerEmail,
-              customerPhone: order.customerPhone,
-              createdAt: order.createdAt,
-              items: order.orderItems.map((item) => ({
-                name: item.product?.name || 'Товар',
-                quantity: item.quantity,
-                price: item.price,
-                size: item.size,
-                color: item.color,
-              })),
-            }
-
-            void Promise.all(
-              admins
-                .map((admin) => admin.orderNotificationEmail)
-                .filter((email): email is string => Boolean(email))
-                .map((email) => sendNewOrderNotification(email, payload))
-            ).catch((notifyError) => {
-              console.error('[YooKassa webhook] Failed to send admin notifications:', notifyError)
+          if (!order) {
+            console.warn(`[YooKassa webhook] Order not found for notification/stock: ${orderId}`)
+          } else {
+            // Уменьшаем остатки по товарам
+            await prisma.$transaction(async (tx) => {
+              for (const item of order.orderItems) {
+                try {
+                  await tx.product.update({
+                    where: { id: item.productId },
+                    data: {
+                      stock: {
+                        decrement: item.quantity,
+                      },
+                    },
+                  })
+                } catch (stockError) {
+                  console.error(
+                    `[YooKassa webhook] Failed to decrement stock for product ${item.productId} (order ${orderId}):`,
+                    stockError
+                  )
+                }
+              }
             })
+
+            // Отправляем письма администраторам
+            const admins = await prisma.user.findMany({
+              where: {
+                role: 'admin',
+                orderNotificationEmail: { not: null },
+              },
+              select: { orderNotificationEmail: true },
+            })
+
+            if (admins.length > 0) {
+              const payload = {
+                id: order.id,
+                total: order.total,
+                customerName: order.customerName,
+                customerEmail: order.customerEmail,
+                customerPhone: order.customerPhone,
+                createdAt: order.createdAt,
+                items: order.orderItems.map((item) => ({
+                  name: item.product?.name || 'Товар',
+                  quantity: item.quantity,
+                  price: item.price,
+                  size: item.size,
+                  color: item.color,
+                })),
+              }
+
+              void Promise.all(
+                admins
+                  .map((admin) => admin.orderNotificationEmail)
+                  .filter((email): email is string => Boolean(email))
+                  .map((email) => sendNewOrderNotification(email, payload))
+              ).catch((notifyError) => {
+                console.error('[YooKassa webhook] Failed to send admin notifications:', notifyError)
+              })
+            }
           }
+        } catch (notifyError) {
+          console.error('[YooKassa webhook] Error while updating stock / sending notifications:', notifyError)
         }
-      } catch (notifyError) {
-        console.error('[YooKassa webhook] Error while preparing/sending admin notifications:', notifyError)
       }
     } else if (event === 'payment.waiting_for_capture') {
       console.log(`[YooKassa webhook] Payment waiting for capture for order ${orderId}`)
