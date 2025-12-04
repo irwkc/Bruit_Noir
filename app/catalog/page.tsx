@@ -221,9 +221,9 @@ export default function CatalogPage() {
             <div className="grid grid-cols-2 gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="aspect-[3/4] rounded-lg bg-gray-200 mb-2" />
-                  <div className="h-3 w-2/3 rounded bg-gray-200 mb-1" />
-                  <div className="h-3 w-16 rounded bg-gray-200" />
+                  <div className="aspect-[3/4] rounded-lg bg-white/10 mb-2" />
+                  <div className="h-3 w-2/3 rounded bg-white/10 mb-1" />
+                  <div className="h-3 w-16 rounded bg-white/10" />
                 </div>
               ))}
             </div>
