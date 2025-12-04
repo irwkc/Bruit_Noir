@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { sendNewOrderNotification } from '@/lib/email'
+import { getDeliveryPrice } from '@/lib/siteSettings'
 import { createYooKassaPayment } from '@/lib/yookassa'
 
 export async function GET(request: NextRequest) {
@@ -112,14 +113,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate total from database prices
-    const total = items.reduce((sum: number, item: any) => {
+    // Calculate items total from database prices
+    const itemsTotal = items.reduce((sum: number, item: any) => {
       const product = productMap.get(item.productId)
       if (!product) {
         return sum
       }
       return sum + Number(product.price) * Number(item.quantity)
     }, 0)
+
+    // Add delivery price from site settings
+    const deliveryPrice = await getDeliveryPrice()
+    const total = itemsTotal + deliveryPrice
 
     // Создаем или находим пункт выдачи, если передан полный объект deliveryPoint
     let finalDeliveryPointId: string | null = null
@@ -228,42 +233,6 @@ export async function POST(request: NextRequest) {
           { status: 502 }
         )
       }
-    }
-
-    // Fire-and-forget notifications
-    const admins = await prisma.user.findMany({
-      where: {
-        role: 'admin',
-        orderNotificationEmail: { not: null },
-      },
-      select: { orderNotificationEmail: true },
-    })
-
-    if (admins.length > 0) {
-      const payload = {
-        id: order.id,
-        total,
-        customerName,
-        customerEmail,
-        customerPhone,
-        createdAt: order.createdAt,
-        items: order.orderItems.map((item) => ({
-          name: item.product?.name || 'Товар',
-          quantity: item.quantity,
-          price: item.price,
-          size: item.size,
-          color: item.color,
-        })),
-      }
-
-      void Promise.all(
-        admins
-          .map((admin) => admin.orderNotificationEmail)
-          .filter((email): email is string => Boolean(email))
-          .map((email) => sendNewOrderNotification(email, payload))
-      ).catch((error) => {
-        console.error('Failed to send admin notifications:', error)
-      })
     }
 
     return NextResponse.json(

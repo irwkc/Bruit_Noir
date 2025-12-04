@@ -41,6 +41,7 @@ export default function CheckoutPage() {
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('+7 ')
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [deliveryPrice, setDeliveryPrice] = useState<number | null>(null)
   const [isRedirecting, setIsRedirecting] = useState(false)
 
   useEffect(() => {
@@ -57,6 +58,32 @@ export default function CheckoutPage() {
       setCustomerEmail(session.user.email || '')
     }
   }, [session])
+
+  // Загружаем стоимость доставки с сервера
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadDeliveryPrice() {
+      try {
+        const res = await fetch('/api/settings/delivery', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = (await res.json()) as { deliveryPrice?: number }
+        if (!cancelled) {
+          setDeliveryPrice(typeof data.deliveryPrice === 'number' ? data.deliveryPrice : 0)
+        }
+      } catch {
+        if (!cancelled) {
+          setDeliveryPrice(0)
+        }
+      }
+    }
+
+    loadDeliveryPrice()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // Форматирование номера телефона
   const formatPhoneNumber = (value: string): string => {
@@ -206,6 +233,10 @@ export default function CheckoutPage() {
     router.push('/cart')
     return null
   }
+
+  const itemsTotal = getTotalPrice()
+  const currentDeliveryPrice = deliveryPrice ?? 0
+  const grandTotal = itemsTotal + currentDeliveryPrice
 
   const cities = ['Москва', 'Санкт-Петербург', 'Казань', 'Екатеринбург', 'Новосибирск']
 
@@ -374,11 +405,15 @@ export default function CheckoutPage() {
                 <div className="border-t border-white/20 pt-4 space-y-2 mb-6">
                   <div className="flex justify-between text-gray-300">
                     <span>Доставка:</span>
-                    <span>Бесплатно</span>
+                    <span>
+                      {currentDeliveryPrice === 0
+                        ? 'Бесплатно'
+                        : `${currentDeliveryPrice.toLocaleString('ru-RU')} ₽`}
+                    </span>
                   </div>
                   <div className="flex justify-between text-xl font-bold text-white">
                     <span>Итого:</span>
-                    <span>{getTotalPrice().toLocaleString('ru-RU')} ₽</span>
+                    <span>{grandTotal.toLocaleString('ru-RU')} ₽</span>
                   </div>
                 </div>
 
@@ -552,11 +587,15 @@ export default function CheckoutPage() {
             <div className="border-t border-white/20 pt-3 space-y-2">
               <div className="flex justify-between text-sm text-gray-300">
                 <span>Доставка:</span>
-                <span>Бесплатно</span>
+                <span>
+                  {currentDeliveryPrice === 0
+                    ? 'Бесплатно'
+                    : `${currentDeliveryPrice.toLocaleString('ru-RU')} ₽`}
+                </span>
               </div>
               <div className="flex justify-between text-lg font-bold text-white">
                 <span>Итого:</span>
-                <span>{getTotalPrice().toLocaleString('ru-RU')} ₽</span>
+                <span>{grandTotal.toLocaleString('ru-RU')} ₽</span>
               </div>
             </div>
           </div>

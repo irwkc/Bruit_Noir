@@ -264,6 +264,10 @@ struct NotificationEmailResponse: Codable {
     let email: String?
 }
 
+struct DeliverySettingsResponse: Codable {
+    let deliveryPrice: Double
+}
+
 extension JSONDecoder {
     static var apiDecoder: JSONDecoder {
         let decoder = JSONDecoder()

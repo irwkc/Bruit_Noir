@@ -3,10 +3,13 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var appModel: AppViewModel
     @State private var isSavingEmail = false
+    @State private var isSavingDelivery = false
+    @State private var deliveryPriceInput: String = ""
     @FocusState private var focusedField: Field?
 
     enum Field {
         case notificationEmail
+        case deliveryPrice
     }
 
     var body: some View {
@@ -47,6 +50,41 @@ struct SettingsView: View {
                         }
                     }
                     .disabled(isSavingEmail)
+                }
+
+                Section("Стоимость доставки") {
+                    TextField("0", text: $deliveryPriceInput)
+                        .keyboardType(.decimalPad)
+                        .focused($focusedField, equals: .deliveryPrice)
+                        .onAppear {
+                            if deliveryPriceInput.isEmpty {
+                                deliveryPriceInput = appModel.deliveryPrice == 0
+                                    ? ""
+                                    : String(format: "%.0f", appModel.deliveryPrice)
+                            }
+                        }
+
+                    Button {
+                        focusedField = nil
+                        isSavingDelivery = true
+                        let normalized = Double(deliveryPriceInput.replacingOccurrences(of: ",", with: ".")) ?? 0
+                        appModel.updateDeliveryPrice(normalized)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            isSavingDelivery = false
+                        }
+                    } label: {
+                        if isSavingDelivery {
+                            ProgressView()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        } else {
+                            Text("Сохранить стоимость доставки")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                    }
+                    .disabled(isSavingDelivery)
+                    .footer {
+                        Text("Эта сумма будет добавляться к стоимости товаров в заказе.")
+                    }
                 }
                 
                 if appModel.isSuperAdmin {

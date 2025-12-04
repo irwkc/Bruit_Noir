@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendNewOrderNotification } from '@/lib/email'
 import { verifyWebhookSignature } from '@/lib/yookassa'
 
 const YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID
@@ -128,6 +129,60 @@ export async function POST(request: NextRequest) {
           status: 'processing',
         },
       })
+
+      try {
+        // Получаем заказ с полной информацией
+        const order = await prisma.order.findUnique({
+          where: { id: orderId },
+          include: {
+            orderItems: {
+              include: { product: true },
+            },
+            deliveryPoint: true,
+          },
+        })
+
+        if (!order) {
+          console.warn(`[YooKassa webhook] Order not found for notification: ${orderId}`)
+        } else {
+          const admins = await prisma.user.findMany({
+            where: {
+              role: 'admin',
+              orderNotificationEmail: { not: null },
+            },
+            select: { orderNotificationEmail: true },
+          })
+
+          if (admins.length > 0) {
+            const payload = {
+              id: order.id,
+              total: order.total,
+              customerName: order.customerName,
+              customerEmail: order.customerEmail,
+              customerPhone: order.customerPhone,
+              createdAt: order.createdAt,
+              items: order.orderItems.map((item) => ({
+                name: item.product?.name || 'Товар',
+                quantity: item.quantity,
+                price: item.price,
+                size: item.size,
+                color: item.color,
+              })),
+            }
+
+            void Promise.all(
+              admins
+                .map((admin) => admin.orderNotificationEmail)
+                .filter((email): email is string => Boolean(email))
+                .map((email) => sendNewOrderNotification(email, payload))
+            ).catch((notifyError) => {
+              console.error('[YooKassa webhook] Failed to send admin notifications:', notifyError)
+            })
+          }
+        }
+      } catch (notifyError) {
+        console.error('[YooKassa webhook] Error while preparing/sending admin notifications:', notifyError)
+      }
     } else if (event === 'payment.waiting_for_capture') {
       console.log(`[YooKassa webhook] Payment waiting for capture for order ${orderId}`)
       await prisma.order.updateMany({

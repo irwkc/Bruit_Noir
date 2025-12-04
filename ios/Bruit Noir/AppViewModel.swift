@@ -49,6 +49,7 @@ final class AppViewModel: ObservableObject {
     @Published var passcodeError: String?
     @Published private(set) var admins: [AdminUser] = []
     @Published private(set) var adminsLoading = false
+    @Published var deliveryPrice: Double = 0
 
     private let authService = AuthService.shared
     private let ordersService = OrdersService.shared
@@ -77,6 +78,7 @@ final class AppViewModel: ObservableObject {
                 await fetchOrders(reset: true)
                 await fetchProducts(force: true)
                 await fetchNotificationEmail()
+                await fetchDeliveryPrice()
                 await fetchAnalytics(range: analyticsRange, force: true)
             } catch {
                 await authService.clearSession()
@@ -99,6 +101,7 @@ final class AppViewModel: ObservableObject {
                     await fetchOrders(reset: true)
                     await fetchProducts(force: true)
                     await fetchNotificationEmail()
+                    await fetchDeliveryPrice()
                     await fetchAnalytics(range: analyticsRange, force: true)
                 case let .requiresTotp(info):
                     authState = .needTotp(info, PendingCredentials(email: email, password: password))
@@ -120,6 +123,7 @@ final class AppViewModel: ObservableObject {
         nextCursor = nil
         products = []
         notificationEmail = ""
+        deliveryPrice = 0
         analyticsData = nil
         analyticsRange = 30
         analyticsFromDate = nil
@@ -314,6 +318,37 @@ final class AppViewModel: ObservableObject {
                 let saved = try await settingsService.updateNotificationEmail(notificationEmail)
                 notificationEmail = saved ?? ""
                 notificationMessage = saved == nil ? "Уведомления отключены" : "Email обновлён"
+            } catch APIClientError.unauthorized {
+                await handleUnauthorized()
+            } catch {
+                handle(error)
+            }
+        }
+    }
+
+    func fetchDeliveryPrice() async {
+        guard case .authenticated = authState else { return }
+        do {
+            let price = try await settingsService.fetchDeliveryPrice()
+            await MainActor.run {
+                deliveryPrice = price
+            }
+        } catch APIClientError.unauthorized {
+            await handleUnauthorized()
+        } catch {
+            handle(error)
+        }
+    }
+
+    func updateDeliveryPrice(_ value: Double) {
+        guard case .authenticated = authState else { return }
+        Task {
+            do {
+                let saved = try await settingsService.updateDeliveryPrice(value)
+                await MainActor.run {
+                    deliveryPrice = saved
+                    notificationMessage = "Стоимость доставки обновлена"
+                }
             } catch APIClientError.unauthorized {
                 await handleUnauthorized()
             } catch {

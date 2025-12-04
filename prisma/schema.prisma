@@ -127,6 +127,7 @@ model SiteSettings {
   id              String   @id @default(cuid())
   siteLocked      Boolean  @default(false)
   siteLockPassword String? // bcrypt hash
+  deliveryPrice   Float    @default(0)
   updatedAt       DateTime @updatedAt
 }
 

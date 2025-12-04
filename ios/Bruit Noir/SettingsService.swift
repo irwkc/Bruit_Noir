@@ -24,5 +24,25 @@ actor SettingsService {
         )
         return response.email
     }
-    
+
+    func fetchDeliveryPrice() async throws -> Double {
+        let response: DeliverySettingsResponse = try await APIClient.shared.performRequest(
+            "GET",
+            path: "/api/admin/settings/delivery",
+            decode: DeliverySettingsResponse.self
+        )
+        return response.deliveryPrice
+    }
+
+    func updateDeliveryPrice(_ value: Double) async throws -> Double {
+        struct Payload: Encodable { let deliveryPrice: Double }
+        let response: DeliverySettingsResponse = try await APIClient.shared.performRequest(
+            "POST",
+            path: "/api/admin/settings/delivery",
+            body: Payload(deliveryPrice: value),
+            decode: DeliverySettingsResponse.self
+        )
+        return response.deliveryPrice
+    }
+
 }

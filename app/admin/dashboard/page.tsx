@@ -32,6 +32,10 @@ export default async function AdminDashboard() {
           <div className="text-xl font-semibold mb-2">Товары</div>
           <div className="text-gray-600 text-sm">Список и редактирование</div>
         </Link>
+        <Link href="/admin/settings" className="block rounded-xl border bg-white p-6 hover:shadow">
+          <div className="text-xl font-semibold mb-2">Настройки</div>
+          <div className="text-gray-600 text-sm">Стоимость доставки и другие параметры</div>
+        </Link>
         <Link href="/admin/orders" className="block rounded-xl border bg-white p-6 hover:shadow">
           <div className="text-xl font-semibold mb-2">Заказы</div>
           <div className="text-gray-600 text-sm">Управление заказами</div>
