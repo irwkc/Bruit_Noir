@@ -46,7 +46,18 @@ export default function CatalogPage() {
           throw new Error(`Failed to fetch products: ${res.status}`)
         }
         const json = await res.json()
-        const data: Product[] = json.data || []
+        const rawData = json.data || []
+        // Нормализуем данные: images может быть Json, нужно преобразовать в массив строк
+        const data: Product[] = rawData.map((product: any) => ({
+          ...product,
+          images: Array.isArray(product.images) 
+            ? product.images 
+            : typeof product.images === 'string' 
+              ? [product.images] 
+              : [],
+          sizes: Array.isArray(product.sizes) ? product.sizes : [],
+          colors: Array.isArray(product.colors) ? product.colors : [],
+        }))
         if (!cancelled) {
           setProducts(data)
         }
