@@ -179,6 +179,15 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-800">
+          <div className="flex flex-wrap justify-center gap-4 mb-4 text-xs text-gray-400">
+            <Link href="/privacy" className="hover:text-white transition">
+              Политика конфиденциальности
+            </Link>
+            <span className="text-gray-600">|</span>
+            <Link href="/oferta" className="hover:text-white transition">
+              Публичная оферта
+            </Link>
+          </div>
           <p className="text-center text-sm text-gray-400">
             &copy; {new Date().getFullYear()} Bruit Noir. Все права защищены.
           </p>
