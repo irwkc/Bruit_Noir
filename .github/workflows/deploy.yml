@@ -49,8 +49,10 @@ jobs:
             chmod 755 public/uploads
             # Remove node_modules before clean install (ignore errors for stubborn directories)
             rm -rf node_modules || find node_modules -mindepth 1 -delete || true
-            # Use npm ci for faster, reliable installs
-            npm ci --prefer-offline
+            # Clear npm cache to free memory
+            npm cache clean --force || true
+            # Use npm install with memory optimizations instead of npm ci
+            NODE_OPTIONS="--max-old-space-size=1024" npm install --no-audit --no-fund --prefer-offline
             npx prisma generate
             npx prisma db push
             npm run build
