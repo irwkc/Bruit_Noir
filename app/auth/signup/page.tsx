@@ -11,6 +11,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -49,6 +50,11 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    if (!agreedToTerms) {
+      setError('Необходимо согласиться с политикой конфиденциальности и публичной офертой')
+      return
+    }
 
     if (password !== confirmPassword) {
       setError('Пароли не совпадают')
@@ -218,11 +224,35 @@ export default function SignUpPage() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-4">
+            <div className="flex items-start space-x-3 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
+              <div className="flex items-center h-5 mt-0.5">
+                <input
+                  id="agreement"
+                  name="agreement"
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="w-5 h-5 bg-white/20 border-2 border-white/30 rounded focus:ring-2 focus:ring-white/50 focus:ring-offset-0 text-black cursor-pointer transition-all duration-200 checked:bg-white checked:border-white"
+                  required
+                />
+              </div>
+              <label htmlFor="agreement" className="text-sm text-gray-300 leading-relaxed cursor-pointer flex-1">
+                Я согласен с{' '}
+                <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="text-white hover:underline font-medium transition-colors">
+                  Политикой конфиденциальности
+                </Link>
+                {' '}и{' '}
+                <Link href="/oferta" target="_blank" rel="noopener noreferrer" className="text-white hover:underline font-medium transition-colors">
+                  Публичной офертой
+                </Link>
+              </label>
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
-                className="w-full py-3.5 px-4 bg-black text-white font-semibold rounded-xl hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+              disabled={loading || !agreedToTerms}
+              className="w-full py-3.5 px-4 bg-black text-white font-semibold rounded-xl hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               {loading ? 'Регистрация...' : 'Зарегистрироваться'}
             </button>
