@@ -30,7 +30,6 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       </div>
 
       <div className="relative" style={{ zIndex: 10 }}>
-      <MarqueeBanner />
       <Header />
       <main className="flex-grow">{children}</main>
       <Footer />
