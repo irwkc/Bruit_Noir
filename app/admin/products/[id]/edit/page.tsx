@@ -68,7 +68,7 @@ export default function EditProductPage() {
           throw new Error('Не удалось загрузить данные товара')
         }
 
-      const product = (await res.json()) as ProductResponse
+        const product = (await res.json()) as ProductResponse
 
         setFormData({
           name: product.name,
@@ -80,7 +80,7 @@ export default function EditProductPage() {
           sizes: Array.isArray(product.sizes) && product.sizes.length > 0 ? product.sizes : DEFAULT_SIZES,
           colors: Array.isArray(product.colors) && product.colors.length > 0 ? product.colors : DEFAULT_COLORS,
           featured: Boolean(product.featured),
-        outOfStock: product.available === false,
+          outOfStock: product.available === false,
         preOrder: product.preOrder === true,
         })
       } catch (fetchError) {

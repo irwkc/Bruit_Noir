@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation'
 import MobileHeader from './Header'
 import MobileFooter from './Footer'
-import MarqueeBanner from '@/components/MarqueeBanner'
 import React from 'react'
 
 interface MobileSiteChromeProps {

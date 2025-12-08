@@ -24,7 +24,7 @@ actor SettingsService {
         )
         return response.email
     }
-
+    
     func fetchDeliveryPrice() async throws -> Double {
         let response: DeliverySettingsResponse = try await APIClient.shared.performRequest(
             "GET",

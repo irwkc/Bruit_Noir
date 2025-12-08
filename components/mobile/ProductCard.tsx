@@ -52,7 +52,7 @@ export default function MobileProductCard({
                 pre-order
               </span>
             )}
-          </div>
+            </div>
         </div>
 
         {/* Content with glass effect */}

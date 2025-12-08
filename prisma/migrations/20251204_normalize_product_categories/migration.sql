@@ -21,3 +21,4 @@ SET "category" = 'accessories'
 WHERE lower(trim("category")) IN ('accessories', 'accessory');
 
 
+
