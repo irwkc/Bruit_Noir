@@ -11,7 +11,7 @@ export default function Header() {
   const totalItems = useCartStore((state) => state.getTotalItems())
 
   return (
-    <header className="bg-white/10 backdrop-blur-2xl text-white sticky top-0 z-50">
+    <header className="bg-white/10 backdrop-blur-2xl text-white sticky top-8 z-50">
       <nav>
         <div className="flex min-h-[60px] items-center justify-between py-2 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
@@ -59,25 +59,8 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden py-4 px-4 space-y-2 border-t border-white/20">
-            <Link 
-              href="/privacy" 
-              className="block px-4 py-2 text-sm text-gray-300 hover:text-white transition"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Политика конфиденциальности
-            </Link>
-            <Link 
-              href="/oferta" 
-              className="block px-4 py-2 text-sm text-gray-300 hover:text-white transition"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Публичная оферта
-            </Link>
-          </div>
-        )}
+        {/* Mobile Menu (removed per request) */}
+        {mobileMenuOpen && <div className="md:hidden py-4 space-y-2" />}
       </nav>
     </header>
   )

@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import MobileHeader from './Header'
 import MobileFooter from './Footer'
+import MarqueeBanner from '@/components/MarqueeBanner'
 import React from 'react'
 
 interface MobileSiteChromeProps {
@@ -35,6 +36,7 @@ export default function MobileSiteChrome({ children }: MobileSiteChromeProps) {
       </div>
 
       <div className="relative flex flex-col min-h-dvh" style={{ zIndex: 10 }}>
+      <MarqueeBanner />
       <MobileHeader />
       <main className="flex-1">{children}</main>
       <MobileFooter />

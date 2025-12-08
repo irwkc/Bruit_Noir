@@ -30,7 +30,7 @@ export default function MobileHeader() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 md:hidden bg-white/10 backdrop-blur-2xl text-white">
+    <header className="sticky top-8 z-50 md:hidden bg-white/10 backdrop-blur-2xl text-white">
       <nav className="py-3">
         <div className="flex items-center justify-between min-h-[36px] px-4">
           {/* Logo - smaller for mobile */}

@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import MarqueeBanner from '@/components/MarqueeBanner'
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -30,6 +31,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       </div>
 
       <div className="relative" style={{ zIndex: 10 }}>
+      <MarqueeBanner />
       <Header />
       <main className="flex-grow">{children}</main>
       <Footer />
