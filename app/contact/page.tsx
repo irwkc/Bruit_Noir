@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function ContactPage() {
   const [name, setName] = useState('')
@@ -169,6 +170,17 @@ export default function ContactPage() {
               >
                 {loading ? 'Отправка...' : 'Отправить'}
               </button>
+              
+              <p className="text-xs text-gray-400 text-center mt-4">
+                Нажимая кнопку «Отправить», вы соглашаетесь с{' '}
+                <Link href="/privacy" className="text-white hover:underline">
+                  Политикой конфиденциальности
+                </Link>
+                {' '}и{' '}
+                <Link href="/oferta" className="text-white hover:underline">
+                  Публичной офертой
+                </Link>
+              </p>
             </form>
           </div>
         </div>
@@ -276,6 +288,17 @@ export default function ContactPage() {
               >
                 {loading ? 'Отправка...' : 'Отправить'}
               </button>
+              
+              <p className="text-xs text-gray-400 text-center mt-3">
+                Нажимая кнопку «Отправить», вы соглашаетесь с{' '}
+                <Link href="/privacy" className="text-white hover:underline">
+                  Политикой конфиденциальности
+                </Link>
+                {' '}и{' '}
+                <Link href="/oferta" className="text-white hover:underline">
+                  Публичной офертой
+                </Link>
+              </p>
             </form>
           </div>
         </div>

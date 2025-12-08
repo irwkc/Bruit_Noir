@@ -28,8 +28,21 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation (removed per request) */}
-          <div className="hidden md:flex md:items-center md:space-x-8" />
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex md:items-center md:space-x-6">
+            <Link 
+              href="/privacy" 
+              className="text-sm text-gray-300 hover:text-white transition"
+            >
+              Политика конфиденциальности
+            </Link>
+            <Link 
+              href="/oferta" 
+              className="text-sm text-gray-300 hover:text-white transition"
+            >
+              Публичная оферта
+            </Link>
+          </div>
 
           {/* Icons */}
           <div className="flex items-center space-x-4">
@@ -59,8 +72,25 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu (removed per request) */}
-        {mobileMenuOpen && <div className="md:hidden py-4 space-y-2" />}
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 px-4 space-y-2 border-t border-white/20">
+            <Link 
+              href="/privacy" 
+              className="block px-4 py-2 text-sm text-gray-300 hover:text-white transition"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Политика конфиденциальности
+            </Link>
+            <Link 
+              href="/oferta" 
+              className="block px-4 py-2 text-sm text-gray-300 hover:text-white transition"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Публичная оферта
+            </Link>
+          </div>
+        )}
       </nav>
     </header>
   )

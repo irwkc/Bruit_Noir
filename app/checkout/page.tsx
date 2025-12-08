@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import CityAutocomplete from '@/components/CityAutocomplete'
 import SdekWidget from '@/components/SdekWidget'
 
@@ -424,6 +425,17 @@ export default function CheckoutPage() {
                 >
                   {loading ? 'Оформление...' : 'Подтвердить заказ'}
                 </button>
+                
+                <p className="text-xs text-gray-400 text-center mt-4">
+                  Нажимая кнопку «Подтвердить заказ», вы соглашаетесь с{' '}
+                  <Link href="/privacy" className="text-white hover:underline">
+                    Политикой конфиденциальности
+                  </Link>
+                  {' '}и{' '}
+                  <Link href="/oferta" className="text-white hover:underline">
+                    Публичной офертой
+                  </Link>
+                </p>
               </div>
             </div>
           </div>
@@ -610,6 +622,17 @@ export default function CheckoutPage() {
             >
               {loading ? 'Оформление...' : 'Подтвердить заказ'}
             </button>
+            
+            <p className="text-xs text-gray-400 text-center mt-3">
+              Нажимая кнопку «Подтвердить заказ», вы соглашаетесь с{' '}
+              <Link href="/privacy" className="text-white hover:underline">
+                Политикой конфиденциальности
+              </Link>
+              {' '}и{' '}
+              <Link href="/oferta" className="text-white hover:underline">
+                Публичной офертой
+              </Link>
+            </p>
           </div>
         </form>
       </div>
