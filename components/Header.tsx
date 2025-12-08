@@ -28,21 +28,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-6">
-            <Link 
-              href="/privacy" 
-              className="text-sm text-gray-300 hover:text-white transition"
-            >
-              Политика конфиденциальности
-            </Link>
-            <Link 
-              href="/oferta" 
-              className="text-sm text-gray-300 hover:text-white transition"
-            >
-              Публичная оферта
-            </Link>
-          </div>
+          {/* Desktop Navigation (removed per request) */}
+          <div className="hidden md:flex md:items-center md:space-x-8" />
 
           {/* Icons */}
           <div className="flex items-center space-x-4">
